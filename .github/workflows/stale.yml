@@ -2,7 +2,7 @@ name: Stale Issues and PRs
 on:
   workflow_call:
     inputs:
-      debugOnly:
+      dryRun:
         description: Set to true for a dry run
         required: false
         default: "false"
@@ -24,7 +24,7 @@ jobs:
           # Set days-before-close to 30 because we want to close the issue/PR after 60 days total, since days-before-stale is set to 30
           days-before-close: 30
           days-before-stale: 30
-          debug-only: ${{ inputs.debugOnly }}
+          debug-only: ${{ inputs.dryRun }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           stale-issue-label: 'stale'
           stale-issue-message: |
