@@ -1,12 +1,6 @@
 name: Sync Labels
 on:
   workflow_call:
-    inputs:
-      dryRun:
-        description: Set to true for a dry run
-        required: false
-        default: "false"
-        type: string
 
 jobs:
   sync:
@@ -17,4 +11,4 @@ jobs:
         with:
           config-file: 'https://raw.githubusercontent.comturbot/steampipe-workflows/blob/main/.github/labels.yml'
           delete-other-labels: false
-          dry-run: ${{ inputs.dryRun }}
+          dry-run: true
