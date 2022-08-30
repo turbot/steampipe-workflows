@@ -18,13 +18,11 @@ jobs:
         uses: EndBug/label-sync@v2
         with:
           config-file: 'https://raw.githubusercontent.com/turbot/steampipe-workflows/main/.github/plugin_labels.yml'
-          delete-other-labels: false
-          dry-run: true
+          delete-other-labels: true
 
       - name: Sync mod labels
         if: steps.repo-type.outputs.repo-type == 'mod'
         uses: EndBug/label-sync@v2
         with:
           config-file: 'https://raw.githubusercontent.com/turbot/steampipe-workflows/main/.github/mod_labels.yml'
-          delete-other-labels: false
-          dry-run: true
+          delete-other-labels: true
