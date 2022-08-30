@@ -8,6 +8,6 @@ jobs:
     steps:
       - uses: EndBug/label-sync@v2
         with:
-          config-file: 'https://raw.githubusercontent.com/turbot/steampipe-workflows/blob/main/.github/labels.yml'
+          config-file: 'https://raw.githubusercontent.com/turbot/steampipe-workflows/main/.github/labels.yml'
           delete-other-labels: false
           dry-run: true
