@@ -6,8 +6,12 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
+      - name: Test env var output
+        run: |
+          echo $GITHUB_REPOSITORY
+
       - uses: EndBug/label-sync@v2
         with:
-          config-file: 'https://raw.githubusercontent.com/turbot/steampipe-workflows/main/.github/labels.yml'
+          config-file: 'https://raw.githubusercontent.com/turbot/steampipe-workflows/main/.github/plugin_labels.yml'
           delete-other-labels: false
           dry-run: true
