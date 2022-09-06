@@ -10,6 +10,12 @@ name: Build and Deploy OCI Image
 
 on:
   workflow_call:
+    inputs:
+      releaseTimeout:
+        description: Timeout for the GoReleaser release command
+        required: false
+        default: 30m
+        type: string
 
 env:
   PROJECT_ID: steampipe
@@ -78,7 +84,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: release --rm-dist --skip-publish
+          args: release --rm-dist --skip-publish --timeout=${{ inputs.releaseTimeout }}
 
       - name: List Build Artifacts
         run: ls -laR ./dist
