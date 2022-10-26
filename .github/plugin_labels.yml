@@ -13,6 +13,9 @@
 - name: enhancement
   description: New feature or request
   color: 'a2eeef'
+- name: good first issue
+  description: Good for newcomers
+  color: '7057ff'
 - name: help wanted
   description: We are asking the community to submit a PR to resolve this issue
   color: '008672'
