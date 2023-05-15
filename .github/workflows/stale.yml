@@ -25,6 +25,7 @@ jobs:
           days-before-close: 30
           days-before-stale: 60
           debug-only: ${{ inputs.dryRun }}
+          exempt-issue-labels: 'good first issue,help wanted'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           stale-issue-label: 'stale'
           stale-issue-message: |
