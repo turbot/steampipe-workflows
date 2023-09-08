@@ -4,6 +4,9 @@
 - name: bug
   description: Something isn't working
   color: 'd73a4a'
+- name: dependencies
+  description: Dependency file updates
+  color: '0366d6'
 - name: documentation
   description: Improvements or additions to documentation
   color: '0075ca'
