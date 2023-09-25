@@ -16,6 +16,9 @@
 - name: good first issue
   description: Good for newcomers
   color: '7057ff'
+- name: hacktoberfest-accepted
+  description: This pull request has been accepted for Hacktoberfest
+  color: 'D93F0B'
 - name: help wanted
   description: We are asking the community to submit a PR to resolve this issue
   color: '008672'
