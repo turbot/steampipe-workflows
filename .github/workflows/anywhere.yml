@@ -1,0 +1,741 @@
+name: Anywhere
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The version to release (must be prefixed with 'v')"
+        required: true
+
+jobs:
+  build-postgres-14-fdw-linux-amd64:
+    name: Build Postgres 14 FDW for Linux - AMD64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out steampipe-postgres-fdw-anywhere
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MY_PAT }}
+          repository: "turbot/steampipe-postgres-fdw-anywhere"
+          ref: main
+          
+      - name: Setup GoLang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+  
+      - name: Setup apt-get
+        run: |-
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo env ACCEPT_EULA=Y apt-get update
+          sudo env ACCEPT_EULA=Y apt-get upgrade
+  
+      - name: Install PostgreSQL14 Dev
+        run: |-
+          sudo apt-get -y install postgresql-server-dev-14
+  
+      - name: Find stuff and set env
+        run: |-
+          
+          which pg_config
+          pg_config --version
+  
+          export PATH=$(pg_config --bindir):$PATH
+          export PGXS=$(pg_config --pgxs)
+      
+          export SERVER_LIB=$(pg_config --includedir)/14/server
+          export INTERNAL_LIB=$(pg_config --includedir)/internal
+  
+          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+      
+          export LDFLAGS=$(pg_config --ldflags)
+          export PG_LDFLAGS=$(pg_config --ldflags)
+  
+          ls -la $SERVER_LIB
+          ls -la $INTERNAL_LIB
+        
+      - name: Build steampipe-postgres-fdw-anywhere
+        run: |
+          pwd
+          ls -ltr
+          make standalone plugin=github
+          ls -ltr
+
+      - name: Rename and zip the build-Linux folder
+        run: |-
+          mv build-Linux steampipe_postgres_github.pg14.linux_amd64
+          tar -czvf steampipe_postgres_github.pg14.linux_amd64.tar.gz steampipe_postgres_github.pg14.linux_amd64
+  
+      - name: Save Linux Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_postgres_github.pg14.linux_amd64.tar.gz
+          path: steampipe_postgres_github.pg14.linux_amd64.tar.gz
+          if-no-files-found: error
+
+  build-postgres-14-fdw-osx-amd64:
+    name: Build Postgres 14 FDW for Darwin - AMD64
+    runs-on: macos-latest
+    steps:
+      - name: Install PostgreSQL@14
+        run: brew install --force postgresql@14
+
+      - name: PGConfig
+        run: |-
+          which pg_config
+          ls -l $(which pg_config)
+          PGXS=$(pg_config --pgxs)
+          SERVER_LIB=$(pg_config --includedir)/server
+          INTERNAL_LIB=$(pg_config --includedir)/internal
+
+          echo $PGXS
+          echo $SERVER_LIB
+          echo $INTERNAL_LIB
+          
+          ls -l $PGXS
+          ls -l $SERVER_LIB
+          ls -l $INTERNAL_LIB
+
+      - name: Check out steampipe-postgres-fdw-anywhere
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MY_PAT }}
+          repository: "turbot/steampipe-postgres-fdw-anywhere"
+          ref: main
+
+      - name: Setup Golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+          
+      - name: Find stuff and set env
+        run: |-
+          go version
+          
+          which pg_config
+          pg_config --version
+          
+          export PATH=$(pg_config --bindir):$PATH
+          export PGXS=$(pg_config --pgxs)
+      
+          export SERVER_LIB=$(pg_config --includedir)/server
+          export INTERNAL_LIB=$(pg_config --includedir)/internal
+
+          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+      
+          export LDFLAGS=$(pg_config --ldfalgs)
+          export PG_LDFLAGS=$(pg_config --ldfalgs)
+
+      - name: Build steampipe-postgres-fdw-anywhere
+        run: |
+          pwd
+          ls -ltr
+          make standalone plugin=github
+          ls -ltr
+
+      - name: Rename and zip the build-Darwin folder
+        run: |-
+          mv build-Darwin steampipe_postgres_github.pg14.darwin_amd64
+          tar -czvf steampipe_postgres_github.pg14.darwin_amd64.tar.gz steampipe_postgres_github.pg14.darwin_amd64
+
+      - name: Save MacOS Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_postgres_github.pg14.darwin_amd64.tar.gz
+          path: steampipe_postgres_github.pg14.darwin_amd64.tar.gz
+          if-no-files-found: error
+
+  build-postgres-14-fdw-osx-arm64:
+    name: Build Postgres 14 FDW for Darwin - ARM64
+    runs-on: macos-latest-xlarge
+    steps:
+
+      - name: Check architecture
+        run: uname -a
+
+      - name: Install PostgreSQL@14
+        run: brew install --force postgresql@14
+
+      - name: PGConfig
+        run: |-
+          which pg_config
+          ls -l $(which pg_config)
+          PGXS=$(pg_config --pgxs)
+          SERVER_LIB=$(pg_config --includedir)/server
+          INTERNAL_LIB=$(pg_config --includedir)/internal
+
+          echo $PGXS
+          echo $SERVER_LIB
+          echo $INTERNAL_LIB
+          
+          ls -l $PGXS
+          ls -l $SERVER_LIB
+          ls -l $INTERNAL_LIB
+
+      - name: Check out steampipe-postgres-fdw-anywhere
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MY_PAT }}
+          repository: "turbot/steampipe-postgres-fdw-anywhere"
+          ref: main
+
+      - name: Setup Golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+          
+      - name: Find stuff and set env
+        run: |-
+          go version
+          
+          which pg_config
+          pg_config --version
+          
+          export PATH=$(pg_config --bindir):$PATH
+          export PGXS=$(pg_config --pgxs)
+      
+          export SERVER_LIB=$(pg_config --includedir)/server
+          export INTERNAL_LIB=$(pg_config --includedir)/internal
+
+          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+      
+          export LDFLAGS=$(pg_config --ldfalgs)
+          export PG_LDFLAGS=$(pg_config --ldfalgs)
+
+      - name: Build steampipe-postgres-fdw-anywhere
+        run: |
+          pwd
+          ls -ltr
+          make standalone plugin=github
+          ls -ltr
+
+      - name: Rename and zip the build-Darwin folder
+        run: |-
+          mv build-Darwin steampipe_postgres_github.pg14.darwin_arm64
+          tar -czvf steampipe_postgres_github.pg14.darwin_arm64.tar.gz steampipe_postgres_github.pg14.darwin_arm64
+
+      - name: Save MacOS Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_postgres_github.pg14.darwin_arm64.tar.gz
+          path: steampipe_postgres_github.pg14.darwin_arm64.tar.gz
+          if-no-files-found: error
+
+  build-postgres-15-fdw-linux-amd64:
+    name: Build Postgres 15 FDW for Linux - AMD64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out steampipe-postgres-fdw-anywhere
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MY_PAT }}
+          repository: "turbot/steampipe-postgres-fdw-anywhere"
+          ref: main
+          
+      - name: Setup GoLang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+  
+      - name: Setup apt-get
+        run: |-
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo env ACCEPT_EULA=Y apt-get update
+          sudo env ACCEPT_EULA=Y apt-get upgrade
+  
+      - name: Install PostgreSQL15 Dev
+        run: |-
+          sudo apt-get -y install postgresql-server-dev-15
+  
+      - name: Find stuff and set env
+        run: |-
+          
+          which pg_config
+          pg_config --version
+  
+          export PATH=$(pg_config --bindir):$PATH
+          export PGXS=$(pg_config --pgxs)
+      
+          export SERVER_LIB=$(pg_config --includedir)/15/server
+          export INTERNAL_LIB=$(pg_config --includedir)/internal
+  
+          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+      
+          export LDFLAGS=$(pg_config --ldflags)
+          export PG_LDFLAGS=$(pg_config --ldflags)
+  
+          ls -la $SERVER_LIB
+          ls -la $INTERNAL_LIB
+        
+      - name: Build steampipe-postgres-fdw-anywhere
+        run: |
+          pwd
+          ls -ltr
+          make standalone plugin=github
+          ls -ltr
+
+      - name: Rename and zip the build-Linux folder
+        run: |-
+          mv build-Linux steampipe_postgres_github.pg15.linux_amd64
+          tar -czvf steampipe_postgres_github.pg15.linux_amd64.tar.gz steampipe_postgres_github.pg15.linux_amd64
+  
+      - name: Save Linux Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_postgres_github.pg15.linux_amd64.tar.gz
+          path: steampipe_postgres_github.pg15.linux_amd64.tar.gz
+          if-no-files-found: error
+
+  build-postgres-15-fdw-osx-amd64:
+    name: Build Postgres 15 FDW for Darwin - AMD64
+    runs-on: macos-latest
+    steps:
+      - name: Install PostgreSQL@15
+        run: brew install --force postgresql@15
+
+      - name: PGConfig
+        run: |-
+          which pg_config
+          ls -l $(which pg_config)
+          PGXS=$(pg_config --pgxs)
+          SERVER_LIB=$(pg_config --includedir)/server
+          INTERNAL_LIB=$(pg_config --includedir)/internal
+
+          echo $PGXS
+          echo $SERVER_LIB
+          echo $INTERNAL_LIB
+          
+          ls -l $PGXS
+          ls -l $SERVER_LIB
+          ls -l $INTERNAL_LIB
+
+      - name: Check out steampipe-postgres-fdw-anywhere
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MY_PAT }}
+          repository: "turbot/steampipe-postgres-fdw-anywhere"
+          ref: main
+
+      - name: Setup Golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+          
+      - name: Find stuff and set env
+        run: |-
+          go version
+          
+          which pg_config
+          pg_config --version
+          
+          export PATH=$(pg_config --bindir):$PATH
+          export PGXS=$(pg_config --pgxs)
+      
+          export SERVER_LIB=$(pg_config --includedir)/server
+          export INTERNAL_LIB=$(pg_config --includedir)/internal
+
+          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+      
+          export LDFLAGS=$(pg_config --ldfalgs)
+          export PG_LDFLAGS=$(pg_config --ldfalgs)
+
+      - name: Build steampipe-postgres-fdw-anywhere
+        run: |
+          pwd
+          ls -ltr
+          make standalone plugin=github
+          ls -ltr
+
+      - name: Rename and zip the build-Darwin folder
+        run: |-
+          mv build-Darwin steampipe_postgres_github.pg15.darwin_amd64
+          tar -czvf steampipe_postgres_github.pg15.darwin_amd64.tar.gz steampipe_postgres_github.pg15.darwin_amd64
+
+      - name: Save MacOS Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_postgres_github.pg15.darwin_amd64.tar.gz
+          path: steampipe_postgres_github.pg15.darwin_amd64.tar.gz
+          if-no-files-found: error
+
+  # build-postgres-15-fdw-osx-arm64:
+  #   name: Build Postgres 15 FDW for Darwin - ARM64
+  #   runs-on: macos-latest-xlarge
+  #   steps:
+  #     - name: Check architecture
+  #       run: uname -a
+
+  #     - name: Install PostgreSQL@15
+  #       run: brew install --force postgresql@15
+
+  #     - name: PGConfig
+  #       run: |-
+  #         which pg_config
+  #         ls -l $(which pg_config)
+  #         PGXS=$(pg_config --pgxs)
+  #         SERVER_LIB=$(pg_config --includedir)/server
+  #         INTERNAL_LIB=$(pg_config --includedir)/internal
+
+  #         echo $PGXS
+  #         echo $SERVER_LIB
+  #         echo $INTERNAL_LIB
+          
+  #         ls -l $PGXS
+  #         ls -l $SERVER_LIB
+  #         ls -l $INTERNAL_LIB
+
+  #     - name: Check out steampipe-postgres-fdw-anywhere
+  #       uses: actions/checkout@v2
+  #       with:
+  #         token: ${{ secrets.MY_PAT }}
+  #         repository: "turbot/steampipe-postgres-fdw-anywhere"
+  #         ref: main
+
+  #     - name: Setup Golang
+  #       uses: actions/setup-go@v4
+  #       with:
+  #         go-version: 1.21
+          
+  #     - name: Find stuff and set env
+  #       run: |-
+  #         go version
+          
+  #         which pg_config
+  #         pg_config --version
+          
+  #         export PATH=$(pg_config --bindir):$PATH
+  #         export PGXS=$(pg_config --pgxs)
+      
+  #         export SERVER_LIB=$(pg_config --includedir)/server
+  #         export INTERNAL_LIB=$(pg_config --includedir)/internal
+
+  #         export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+  #         export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+      
+  #         export LDFLAGS=$(pg_config --ldfalgs)
+  #         export PG_LDFLAGS=$(pg_config --ldfalgs)
+
+  #     - name: Build steampipe-postgres-fdw-anywhere
+  #       run: |
+  #         pwd
+  #         ls -ltr
+  #         make standalone plugin=github
+  #         ls -ltr
+
+  #     - name: Rename and zip the build-Darwin folder
+  #       run: |-
+  #         mv build-Darwin steampipe_postgres_github.pg15.darwin_arm64
+  #         tar -czvf steampipe_postgres_github.pg15.darwin_arm64.tar.gz steampipe_postgres_github.pg15.darwin_arm64
+
+  #     - name: Save MacOS Build Artifact - AMD64
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: steampipe_postgres_github.pg15.darwin_arm64.tar.gz
+  #         path: steampipe_postgres_github.pg15.darwin_arm64.tar.gz
+  #         if-no-files-found: error
+
+  build-sqlite-extension-linux-amd64:
+    name: Build SQLite Extension for Linux - AMD64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out steampipe-sqlite-extension
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MY_PAT }}
+          repository: "turbot/steampipe-sqlite-extension"
+          ref: main
+
+      - name: Setup GoLang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+        
+      - name: Build steampipe-sqlite-extension
+        run: |
+          pwd
+          ls -ltr
+          make build plugin=github
+          ls -ltr
+          
+      - name: Zip and rename the steampipe_sqlite_github.so
+        run: |-
+          tar -czvf steampipe_sqlite_github.linux_amd64.tar.gz steampipe_sqlite_github.so
+  
+      - name: Save Linux Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_sqlite_github.linux_amd64.tar.gz
+          path: steampipe_sqlite_github.linux_amd64.tar.gz
+          if-no-files-found: error
+
+  build-sqlite-extension-osx-amd64:
+    name: Build SQLite Extension for Darwin - AMD64
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out steampipe-sqlite-extension
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MY_PAT }}
+          repository: "turbot/steampipe-sqlite-extension"
+          ref: main
+
+      - name: Setup GoLang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+        
+      - name: Build steampipe-sqlite-extension
+        run: |
+          pwd
+          ls -ltr
+          make build plugin=github
+          ls -ltr
+            
+      - name: Zip and rename the steampipe_sqlite_github.so
+        run: |-
+          tar -czvf steampipe_sqlite_github.darwin_amd64.tar.gz steampipe_sqlite_github.so
+  
+      - name: Save Darwin Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_sqlite_github.darwin_amd64.tar.gz
+          path: steampipe_sqlite_github.darwin_amd64.tar.gz
+          if-no-files-found: error
+
+  build-sqlite-extension-osx-arm64:
+    name: Build SQLite Extension for Darwin - ARM64
+    runs-on: macos-latest-xlarge
+
+    steps:
+      - name: Check architecture
+        run: uname -a
+
+      - name: Check out steampipe-sqlite-extension
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MY_PAT }}
+          repository: "turbot/steampipe-sqlite-extension"
+          ref: main
+
+      - name: Setup GoLang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+        
+      - name: Build steampipe-sqlite-extension
+        run: |
+          pwd
+          ls -ltr
+          make build plugin=github
+          ls -ltr
+            
+      - name: Zip and rename the steampipe_sqlite_github.so
+        run: |-
+          tar -czvf steampipe_sqlite_github.darwin_arm64.tar.gz steampipe_sqlite_github.so 
+  
+      - name: Save Darwin Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_sqlite_github.darwin_arm64.tar.gz
+          path: steampipe_sqlite_github.darwin_arm64.tar.gz
+          if-no-files-found: error
+
+  build-export-tool:
+    name: Build Export Tool
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out steampipe-table-dump
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MY_PAT }}
+          repository: "turbot/steampipe-table-dump"
+          ref: main
+
+      - name: Setup GoLang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+
+      - name: Build steampipe-table-dump
+        run: |
+          pwd
+          ls -ltr
+          make build plugin=github
+          ls -ltr
+          go mod tidy
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: latest
+          args: release --snapshot --skip-publish --rm-dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_PAT }}
+
+      - name: Copy the gzipped binaries from dist
+        run: |-
+          ls -al dist/
+          cp dist/steampipe_export_github.linux_amd64.tar.gz steampipe_export_github.linux_amd64.tar.gz
+          cp dist/steampipe_export_github.linux_arm64.tar.gz steampipe_export_github.linux_arm64.tar.gz
+          cp dist/steampipe_export_github.darwin_amd64.tar.gz steampipe_export_github.darwin_amd64.tar.gz
+          cp dist/steampipe_export_github.darwin_arm64.tar.gz steampipe_export_github.darwin_arm64.tar.gz
+          ls -al
+
+      - name: Save Linux Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_export_github.linux_amd64.tar.gz
+          path: steampipe_export_github.linux_amd64.tar.gz
+          if-no-files-found: error
+
+      - name: Save Linux Build Artifact - ARM64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_export_github.linux_arm64.tar.gz
+          path: steampipe_export_github.linux_arm64.tar.gz
+          if-no-files-found: error
+
+      - name: Save Darwin Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_export_github.darwin_amd64.tar.gz
+          path: steampipe_export_github.darwin_amd64.tar.gz
+          if-no-files-found: error
+
+      - name: Save Darwin Build Artifact - ARM64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_export_github.darwin_arm64.tar.gz
+          path: steampipe_export_github.darwin_arm64.tar.gz
+          if-no-files-found: error
+
+  build-draft-release:
+    name: Build Draft Release
+    runs-on: ubuntu-latest
+    needs:
+      - build-postgres-14-fdw-linux-amd64
+      - build-postgres-14-fdw-osx-amd64
+      - build-postgres-14-fdw-osx-arm64
+      - build-postgres-15-fdw-linux-amd64
+      - build-postgres-15-fdw-osx-amd64
+      # - build-postgres-15-fdw-osx-arm64
+      - build-sqlite-extension-linux-amd64
+      - build-sqlite-extension-osx-amd64
+      - build-sqlite-extension-osx-arm64
+      - build-export-tool
+    steps:
+      - name: Download steampipe_postgres_github.pg14.linux_amd64.tar.gz
+        id: download_14_github_linux_amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_postgres_github.pg14.linux_amd64.tar.gz
+
+      - name: Download steampipe_postgres_github.pg14.darwin_amd64.tar.gz
+        id: download_14_github_darwin_amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_postgres_github.pg14.darwin_amd64.tar.gz
+      
+      - name: Download steampipe_postgres_github.pg14.darwin_arm64.tar.gz
+        id: download_14_github_darwin_arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_postgres_github.pg14.darwin_arm64.tar.gz
+      
+      - name: Download steampipe_postgres_github.pg15.linux_amd64.tar.gz
+        id: download_15_github_linux_amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_postgres_github.pg15.linux_amd64.tar.gz
+
+      - name: Download steampipe_postgres_github.pg15.darwin_amd64.tar.gz
+        id: download_15_github_darwin_amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_postgres_github.pg15.darwin_amd64.tar.gz
+
+      # - name: Download steampipe_postgres_github.pg15.darwin_arm64.tar.gz
+      #   id: download_15_github_darwin_arm64
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: steampipe_postgres_github.pg15.darwin_arm64.tar.gz
+
+      - name: Download steampipe_sqlite_github.linux_amd64.tar.gz
+        id: download_extension_github_linux_amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_sqlite_github.linux_amd64.tar.gz
+
+      - name: Download steampipe_sqlite_github.darwin_amd64.tar.gz
+        id: download_extension_github_darwin_amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_sqlite_github.darwin_amd64.tar.gz
+
+      - name: Download steampipe_sqlite_github.darwin_arm64.tar.gz
+        id: download_extension_github_darwin_arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_sqlite_github.darwin_arm64.tar.gz
+
+      - name: Download steampipe_export_github.linux_amd64.tar.gz
+        id: download_steampipe_export_github_linux_amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_export_github.linux_amd64.tar.gz
+
+      - name: Download steampipe_export_github.linux_arm64.tar.gz
+        id: download_steampipe_export_github_linux_arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_export_github.linux_arm64.tar.gz
+
+      - name: Download steampipe_export_github.darwin_amd64.tar.gz
+        id: download_steampipe_export_github_darwin_amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_export_github.darwin_amd64.tar.gz
+
+      - name: Download steampipe_export_github.darwin_arm64.tar.gz
+        id: download_steampipe_export_github_darwin_arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_export_github.darwin_arm64.tar.gz
+
+      - name: Check Path
+        run: |-
+          ls -la
+
+      - name: Create a draft release
+        uses: softprops/action-gh-release@v1
+        id: create_draft_release
+        with:
+          draft: true
+          name: ${{ github.event.inputs.version }}
+          tag_name: ${{ github.event.inputs.version }}
+          repository: ${{ github.repository }}
+          files: |-
+            ${{ steps.download_14_github_linux_amd64.outputs.download-path }}/steampipe_postgres_github.pg14.linux_amd64.tar.gz
+            ${{ steps.download_14_github_darwin_amd64.outputs.download-path }}/steampipe_postgres_github.pg14.darwin_amd64.tar.gz
+            ${{ steps.download_14_github_darwin_arm64.outputs.download-path }}/steampipe_postgres_github.pg14.darwin_arm64.tar.gz
+            ${{ steps.download_15_github_linux_amd64.outputs.download-path }}/steampipe_postgres_github.pg15.linux_amd64.tar.gz
+            ${{ steps.download_15_github_darwin_amd64.outputs.download-path }}/steampipe_postgres_github.pg15.darwin_amd64.tar.gz
+            ${{ steps.download_extension_github_linux_amd64.outputs.download-path }}/steampipe_sqlite_github.linux_amd64.tar.gz
+            ${{ steps.download_extension_github_darwin_amd64.outputs.download-path }}/steampipe_sqlite_github.darwin_amd64.tar.gz
+            ${{ steps.download_extension_github_darwin_arm64.outputs.download-path }}/steampipe_sqlite_github.darwin_arm64.tar.gz
+            ${{ steps.download_steampipe_export_github_linux_amd64.outputs.download-path }}/steampipe_export_github.linux_amd64.tar.gz
+            ${{ steps.download_steampipe_export_github_linux_arm64.outputs.download-path }}/steampipe_export_github.linux_arm64.tar.gz
+            ${{ steps.download_steampipe_export_github_darwin_amd64.outputs.download-path }}/steampipe_export_github.darwin_amd64.tar.gz
+            ${{ steps.download_steampipe_export_github_darwin_arm64.outputs.download-path }}/steampipe_export_github.darwin_arm64.tar.gz
