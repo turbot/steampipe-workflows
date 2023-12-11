@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -95,7 +95,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Install Homebrew (if not installed)
         run: |
@@ -168,7 +168,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Setup Golang
         uses: actions/setup-go@v4
@@ -243,7 +243,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Setup Golang
         uses: actions/setup-go@v4
@@ -297,7 +297,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -364,7 +364,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Install Homebrew (if not installed)
         run: |
@@ -437,7 +437,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Setup Golang
         uses: actions/setup-go@v4
@@ -515,7 +515,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Setup Golang
         uses: actions/setup-go@v4
