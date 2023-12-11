@@ -103,7 +103,7 @@ jobs:
 
       - name: Install Docker
         run: |
-          brew install --cask docker
+          brew install --cask docker-desktop
 
       - name: Start Docker
         run: |
@@ -370,7 +370,7 @@ jobs:
 
       - name: Install Docker
         run: |
-          brew install --cask docker
+          brew install --cask docker-desktop
 
       - name: Start Docker
         run: |
@@ -525,7 +525,6 @@ jobs:
           which pg_config
           pg_config --version
 
-          export PATH=$(pg_config --bindir):$PATH
           export PGXS=$(pg_config --pgxs)
 
           export SERVER_LIB=$(pg_config --includedir)/server
@@ -610,7 +609,7 @@ jobs:
 
       - name: Install Docker
         run: |
-          brew install --cask docker
+          brew install --cask docker-desktop
 
       - name: Start Docker
         run: |
