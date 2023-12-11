@@ -109,7 +109,7 @@ jobs:
 
       - name: Build docker image
         run: |-
-          docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=14" ${{github.workspace}}
+          docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=14" ${{ github.action_path }}
 
       - name: Build steampipe-postgres-fdw - ${{ inputs.plugin }}
         run: |
@@ -367,7 +367,7 @@ jobs:
 
       - name: Build docker image
         run: |-
-          docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=15"  ${{github.workspace}}
+          docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=15" ${{ github.action_path }}
 
       - name: Build steampipe-postgres-fdw - ${{ inputs.plugin }}
         run: |
@@ -597,7 +597,7 @@ jobs:
 
       - name: Build docker image
         run: |-
-          docker build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder  ${{github.workspace}}
+          docker build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder ${{ github.action_path }}
 
       - name: Build steampipe-sqlite-extension - ${{ inputs.plugin }}
         run: |
