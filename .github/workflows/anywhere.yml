@@ -546,16 +546,16 @@ jobs:
           make build plugin=github
           ls -ltr
 
-          - name: Zip and rename the steampipe_sqlite_${{ inputs.plugin }}.so
-          run: |-
-            tar -czvf steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz steampipe_sqlite_${{ inputs.plugin }}.so
+      - name: Zip and rename the steampipe_sqlite_${{ inputs.plugin }}.so
+        run: |-
+          tar -czvf steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz steampipe_sqlite_${{ inputs.plugin }}.so
             
-            - name: Save Linux Build Artifact - AMD64
-            uses: actions/upload-artifact@v3
-            with:
-              name: steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz
-              path: steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz
-              if-no-files-found: error
+      - name: Save Linux Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz
+          path: steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz
+          if-no-files-found: error
 
   build-sqlite-extension-linux-arm64:
     name: Build SQLite Extension for Linux - ARM64
