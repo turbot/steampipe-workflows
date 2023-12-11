@@ -1,4 +1,4 @@
-name: Anywhere Components
+name: Steampipe Anywhere Components
 
 on:
   workflow_dispatch:
