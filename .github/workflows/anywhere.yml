@@ -73,14 +73,14 @@ jobs:
 
       - name: Rename and zip the build-Linux folder
         run: |-
-          mv build-Linux steampipe_postgres_github.pg14.linux_amd64
-          tar -czvf steampipe_postgres_github.pg14.linux_amd64.tar.gz steampipe_postgres_github.pg14.linux_amd64
+          mv build-Linux steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_amd64
+          tar -czvf steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_amd64.tar.gz steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_amd64
 
       - name: Save Linux Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_postgres_github.pg14.linux_amd64.tar.gz
-          path: steampipe_postgres_github.pg14.linux_amd64.tar.gz
+          name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_amd64.tar.gz
+          path: steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_amd64.tar.gz
           if-no-files-found: error
 
   build-postgres-14-fdw-osx-amd64:
@@ -146,14 +146,14 @@ jobs:
 
       - name: Rename and zip the build-Darwin folder
         run: |-
-          mv build-Darwin steampipe_postgres_github.pg14.darwin_amd64
-          tar -czvf steampipe_postgres_github.pg14.darwin_amd64.tar.gz steampipe_postgres_github.pg14.darwin_amd64
+          mv build-Darwin steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_amd64
+          tar -czvf steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_amd64.tar.gz steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_amd64
 
       - name: Save MacOS Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_postgres_github.pg14.darwin_amd64.tar.gz
-          path: steampipe_postgres_github.pg14.darwin_amd64.tar.gz
+          name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_amd64.tar.gz
+          path: steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_amd64.tar.gz
           if-no-files-found: error
 
   build-postgres-14-fdw-osx-arm64:
@@ -222,14 +222,14 @@ jobs:
 
       - name: Rename and zip the build-Darwin folder
         run: |-
-          mv build-Darwin steampipe_postgres_github.pg14.darwin_arm64
-          tar -czvf steampipe_postgres_github.pg14.darwin_arm64.tar.gz steampipe_postgres_github.pg14.darwin_arm64
+          mv build-Darwin steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_arm64
+          tar -czvf steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_arm64.tar.gz steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_arm64
 
       - name: Save MacOS Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_postgres_github.pg14.darwin_arm64.tar.gz
-          path: steampipe_postgres_github.pg14.darwin_arm64.tar.gz
+          name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_arm64.tar.gz
+          path: steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_arm64.tar.gz
           if-no-files-found: error
 
   build-postgres-15-fdw-linux-amd64:
@@ -290,14 +290,14 @@ jobs:
 
       - name: Rename and zip the build-Linux folder
         run: |-
-          mv build-Linux steampipe_postgres_github.pg15.linux_amd64
-          tar -czvf steampipe_postgres_github.pg15.linux_amd64.tar.gz steampipe_postgres_github.pg15.linux_amd64
+          mv build-Linux steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.linux_amd64
+          tar -czvf steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.linux_amd64.tar.gz steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.linux_amd64
 
       - name: Save Linux Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_postgres_github.pg15.linux_amd64.tar.gz
-          path: steampipe_postgres_github.pg15.linux_amd64.tar.gz
+          name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.linux_amd64.tar.gz
+          path: steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.linux_amd64.tar.gz
           if-no-files-found: error
 
   build-postgres-15-fdw-osx-amd64:
@@ -363,14 +363,14 @@ jobs:
 
       - name: Rename and zip the build-Darwin folder
         run: |-
-          mv build-Darwin steampipe_postgres_github.pg15.darwin_amd64
-          tar -czvf steampipe_postgres_github.pg15.darwin_amd64.tar.gz steampipe_postgres_github.pg15.darwin_amd64
+          mv build-Darwin steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_amd64
+          tar -czvf steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_amd64.tar.gz steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_amd64
 
       - name: Save MacOS Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_postgres_github.pg15.darwin_amd64.tar.gz
-          path: steampipe_postgres_github.pg15.darwin_amd64.tar.gz
+          name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_amd64.tar.gz
+          path: steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_amd64.tar.gz
           if-no-files-found: error
 
   build-postgres-15-fdw-osx-arm64:
@@ -439,14 +439,14 @@ jobs:
 
       - name: Rename and zip the build-Darwin folder
         run: |-
-          mv build-Darwin steampipe_postgres_github.pg15.darwin_arm64
-          tar -czvf steampipe_postgres_github.pg15.darwin_arm64.tar.gz steampipe_postgres_github.pg15.darwin_arm64
+          mv build-Darwin steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_arm64
+          tar -czvf steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_arm64.tar.gz steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_arm64
 
       - name: Save MacOS Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_postgres_github.pg15.darwin_arm64.tar.gz
-          path: steampipe_postgres_github.pg15.darwin_arm64.tar.gz
+          name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_arm64.tar.gz
+          path: steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_arm64.tar.gz
           if-no-files-found: error
 
   build-sqlite-extension-linux-amd64:
@@ -630,38 +630,38 @@ jobs:
       - name: Copy the gzipped binaries from dist
         run: |-
           ls -al dist/
-          cp dist/steampipe_export_github.linux_amd64.tar.gz steampipe_export_github.linux_amd64.tar.gz
-          cp dist/steampipe_export_github.linux_arm64.tar.gz steampipe_export_github.linux_arm64.tar.gz
-          cp dist/steampipe_export_github.darwin_amd64.tar.gz steampipe_export_github.darwin_amd64.tar.gz
-          cp dist/steampipe_export_github.darwin_arm64.tar.gz steampipe_export_github.darwin_arm64.tar.gz
+          cp dist/steampipe_export_${{ github.event.inputs.plugin }}.linux_amd64.tar.gz steampipe_export_${{ github.event.inputs.plugin }}.linux_amd64.tar.gz
+          cp dist/steampipe_export_${{ github.event.inputs.plugin }}.linux_arm64.tar.gz steampipe_export_${{ github.event.inputs.plugin }}.linux_arm64.tar.gz
+          cp dist/steampipe_export_${{ github.event.inputs.plugin }}.darwin_amd64.tar.gz steampipe_export_${{ github.event.inputs.plugin }}.darwin_amd64.tar.gz
+          cp dist/steampipe_export_${{ github.event.inputs.plugin }}.darwin_arm64.tar.gz steampipe_export_${{ github.event.inputs.plugin }}.darwin_arm64.tar.gz
           ls -al
 
       - name: Save Linux Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_export_github.linux_amd64.tar.gz
-          path: steampipe_export_github.linux_amd64.tar.gz
+          name: steampipe_export_${{ github.event.inputs.plugin }}.linux_amd64.tar.gz
+          path: steampipe_export_${{ github.event.inputs.plugin }}.linux_amd64.tar.gz
           if-no-files-found: error
 
       - name: Save Linux Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_export_github.linux_arm64.tar.gz
-          path: steampipe_export_github.linux_arm64.tar.gz
+          name: steampipe_export_${{ github.event.inputs.plugin }}.linux_arm64.tar.gz
+          path: steampipe_export_${{ github.event.inputs.plugin }}.linux_arm64.tar.gz
           if-no-files-found: error
 
       - name: Save Darwin Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_export_github.darwin_amd64.tar.gz
-          path: steampipe_export_github.darwin_amd64.tar.gz
+          name: steampipe_export_${{ github.event.inputs.plugin }}.darwin_amd64.tar.gz
+          path: steampipe_export_${{ github.event.inputs.plugin }}.darwin_amd64.tar.gz
           if-no-files-found: error
 
       - name: Save Darwin Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_export_github.darwin_arm64.tar.gz
-          path: steampipe_export_github.darwin_arm64.tar.gz
+          name: steampipe_export_${{ github.event.inputs.plugin }}.darwin_arm64.tar.gz
+          path: steampipe_export_${{ github.event.inputs.plugin }}.darwin_arm64.tar.gz
           if-no-files-found: error
 
   build-draft-release:
@@ -680,41 +680,41 @@ jobs:
       - build-sqlite-extension-osx-arm64
       - build-export-tool
     steps:
-      - name: Download steampipe_postgres_github.pg14.linux_amd64.tar.gz
+      - name: Download steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_amd64.tar.gz
         id: download_pg14_linux_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_postgres_github.pg14.linux_amd64.tar.gz
+          name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_amd64.tar.gz
 
-      - name: Download steampipe_postgres_github.pg14.darwin_amd64.tar.gz
+      - name: Download steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_amd64.tar.gz
         id: download_pg14_darwin_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_postgres_github.pg14.darwin_amd64.tar.gz
+          name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_amd64.tar.gz
 
-      - name: Download steampipe_postgres_github.pg14.darwin_arm64.tar.gz
+      - name: Download steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_arm64.tar.gz
         id: download_pg14_darwin_arm64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_postgres_github.pg14.darwin_arm64.tar.gz
+          name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_arm64.tar.gz
 
-      - name: Download steampipe_postgres_github.pg15.linux_amd64.tar.gz
+      - name: Download steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.linux_amd64.tar.gz
         id: download_pg15_linux_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_postgres_github.pg15.linux_amd64.tar.gz
+          name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.linux_amd64.tar.gz
 
-      - name: Download steampipe_postgres_github.pg15.darwin_amd64.tar.gz
+      - name: Download steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_amd64.tar.gz
         id: download_pg15_darwin_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_postgres_github.pg15.darwin_amd64.tar.gz
+          name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_amd64.tar.gz
 
-      # - name: Download steampipe_postgres_github.pg15.darwin_arm64.tar.gz
+      # - name: Download steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_arm64.tar.gz
       #   id: download_pg15_darwin_arm64
       #   uses: actions/download-artifact@v3
       #   with:
-      #     name: steampipe_postgres_github.pg15.darwin_arm64.tar.gz
+      #     name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_arm64.tar.gz
 
       - name: Download steampipe_sqlite_${{ github.event.inputs.plugin }}.linux_amd64.tar.gz
         id: download_sqlite_linux_amd64
@@ -734,29 +734,29 @@ jobs:
         with:
           name: steampipe_sqlite_${{ github.event.inputs.plugin }}.darwin_arm64.tar.gz
 
-      - name: Download steampipe_export_github.linux_amd64.tar.gz
-        id: download_export_github_linux_amd64
+      - name: Download steampipe_export_${{ github.event.inputs.plugin }}.linux_amd64.tar.gz
+        id: download_export_linux_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_export_github.linux_amd64.tar.gz
+          name: steampipe_export_${{ github.event.inputs.plugin }}.linux_amd64.tar.gz
 
-      - name: Download steampipe_export_github.linux_arm64.tar.gz
-        id: download_export_github_linux_arm64
+      - name: Download steampipe_export_${{ github.event.inputs.plugin }}.linux_arm64.tar.gz
+        id: download_export_linux_arm64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_export_github.linux_arm64.tar.gz
+          name: steampipe_export_${{ github.event.inputs.plugin }}.linux_arm64.tar.gz
 
-      - name: Download steampipe_export_github.darwin_amd64.tar.gz
-        id: download_export_github_darwin_amd64
+      - name: Download steampipe_export_${{ github.event.inputs.plugin }}.darwin_amd64.tar.gz
+        id: download_export_darwin_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_export_github.darwin_amd64.tar.gz
+          name: steampipe_export_${{ github.event.inputs.plugin }}.darwin_amd64.tar.gz
 
-      - name: Download steampipe_export_github.darwin_arm64.tar.gz
-        id: download_export_github_darwin_arm64
+      - name: Download steampipe_export_${{ github.event.inputs.plugin }}.darwin_arm64.tar.gz
+        id: download_export_darwin_arm64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_export_github.darwin_arm64.tar.gz
+          name: steampipe_export_${{ github.event.inputs.plugin }}.darwin_arm64.tar.gz
 
       - name: Check Path
         run: |-
@@ -771,15 +771,15 @@ jobs:
           tag_name: ${{ github.event.inputs.version }}
           repository: ${{ github.repository }}
           files: |-
-            ${{ steps.download_pg14_linux_amd64.outputs.download-path }}/steampipe_postgres_github.pg14.linux_amd64.tar.gz
-            ${{ steps.download_pg14_darwin_amd64.outputs.download-path }}/steampipe_postgres_github.pg14.darwin_amd64.tar.gz
-            ${{ steps.download_pg14_darwin_arm64.outputs.download-path }}/steampipe_postgres_github.pg14.darwin_arm64.tar.gz
-            ${{ steps.download_pg15_linux_amd64.outputs.download-path }}/steampipe_postgres_github.pg15.linux_amd64.tar.gz
-            ${{ steps.download_pg15_darwin_amd64.outputs.download-path }}/steampipe_postgres_github.pg15.darwin_amd64.tar.gz
-            ${{ steps.download_sqlite_linux_amd64.outputs.download-path }}/steampipe_sqlite_${{ github.event.inputs.plugin }}.linux_amd64.tar.gz
+            ${{ steps.download_pg14_darwin_amd64.outputs.download-path }}/steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_amd64.tar.gz
+            ${{ steps.download_pg14_darwin_arm64.outputs.download-path }}/steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_arm64.tar.gz
+            ${{ steps.download_pg14_linux_amd64.outputs.download-path }}/steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_amd64.tar.gz
+            ${{ steps.download_pg15_darwin_amd64.outputs.download-path }}/steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_amd64.tar.gz
+            ${{ steps.download_pg15_linux_amd64.outputs.download-path }}/steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.linux_amd64.tar.gz
             ${{ steps.download_sqlite_darwin_amd64.outputs.download-path }}/steampipe_sqlite_${{ github.event.inputs.plugin }}.darwin_amd64.tar.gz
             ${{ steps.download_sqlite_darwin_arm64.outputs.download-path }}/steampipe_sqlite_${{ github.event.inputs.plugin }}.darwin_arm64.tar.gz
-            ${{ steps.download_export_github_linux_amd64.outputs.download-path }}/steampipe_export_github.linux_amd64.tar.gz
-            ${{ steps.download_export_github_linux_arm64.outputs.download-path }}/steampipe_export_github.linux_arm64.tar.gz
-            ${{ steps.download_export_github_darwin_amd64.outputs.download-path }}/steampipe_export_github.darwin_amd64.tar.gz
-            ${{ steps.download_export_github_darwin_arm64.outputs.download-path }}/steampipe_export_github.darwin_arm64.tar.gz
+            ${{ steps.download_sqlite_linux_amd64.outputs.download-path }}/steampipe_sqlite_${{ github.event.inputs.plugin }}.linux_amd64.tar.gz
+            ${{ steps.download_export_darwin_amd64.outputs.download-path }}/steampipe_export_${{ github.event.inputs.plugin }}.darwin_amd64.tar.gz
+            ${{ steps.download_export_darwin_arm64.outputs.download-path }}/steampipe_export_${{ github.event.inputs.plugin }}.darwin_arm64.tar.gz
+            ${{ steps.download_export_linux_amd64.outputs.download-path }}/steampipe_export_${{ github.event.inputs.plugin }}.linux_amd64.tar.gz
+            ${{ steps.download_export_linux_arm64.outputs.download-path }}/steampipe_export_${{ github.event.inputs.plugin }}.linux_arm64.tar.gz
