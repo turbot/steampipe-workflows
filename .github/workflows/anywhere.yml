@@ -68,7 +68,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=github
+          make standalone plugin=${{ github.event.inputs.plugin }}
           ls -ltr
 
       - name: Rename and zip the build-Linux folder
@@ -141,7 +141,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=github
+          make standalone plugin=${{ github.event.inputs.plugin }}
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
@@ -217,7 +217,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=github
+          make standalone plugin=${{ github.event.inputs.plugin }}
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
@@ -285,7 +285,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=github
+          make standalone plugin=${{ github.event.inputs.plugin }}
           ls -ltr
 
       - name: Rename and zip the build-Linux folder
@@ -358,7 +358,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=github
+          make standalone plugin=${{ github.event.inputs.plugin }}
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
@@ -434,7 +434,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=github
+          make standalone plugin=${{ github.event.inputs.plugin }}
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
