@@ -24,6 +24,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Get params
+        run: |
+          echo ${{ github.event.inputs.version }}
+          echo ${{ github.event.inputs.plugin }}
+          echo "${{github.action_path}}"
+          echo "${{github.workspace}}"
+          echo "${{github.event_path}}"
+          echo "${{github.path}}"
+          echo "${{github.event.workflow.path}}"
+
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v2
         with:
@@ -109,7 +119,7 @@ jobs:
 
       - name: Build docker image
         run: |-
-          docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=14" ${{ github.action_path }}
+          docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=14" ${{ github.action_path }}../
 
       - name: Build steampipe-postgres-fdw - ${{ inputs.plugin }}
         run: |
@@ -367,7 +377,7 @@ jobs:
 
       - name: Build docker image
         run: |-
-          docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=15" ${{ github.action_path }}
+          docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=15" ${{ github.action_path }}../
 
       - name: Build steampipe-postgres-fdw - ${{ inputs.plugin }}
         run: |
@@ -597,7 +607,7 @@ jobs:
 
       - name: Build docker image
         run: |-
-          docker build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder ${{ github.action_path }}
+          docker build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder ${{ github.action_path }}../
 
       - name: Build steampipe-sqlite-extension - ${{ inputs.plugin }}
         run: |
