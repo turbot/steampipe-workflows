@@ -103,7 +103,7 @@ jobs:
 
       - name: Install Docker
         run: |
-          brew install --cask docker-desktop
+          brew install --cask docker
 
       - name: Start Docker
         run: |
@@ -370,7 +370,7 @@ jobs:
 
       - name: Install Docker
         run: |
-          brew install --cask docker-desktop
+          brew install --cask docker
 
       - name: Start Docker
         run: |
@@ -609,7 +609,7 @@ jobs:
 
       - name: Install Docker
         run: |
-          brew install --cask docker-desktop
+          brew install --cask docker
 
       - name: Start Docker
         run: |
