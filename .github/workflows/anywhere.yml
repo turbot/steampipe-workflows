@@ -34,7 +34,7 @@ jobs:
           echo "${{github.path}}"
           echo "${{github.event.workflow.path}}"
           ls -l "${{github.workspace}}/../../"
-          ls -l "${{github.event_path}}/../"
+          ls -l "$(dir ${{github.event_path}}/)"
           
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v2
