@@ -27,7 +27,6 @@ jobs:
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MY_PAT }}
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
@@ -95,7 +94,6 @@ jobs:
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MY_PAT }}
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
@@ -148,7 +146,6 @@ jobs:
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MY_PAT }}
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
@@ -224,7 +221,6 @@ jobs:
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MY_PAT }}
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
@@ -279,7 +275,6 @@ jobs:
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MY_PAT }}
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
@@ -365,7 +360,6 @@ jobs:
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MY_PAT }}
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
@@ -441,7 +435,6 @@ jobs:
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MY_PAT }}
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
@@ -496,7 +489,6 @@ jobs:
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MY_PAT }}
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
 
@@ -534,7 +526,6 @@ jobs:
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MY_PAT }}
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
 
@@ -568,7 +559,6 @@ jobs:
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MY_PAT }}
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
 
@@ -581,7 +571,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=github
+          make build plugin=${{ github.event.inputs.plugin }}
           ls -ltr
 
       - name: Zip and rename the steampipe_sqlite_${{ github.event.inputs.plugin }}.so
@@ -606,7 +596,6 @@ jobs:
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MY_PAT }}
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
 
@@ -619,7 +608,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=github
+          make build plugin=${{ github.event.inputs.plugin }}
           ls -ltr
 
       - name: Zip and rename the steampipe_sqlite_${{ github.event.inputs.plugin }}.so
@@ -641,7 +630,6 @@ jobs:
       - name: Check out steampipe-table-dump
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MY_PAT }}
           repository: "turbot/steampipe-table-dump"
           ref: main
 
@@ -654,7 +642,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=github
+          make build plugin=${{ github.event.inputs.plugin }}
           ls -ltr
           go mod tidy
 
@@ -663,8 +651,6 @@ jobs:
         with:
           version: latest
           args: release --snapshot --skip-publish --rm-dist
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_PAT }}
 
       - name: Copy the gzipped binaries from dist
         run: |-
