@@ -107,17 +107,6 @@ jobs:
           which docker
           docker --version
 
-      - name: Start Docker
-        run: |
-          # Open the Docker application
-          open /Applications/Docker.app
-
-          # Wait for Docker to be up and running
-          while ! docker system info > /dev/null 2>&1; do
-            echo "Waiting for Docker to start..."
-            sleep 1
-          done
-
       - name: Build docker image
         run: |-
           docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=14" .
@@ -376,17 +365,6 @@ jobs:
           which docker
           docker --version
 
-      - name: Start Docker
-        run: |
-          # Open the Docker application
-          open /Applications/Docker.app
-
-          # Wait for Docker to be up and running
-          while ! docker system info > /dev/null 2>&1; do
-            echo "Waiting for Docker to start..."
-            sleep 1
-          done
-
       - name: Build docker image
         run: |-
           docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=15" .
@@ -616,17 +594,6 @@ jobs:
           brew install --cask docker
           which docker
           docker --version
-
-      - name: Start Docker
-        run: |
-          # Open the Docker application
-          open /Applications/Docker.app
-
-          # Wait for Docker to be up and running
-          while ! docker system info > /dev/null 2>&1; do
-            echo "Waiting for Docker to start..."
-            sleep 1
-          done
 
       - name: Build docker image
         run: |-
