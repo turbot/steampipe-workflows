@@ -488,6 +488,11 @@ jobs:
       - name: Install PostgreSQL@15
         run: brew install postgresql@15
 
+      - name: Configure PATH for pg_config
+        run: |
+          ls /opt/homebrew/opt/postgresql@15/bin
+          echo "/opt/homebrew/opt/postgresql@15/bin" >> $GITHUB_PATH
+
       - name: PGConfig
         run: |-
           which pg_config
