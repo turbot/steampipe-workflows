@@ -708,6 +708,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build-postgres-14-fdw-linux-amd64
+      - build-postgres-14-fdw-linux-arm64
       - build-postgres-14-fdw-osx-amd64
       - build-postgres-14-fdw-osx-arm64
       - build-postgres-15-fdw-linux-amd64
@@ -724,6 +725,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_amd64.tar.gz
+
+      - name: Download steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_arm64.tar.gz
+        id: download_pg14_linux_arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_arm64.tar.gz
 
       - name: Download steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_amd64.tar.gz
         id: download_pg14_darwin_amd64
@@ -819,6 +826,7 @@ jobs:
             ${{ steps.download_pg14_darwin_amd64.outputs.download-path }}/steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_amd64.tar.gz
             ${{ steps.download_pg14_darwin_arm64.outputs.download-path }}/steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.darwin_arm64.tar.gz
             ${{ steps.download_pg14_linux_amd64.outputs.download-path }}/steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_amd64.tar.gz
+            ${{ steps.download_pg14_linux_arm64.outputs.download-path }}/steampipe_postgres_${{ github.event.inputs.plugin }}.pg14.linux_arm64.tar.gz
 
             ${{ steps.download_pg15_darwin_amd64.outputs.download-path }}/steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_amd64.tar.gz
             ${{ steps.download_pg15_darwin_arm64.outputs.download-path }}/steampipe_postgres_${{ github.event.inputs.plugin }}.pg15.darwin_arm64.tar.gz
