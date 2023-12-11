@@ -97,9 +97,24 @@ jobs:
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
-      - name: Setup docker
-        uses: docker-practice/actions-setup-docker@master
-        timeout-minutes: 12
+      - name: Install Homebrew (if not installed)
+        run: |
+          which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+      - name: Install Docker
+        run: |
+          brew install --cask docker
+
+      - name: Start Docker
+        run: |
+          # Open the Docker application
+          open /Applications/Docker.app
+
+          # Wait for Docker to be up and running
+          while ! docker system info > /dev/null 2>&1; do
+            echo "Waiting for Docker to start..."
+            sleep 1
+          done
 
       - name: Build docker image
         run: |-
@@ -111,7 +126,7 @@ jobs:
           ls -ltr
           docker run -it --rm --name sp_fdw_builder  -v $(pwd):/tmp/ext steampipe_fdw_builder make standalone plugin=${{ inputs.plugin }}
           ls -ltr
-  
+
       - name: Rename and zip the build-Linux folder
         run: |-
           mv build-Linux steampipe_postgres_${{ inputs.plugin }}.pg14.linux_arm64
@@ -349,10 +364,25 @@ jobs:
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
-      - name: Setup docker
-        uses: docker-practice/actions-setup-docker@master
-        timeout-minutes: 12
-    
+      - name: Install Homebrew (if not installed)
+        run: |
+          which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+      - name: Install Docker
+        run: |
+          brew install --cask docker
+
+      - name: Start Docker
+        run: |
+          # Open the Docker application
+          open /Applications/Docker.app
+
+          # Wait for Docker to be up and running
+          while ! docker system info > /dev/null 2>&1; do
+            echo "Waiting for Docker to start..."
+            sleep 1
+          done
+
       - name: Build docker image
         run: |-
           docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=15" .
@@ -363,7 +393,7 @@ jobs:
           ls -ltr
           docker run -it --rm --name sp_fdw_builder  -v $(pwd):/tmp/ext steampipe_fdw_builder make standalone plugin=${{ inputs.plugin }}
           ls -ltr
-  
+
       - name: Rename and zip the build-Linux folder
         run: |-
           mv build-Linux steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64
@@ -375,7 +405,7 @@ jobs:
           name: steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64.tar.gz
           path: steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64.tar.gz
           if-no-files-found: error
-          
+
   build-postgres-15-fdw-osx-amd64:
     name: Build Postgres 15 FDW for Darwin - AMD64
     runs-on: macos-latest
@@ -549,7 +579,7 @@ jobs:
       - name: Zip and rename the steampipe_sqlite_${{ inputs.plugin }}.so
         run: |-
           tar -czvf steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz steampipe_sqlite_${{ inputs.plugin }}.so
-            
+
       - name: Save Linux Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
@@ -570,11 +600,26 @@ jobs:
         with:
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
+      
+      - name: Install Homebrew (if not installed)
+        run: |
+          which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-      - name: Setup docker
-        uses: docker-practice/actions-setup-docker@master
-        timeout-minutes: 12
-        
+      - name: Install Docker
+        run: |
+          brew install --cask docker
+
+      - name: Start Docker
+        run: |
+          # Open the Docker application
+          open /Applications/Docker.app
+
+          # Wait for Docker to be up and running
+          while ! docker system info > /dev/null 2>&1; do
+            echo "Waiting for Docker to start..."
+            sleep 1
+          done
+
       - name: Build docker image
         run: |-
           docker build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder .
@@ -661,7 +706,7 @@ jobs:
         run: |-
           tar -czvf steampipe_sqlite_${{ inputs.plugin }}.darwin_arm64.tar.gz steampipe_sqlite_${{ inputs.plugin }}.so
 
-      - name: Save Darwin Build Artifact - AMD64
+      - name: Save Darwin Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
           name: steampipe_sqlite_${{ inputs.plugin }}.darwin_arm64.tar.gz
