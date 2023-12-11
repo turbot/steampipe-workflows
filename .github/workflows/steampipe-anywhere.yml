@@ -553,7 +553,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=github
+          make build plugin=${{ inputs.plugin }}
           ls -ltr
 
       - name: Zip and rename the steampipe_sqlite_${{ inputs.plugin }}.so
