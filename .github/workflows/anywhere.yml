@@ -88,7 +88,7 @@ jobs:
 
   build-postgres-14-fdw-linux-arm64:
     name: Build Postgres 14 FDW for Linux - ARM64
-    runs-on: macos-latest-large
+    runs-on: macos-latest-xlarge
 
     steps:
       - name: Check out steampipe-postgres-fdw
@@ -198,7 +198,7 @@ jobs:
 
   build-postgres-14-fdw-osx-arm64:
     name: Build Postgres 14 FDW for Darwin - ARM64
-    runs-on: macos-latest-large
+    runs-on: macos-latest-xlarge
     steps:
       - name: Check architecture
         run: uname -a
@@ -340,7 +340,7 @@ jobs:
 
   build-postgres-15-fdw-linux-arm64:
     name: Build Postgres 15 FDW for Linux - ARM64
-    runs-on: macos-latest-large
+    runs-on: macos-latest-xlarge
 
     steps:
       - name: Check out steampipe-postgres-fdw
@@ -450,7 +450,7 @@ jobs:
 
   build-postgres-15-fdw-osx-arm64:
     name: Build Postgres 15 FDW for Darwin - ARM64
-    runs-on: macos-latest-large
+    runs-on: macos-latest-xlarge
     steps:
       - name: Check architecture
         run: uname -a
@@ -559,7 +559,7 @@ jobs:
 
   build-sqlite-extension-linux-arm64:
     name: Build SQLite Extension for Linux - ARM64
-    runs-on: macos-latest-large
+    runs-on: macos-latest-xlarge
 
     steps:
       - name: Check architecture
@@ -633,7 +633,7 @@ jobs:
 
   build-sqlite-extension-osx-arm64:
     name: Build SQLite Extension for Darwin - ARM64
-    runs-on: macos-latest-large
+    runs-on: macos-latest-xlarge
 
     steps:
       - name: Check architecture
@@ -739,17 +739,22 @@ jobs:
     name: Build Draft Release
     runs-on: ubuntu-latest
     needs:
+      # Postgres 14
       - build-postgres-14-fdw-linux-amd64
       - build-postgres-14-fdw-linux-arm64
       - build-postgres-14-fdw-osx-amd64
       - build-postgres-14-fdw-osx-arm64
+      # Postgres 15
       - build-postgres-15-fdw-linux-amd64
+      - build-postgres-15-fdw-linux-arm64
       - build-postgres-15-fdw-osx-amd64
       - build-postgres-15-fdw-osx-arm64
+      # SQLite
       - build-sqlite-extension-linux-amd64
       - build-sqlite-extension-linux-arm64
       - build-sqlite-extension-osx-amd64
       - build-sqlite-extension-osx-arm64
+      # Export
       - build-export-tool
     steps:
       - name: Download steampipe_postgres_${{ inputs.plugin }}.pg14.linux_amd64.tar.gz
@@ -781,6 +786,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: steampipe_postgres_${{ inputs.plugin }}.pg15.linux_amd64.tar.gz
+
+      - name: Download steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64.tar.gz
+        id: download_pg15_linux_arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64.tar.gz
 
       - name: Download steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_amd64.tar.gz
         id: download_pg15_darwin_amd64
@@ -863,6 +874,7 @@ jobs:
             ${{ steps.download_pg15_darwin_amd64.outputs.download-path }}/steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_amd64.tar.gz
             ${{ steps.download_pg15_darwin_arm64.outputs.download-path }}/steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_arm64.tar.gz
             ${{ steps.download_pg15_linux_amd64.outputs.download-path }}/steampipe_postgres_${{ inputs.plugin }}.pg15.linux_amd64.tar.gz
+            ${{ steps.download_pg15_linux_arm64.outputs.download-path }}/steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64.tar.gz
 
             ${{ steps.download_sqlite_darwin_amd64.outputs.download-path }}/steampipe_sqlite_${{ inputs.plugin }}.darwin_amd64.tar.gz
             ${{ steps.download_sqlite_darwin_arm64.outputs.download-path }}/steampipe_sqlite_${{ inputs.plugin }}.darwin_arm64.tar.gz
