@@ -13,10 +13,6 @@ on:
         description: The plugin to build FDW components for
         required: true
         type: string
-      version:
-        type: string
-        description: "The version to release (must be prefixed with 'v')"
-        required: true
 
 jobs:
   build-postgres-14-fdw-linux-amd64:
@@ -877,13 +873,20 @@ jobs:
         run: |-
           ls -la
 
+      - name: Get latest version tag
+        run: |-
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          trim=${VERSION#"v"}
+          echo $trim
+          echo "VERSION=${trim}" >> $GITHUB_ENV
+          
       - name: Create a draft release
         uses: softprops/action-gh-release@v1
         id: create_draft_release
         with:
           draft: true
-          name: ${{ github.event.inputs.version }}
-          tag_name: ${{ github.event.inputs.version }}
+          name: ${{ env.VERSION }}
+          tag_name: ${{ env.VERSION }}
           repository: ${{ github.repository }}
           files: |-
             ${{ steps.download_pg14_darwin_amd64.outputs.download-path }}/steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_amd64.tar.gz
