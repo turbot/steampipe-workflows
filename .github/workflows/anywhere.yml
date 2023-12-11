@@ -607,20 +607,11 @@ jobs:
         run: |
           which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-      - name: Install Docker
-        run: |
-          brew install --cask docker
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-      - name: Start Docker
-        run: |
-          # Open the Docker application
-          open /Applications/Docker.app
-
-          # Wait for Docker to be up and running
-          while ! docker system info > /dev/null 2>&1; do
-            echo "Waiting for Docker to start..."
-            sleep 1
-          done
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Build docker image
         run: |-
