@@ -97,6 +97,9 @@ jobs:
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: Build docker image
         run: |-
           docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=14" .
@@ -125,7 +128,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Install PostgreSQL@14
-        run: brew install --force postgresql@14
+        run: brew install postgresql@14
 
       - name: PGConfig
         run: |-
@@ -200,7 +203,7 @@ jobs:
         run: uname -a
 
       - name: Install PostgreSQL@14
-        run: brew install --force postgresql@14
+        run: brew install postgresql@14
 
       - name: PGConfig
         run: |-
@@ -345,6 +348,9 @@ jobs:
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: Build docker image
         run: |-
           docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=15" .
@@ -373,7 +379,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Install PostgreSQL@15
-        run: brew install --force postgresql@15
+        run: brew install postgresql@15
 
       - name: PGConfig
         run: |-
@@ -448,7 +454,7 @@ jobs:
         run: uname -a
 
       - name: Install PostgreSQL@15
-        run: brew install --force postgresql@15
+        run: brew install postgresql@15
 
       - name: PGConfig
         run: |-
@@ -563,6 +569,9 @@ jobs:
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        
       - name: Build docker image
         run: |-
           docker build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder .
