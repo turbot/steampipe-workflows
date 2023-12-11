@@ -13,6 +13,10 @@ on:
         description: The plugin to build FDW components for
         required: true
         type: string
+      version:
+        type: string
+        description: "The version to release (must be prefixed with 'v')"
+        required: true
 
 jobs:
   build-postgres-14-fdw-linux-amd64:
