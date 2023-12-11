@@ -97,8 +97,9 @@ jobs:
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+      - name: Setup docker
+        uses: docker-practice/actions-setup-docker@master
+        timeout-minutes: 12
 
       - name: Build docker image
         run: |-
@@ -348,9 +349,10 @@ jobs:
           repository: "turbot/steampipe-postgres-fdw"
           ref: local
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
+      - name: Setup docker
+        uses: docker-practice/actions-setup-docker@master
+        timeout-minutes: 12
+    
       - name: Build docker image
         run: |-
           docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=15" .
@@ -569,8 +571,9 @@ jobs:
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+      - name: Setup docker
+        uses: docker-practice/actions-setup-docker@master
+        timeout-minutes: 12
         
       - name: Build docker image
         run: |-
