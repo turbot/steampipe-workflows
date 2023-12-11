@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -95,27 +95,14 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
-      - name: Install Homebrew (if not installed)
-        run: |
-          which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-      - name: Install Docker
-        run: |
-          brew install --cask docker
-
-      - name: Start Docker
-        run: |
-          # Open the Docker application
-          open /Applications/Docker.app
-
-          # Wait for Docker to be up and running
-          while ! docker system info > /dev/null 2>&1; do
-            echo "Waiting for Docker to start..."
-            sleep 1
-          done
-
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+  
       - name: Build docker image
         run: |-
           docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=14" .
@@ -166,7 +153,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Setup Golang
         uses: actions/setup-go@v4
@@ -241,7 +228,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Setup Golang
         uses: actions/setup-go@v4
@@ -295,7 +282,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -362,15 +349,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
-      - name: Install Homebrew (if not installed)
-        run: |
-          which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-      - name: Install Docker
-        run: |
-          brew install --cask docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Start Docker
         run: |
@@ -433,7 +418,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Setup Golang
         uses: actions/setup-go@v4
@@ -511,7 +496,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: local
+          ref: main
 
       - name: Setup Golang
         uses: actions/setup-go@v4
@@ -603,10 +588,6 @@ jobs:
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
       
-      - name: Install Homebrew (if not installed)
-        run: |
-          which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
