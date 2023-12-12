@@ -8,11 +8,6 @@ on:
         required: true
 
   workflow_call:
-    inputs:
-      plugin:
-        description: The plugin to build FDW components for
-        required: true
-        type: string
 
 jobs:
   build-postgres-14-fdw-linux-amd64:
