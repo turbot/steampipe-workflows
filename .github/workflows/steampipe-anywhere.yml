@@ -604,51 +604,55 @@ jobs:
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           if-no-files-found: error
 
-  # build-sqlite-extension-linux-arm64:
-  #   name: Build SQLite Extension for Linux - ARM64
-  #   runs-on: macos-latest-xlarge
+  build-sqlite-extension-linux-arm64:
+    name: Build SQLite Extension for Linux - ARM64
+    runs-on: macos-latest-xlarge
 
-  #   steps:
-  #     - name: Check architecture
-  #       run: uname -a
+    steps:
+      - name: Check architecture
+        run: uname -a
 
-  #     - name: Check out steampipe-sqlite-extension
-  #       uses: actions/checkout@v2
-  #       with:
-  #         repository: "turbot/steampipe-sqlite-extension"
-  #         ref: main
-      
-  #     - name: Install Homebrew (if not installed)
-  #       run: |
-  #         which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      - name: Check out steampipe-sqlite-extension
+        uses: actions/checkout@v2
+        with:
+          repository: "turbot/steampipe-sqlite-extension"
+          ref: main
 
-  #     - name: Install Docker
-  #       run: |
-  #         brew install --cask docker
-  #         which docker
-  #         docker --version
+      - name: Install Homebrew (if not installed)
+        run: |
+          which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-  #     - name: Build docker image
-  #       run: |-
-  #         docker build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder ${{ github.action_path }}../
+      - name: Install Docker
+        run: |
+          brew install --cask docker
+          which docker
+          docker --version
+          
+      - name: Download the Dockerfile
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/turbot/steampipe-workflows/nwf/anywhere.Dockerfile -o anywhere.Dockerfile
 
-  #     - name: Build steampipe-sqlite-extension - ${{ env.PLUGIN_NAME }}
-  #       run: |
-  #         pwd
-  #         ls -ltr
-  #         docker run -it --rm --name sp_sqlite_builder  -v $(pwd):/tmp/ext steampipe_sqlite_builder make build plugin=${{ env.PLUGIN_NAME }}
-  #         ls -ltr
+      - name: Build docker image
+        run: |-
+          docker build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder .
 
-  #     - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
-  #       run: |-
-  #         tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
+      - name: Build steampipe-sqlite-extension - ${{ env.PLUGIN_NAME }}
+        run: |
+          pwd
+          ls -ltr
+          docker run -it --rm --name sp_sqlite_builder  -v $(pwd):/tmp/ext steampipe_sqlite_builder make build plugin=${{ env.PLUGIN_NAME }}
+          ls -ltr
 
-  #     - name: Save Linux Build Artifact - ARM64
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-  #         path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-  #         if-no-files-found: error
+      - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
+        run: |-
+          tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
+
+      - name: Save Linux Build Artifact - ARM64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+          path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+          if-no-files-found: error
 
   build-sqlite-extension-osx-amd64:
     name: Build SQLite Extension for Darwin - AMD64
