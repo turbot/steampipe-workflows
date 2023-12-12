@@ -627,6 +627,7 @@ jobs:
           brew install --cask docker
           which docker
           docker --version
+          colima start
           
       - name: Download the Dockerfile
         run: |
