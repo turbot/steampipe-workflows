@@ -618,16 +618,14 @@ jobs:
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
 
-      - name: Install Homebrew (if not installed)
-        run: |
-          which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+          
       - name: Install Podman
         run: |
-          brew install podman
-          which podman
-          podman machine init
-          podman machine start
+          brew install docker colima
+          colima start --arch aarch64
           
       - name: Download the Dockerfile
         run: |
@@ -635,13 +633,13 @@ jobs:
 
       - name: Build Podman image
         run: |-
-          podman build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder .
+          docker build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder .
 
       - name: Build steampipe-sqlite-extension with Podman - ${{ env.PLUGIN_NAME }}
         run: |
           pwd
           ls -ltr
-          podman run -it --rm --name sp_sqlite_builder  -v $(pwd):/tmp/ext steampipe_sqlite_builder make build plugin=${{ env.PLUGIN_NAME }}
+          docker run -it --rm --name sp_sqlite_builder  -v $(pwd):/tmp/ext steampipe_sqlite_builder make build plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
 
       - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
