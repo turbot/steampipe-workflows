@@ -622,27 +622,24 @@ jobs:
         run: |
           which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-      - name: Install Docker
+      - name: Install Podman
         run: |
-          brew install --cask docker
-          which docker
-          docker --version
-          brew install colima
-          which colima
+          brew install podman
+          which podman
           
       - name: Download the Dockerfile
         run: |
           curl -fsSL https://raw.githubusercontent.com/turbot/steampipe-workflows/nwf/anywhere.Dockerfile -o anywhere.Dockerfile
 
-      - name: Build docker image
+      - name: Build Podman image
         run: |-
-          docker build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder .
+          podman build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder .
 
-      - name: Build steampipe-sqlite-extension - ${{ env.PLUGIN_NAME }}
+      - name: Build steampipe-sqlite-extension with Podman - ${{ env.PLUGIN_NAME }}
         run: |
           pwd
           ls -ltr
-          docker run -it --rm --name sp_sqlite_builder  -v $(pwd):/tmp/ext steampipe_sqlite_builder make build plugin=${{ env.PLUGIN_NAME }}
+          podman run -it --rm --name sp_sqlite_builder  -v $(pwd):/tmp/ext steampipe_sqlite_builder make build plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
 
       - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
