@@ -19,7 +19,13 @@ jobs:
     name: Build Postgres 14 FDW for Linux - AMD64
     runs-on: ubuntu-latest
 
-    steps:          
+    steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+    
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v2
         with:
@@ -67,19 +73,19 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ inputs.plugin }}
+          make standalone plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
 
       - name: Rename and zip the build-Linux folder
         run: |-
-          mv build-Linux steampipe_postgres_${{ inputs.plugin }}.pg14.linux_amd64
-          tar -czvf steampipe_postgres_${{ inputs.plugin }}.pg14.linux_amd64.tar.gz steampipe_postgres_${{ inputs.plugin }}.pg14.linux_amd64
+          mv build-Linux steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64
+          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64
 
       - name: Save Linux Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_postgres_${{ inputs.plugin }}.pg14.linux_amd64.tar.gz
-          path: steampipe_postgres_${{ inputs.plugin }}.pg14.linux_amd64.tar.gz
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
+          path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
           if-no-files-found: error
 
   # build-postgres-14-fdw-linux-arm64:
@@ -107,29 +113,35 @@ jobs:
   #       run: |-
   #         docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=14" ${{ github.action_path }}../
 
-  #     - name: Build steampipe-postgres-fdw - ${{ inputs.plugin }}
+  #     - name: Build steampipe-postgres-fdw - ${{ env.PLUGIN_NAME }}
   #       run: |
   #         pwd
   #         ls -ltr
-  #         docker run -it --rm --name sp_fdw_builder  -v $(pwd):/tmp/ext steampipe_fdw_builder make standalone plugin=${{ inputs.plugin }}
+  #         docker run -it --rm --name sp_fdw_builder  -v $(pwd):/tmp/ext steampipe_fdw_builder make standalone plugin=${{ env.PLUGIN_NAME }}
   #         ls -ltr
 
   #     - name: Rename and zip the build-Linux folder
   #       run: |-
-  #         mv build-Linux steampipe_postgres_${{ inputs.plugin }}.pg14.linux_arm64
-  #         tar -czvf steampipe_postgres_${{ inputs.plugin }}.pg14.linux_arm64.tar.gz steampipe_postgres_${{ inputs.plugin }}.pg14.linux_arm64
+  #         mv build-Linux steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64
+  #         tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64
 
   #     - name: Save Linux Build Artifact - ARM64
   #       uses: actions/upload-artifact@v3
   #       with:
-  #         name: steampipe_postgres_${{ inputs.plugin }}.pg14.linux_arm64.tar.gz
-  #         path: steampipe_postgres_${{ inputs.plugin }}.pg14.linux_arm64.tar.gz
+  #         name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
+  #         path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
   #         if-no-files-found: error
 
   build-postgres-14-fdw-osx-amd64:
     name: Build Postgres 14 FDW for Darwin - AMD64
     runs-on: macos-latest
     steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
       - name: Install PostgreSQL@14
         run: brew install postgresql@14
 
@@ -183,25 +195,31 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ inputs.plugin }}
+          make standalone plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
         run: |-
-          mv build-Darwin steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_amd64
-          tar -czvf steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_amd64.tar.gz steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_amd64
+          mv build-Darwin steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64
+          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64
 
       - name: Save MacOS Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_amd64.tar.gz
-          path: steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_amd64.tar.gz
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
+          path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
           if-no-files-found: error
 
   build-postgres-14-fdw-osx-arm64:
     name: Build Postgres 14 FDW for Darwin - ARM64
     runs-on: macos-latest-xlarge
     steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
       - name: Check architecture
         run: uname -a
 
@@ -258,19 +276,19 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ inputs.plugin }}
+          make standalone plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
         run: |-
-          mv build-Darwin steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_arm64
-          tar -czvf steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_arm64.tar.gz steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_arm64
+          mv build-Darwin steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64
+          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64
 
       - name: Save MacOS Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_arm64.tar.gz
-          path: steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_arm64.tar.gz
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
+          path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
           if-no-files-found: error
 
   build-postgres-15-fdw-linux-amd64:
@@ -278,6 +296,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v2
         with:
@@ -325,19 +349,19 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ inputs.plugin }}
+          make standalone plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
 
       - name: Rename and zip the build-Linux folder
         run: |-
-          mv build-Linux steampipe_postgres_${{ inputs.plugin }}.pg15.linux_amd64
-          tar -czvf steampipe_postgres_${{ inputs.plugin }}.pg15.linux_amd64.tar.gz steampipe_postgres_${{ inputs.plugin }}.pg15.linux_amd64
+          mv build-Linux steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64
+          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64
 
       - name: Save Linux Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_postgres_${{ inputs.plugin }}.pg15.linux_amd64.tar.gz
-          path: steampipe_postgres_${{ inputs.plugin }}.pg15.linux_amd64.tar.gz
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
+          path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
           if-no-files-found: error
 
   # build-postgres-15-fdw-linux-arm64:
@@ -365,29 +389,35 @@ jobs:
   #       run: |-
   #         docker build --pull -f anywhere.Dockerfile -t steampipe_fdw_builder --build-arg="pg_version=15" ${{ github.action_path }}../
 
-  #     - name: Build steampipe-postgres-fdw - ${{ inputs.plugin }}
+  #     - name: Build steampipe-postgres-fdw - ${{ env.PLUGIN_NAME }}
   #       run: |
   #         pwd
   #         ls -ltr
-  #         docker run -it --rm --name sp_fdw_builder  -v $(pwd):/tmp/ext steampipe_fdw_builder make standalone plugin=${{ inputs.plugin }}
+  #         docker run -it --rm --name sp_fdw_builder  -v $(pwd):/tmp/ext steampipe_fdw_builder make standalone plugin=${{ env.PLUGIN_NAME }}
   #         ls -ltr
 
   #     - name: Rename and zip the build-Linux folder
   #       run: |-
-  #         mv build-Linux steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64
-  #         tar -czvf steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64.tar.gz steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64
+  #         mv build-Linux steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64
+  #         tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64
 
   #     - name: Save Linux Build Artifact - ARM64
   #       uses: actions/upload-artifact@v3
   #       with:
-  #         name: steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64.tar.gz
-  #         path: steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64.tar.gz
+  #         name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
+  #         path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
   #         if-no-files-found: error
 
   build-postgres-15-fdw-osx-amd64:
     name: Build Postgres 15 FDW for Darwin - AMD64
     runs-on: macos-latest
     steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
       - name: Install PostgreSQL@15
         run: brew install postgresql@15
 
@@ -441,25 +471,31 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ inputs.plugin }}
+          make standalone plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
         run: |-
-          mv build-Darwin steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_amd64
-          tar -czvf steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_amd64.tar.gz steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_amd64
+          mv build-Darwin steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64
+          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64
 
       - name: Save MacOS Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_amd64.tar.gz
-          path: steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_amd64.tar.gz
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
+          path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
           if-no-files-found: error
 
   build-postgres-15-fdw-osx-arm64:
     name: Build Postgres 15 FDW for Darwin - ARM64
     runs-on: macos-latest-xlarge
     steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
       - name: Check architecture
         run: uname -a
 
@@ -518,19 +554,19 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ inputs.plugin }}
+          make standalone plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
         run: |-
-          mv build-Darwin steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_arm64
-          tar -czvf steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_arm64.tar.gz steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_arm64
+          mv build-Darwin steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64
+          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64
 
       - name: Save MacOS Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_arm64.tar.gz
-          path: steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_arm64.tar.gz
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
+          path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
           if-no-files-found: error
 
   build-sqlite-extension-linux-amd64:
@@ -538,6 +574,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@v2
         with:
@@ -553,18 +595,18 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=${{ inputs.plugin }}
+          make build plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
 
-      - name: Zip and rename the steampipe_sqlite_${{ inputs.plugin }}.so
+      - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
         run: |-
-          tar -czvf steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz steampipe_sqlite_${{ inputs.plugin }}.so
+          tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Linux Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz
-          path: steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz
+          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
+          path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           if-no-files-found: error
 
   # build-sqlite-extension-linux-arm64:
@@ -595,22 +637,22 @@ jobs:
   #       run: |-
   #         docker build --pull -f anywhere.Dockerfile -t steampipe_sqlite_builder ${{ github.action_path }}../
 
-  #     - name: Build steampipe-sqlite-extension - ${{ inputs.plugin }}
+  #     - name: Build steampipe-sqlite-extension - ${{ env.PLUGIN_NAME }}
   #       run: |
   #         pwd
   #         ls -ltr
-  #         docker run -it --rm --name sp_sqlite_builder  -v $(pwd):/tmp/ext steampipe_sqlite_builder make build plugin=${{ inputs.plugin }}
+  #         docker run -it --rm --name sp_sqlite_builder  -v $(pwd):/tmp/ext steampipe_sqlite_builder make build plugin=${{ env.PLUGIN_NAME }}
   #         ls -ltr
 
-  #     - name: Zip and rename the steampipe_sqlite_${{ inputs.plugin }}.so
+  #     - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
   #       run: |-
-  #         tar -czvf steampipe_sqlite_${{ inputs.plugin }}.linux_arm64.tar.gz steampipe_sqlite_${{ inputs.plugin }}.so
+  #         tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
   #     - name: Save Linux Build Artifact - ARM64
   #       uses: actions/upload-artifact@v3
   #       with:
-  #         name: steampipe_sqlite_${{ inputs.plugin }}.darwin_arm64.tar.gz
-  #         path: steampipe_sqlite_${{ inputs.plugin }}.darwin_arm64.tar.gz
+  #         name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+  #         path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
   #         if-no-files-found: error
 
   build-sqlite-extension-osx-amd64:
@@ -618,6 +660,12 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@v2
         with:
@@ -633,18 +681,18 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=${{ inputs.plugin }}
+          make build plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
 
-      - name: Zip and rename the steampipe_sqlite_${{ inputs.plugin }}.so
+      - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
         run: |-
-          tar -czvf steampipe_sqlite_${{ inputs.plugin }}.darwin_amd64.tar.gz steampipe_sqlite_${{ inputs.plugin }}.so
+          tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Darwin Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_sqlite_${{ inputs.plugin }}.darwin_amd64.tar.gz
-          path: steampipe_sqlite_${{ inputs.plugin }}.darwin_amd64.tar.gz
+          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
+          path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           if-no-files-found: error
 
   build-sqlite-extension-osx-arm64:
@@ -652,6 +700,12 @@ jobs:
     runs-on: macos-latest-xlarge
 
     steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
       - name: Check architecture
         run: uname -a
 
@@ -670,18 +724,18 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=${{ inputs.plugin }}
+          make build plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
 
-      - name: Zip and rename the steampipe_sqlite_${{ inputs.plugin }}.so
+      - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
         run: |-
-          tar -czvf steampipe_sqlite_${{ inputs.plugin }}.darwin_arm64.tar.gz steampipe_sqlite_${{ inputs.plugin }}.so
+          tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Darwin Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_sqlite_${{ inputs.plugin }}.darwin_arm64.tar.gz
-          path: steampipe_sqlite_${{ inputs.plugin }}.darwin_arm64.tar.gz
+          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+          path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
           if-no-files-found: error
 
   build-export-tool:
@@ -689,6 +743,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
       - name: Check out steampipe-table-dump
         uses: actions/checkout@v2
         with:
@@ -704,7 +764,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=${{ inputs.plugin }}
+          make build plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
           go mod tidy
 
@@ -717,38 +777,38 @@ jobs:
       - name: Copy the gzipped binaries from dist
         run: |-
           ls -al dist/
-          cp dist/steampipe_export_${{ inputs.plugin }}.linux_amd64.tar.gz steampipe_export_${{ inputs.plugin }}.linux_amd64.tar.gz
-          cp dist/steampipe_export_${{ inputs.plugin }}.linux_arm64.tar.gz steampipe_export_${{ inputs.plugin }}.linux_arm64.tar.gz
-          cp dist/steampipe_export_${{ inputs.plugin }}.darwin_amd64.tar.gz steampipe_export_${{ inputs.plugin }}.darwin_amd64.tar.gz
-          cp dist/steampipe_export_${{ inputs.plugin }}.darwin_arm64.tar.gz steampipe_export_${{ inputs.plugin }}.darwin_arm64.tar.gz
+          cp dist/steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
+          cp dist/steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
+          cp dist/steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
+          cp dist/steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
           ls -al
 
       - name: Save Linux Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_export_${{ inputs.plugin }}.linux_amd64.tar.gz
-          path: steampipe_export_${{ inputs.plugin }}.linux_amd64.tar.gz
+          name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
+          path: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           if-no-files-found: error
 
       - name: Save Linux Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_export_${{ inputs.plugin }}.linux_arm64.tar.gz
-          path: steampipe_export_${{ inputs.plugin }}.linux_arm64.tar.gz
+          name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
+          path: steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           if-no-files-found: error
 
       - name: Save Darwin Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_export_${{ inputs.plugin }}.darwin_amd64.tar.gz
-          path: steampipe_export_${{ inputs.plugin }}.darwin_amd64.tar.gz
+          name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
+          path: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           if-no-files-found: error
 
       - name: Save Darwin Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_export_${{ inputs.plugin }}.darwin_arm64.tar.gz
-          path: steampipe_export_${{ inputs.plugin }}.darwin_arm64.tar.gz
+          name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+          path: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
           if-no-files-found: error
 
   build-draft-release:
@@ -773,101 +833,107 @@ jobs:
       # Export
       - build-export-tool
     steps:
-      - name: Download steampipe_postgres_${{ inputs.plugin }}.pg14.linux_amd64.tar.gz
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
+      - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
         id: download_pg14_linux_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_postgres_${{ inputs.plugin }}.pg14.linux_amd64.tar.gz
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
 
-      # - name: Download steampipe_postgres_${{ inputs.plugin }}.pg14.linux_arm64.tar.gz
+      # - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
       #   id: download_pg14_linux_arm64
       #   uses: actions/download-artifact@v3
       #   with:
-      #     name: steampipe_postgres_${{ inputs.plugin }}.pg14.linux_arm64.tar.gz
+      #     name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
 
-      - name: Download steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_amd64.tar.gz
+      - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
         id: download_pg14_darwin_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_amd64.tar.gz
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
 
-      - name: Download steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_arm64.tar.gz
+      - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
         id: download_pg14_darwin_arm64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_arm64.tar.gz
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
 
-      - name: Download steampipe_postgres_${{ inputs.plugin }}.pg15.linux_amd64.tar.gz
+      - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
         id: download_pg15_linux_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_postgres_${{ inputs.plugin }}.pg15.linux_amd64.tar.gz
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
 
-      # - name: Download steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64.tar.gz
+      # - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
       #   id: download_pg15_linux_arm64
       #   uses: actions/download-artifact@v3
       #   with:
-      #     name: steampipe_postgres_${{ inputs.plugin }}.pg15.linux_arm64.tar.gz
+      #     name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
 
-      - name: Download steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_amd64.tar.gz
+      - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
         id: download_pg15_darwin_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_amd64.tar.gz
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
 
-      - name: Download steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_arm64.tar.gz
+      - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
         id: download_pg15_darwin_arm64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_arm64.tar.gz
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
 
-      - name: Download steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz
+      - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
         id: download_sqlite_linux_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz
+          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
 
-      # - name: Download steampipe_sqlite_${{ inputs.plugin }}.linux_arm64.tar.gz
+      # - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
       #   id: download_sqlite_linux_arm64
       #   uses: actions/download-artifact@v3
       #   with:
-      #     name: steampipe_sqlite_${{ inputs.plugin }}.linux_arm.tar.gz
+      #     name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm.tar.gz
 
-      - name: Download steampipe_sqlite_${{ inputs.plugin }}.darwin_amd64.tar.gz
+      - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
         id: download_sqlite_darwin_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_sqlite_${{ inputs.plugin }}.darwin_amd64.tar.gz
+          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
 
-      - name: Download steampipe_sqlite_${{ inputs.plugin }}.darwin_arm64.tar.gz
+      - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
         id: download_sqlite_darwin_arm64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_sqlite_${{ inputs.plugin }}.darwin_arm64.tar.gz
+          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
 
-      - name: Download steampipe_export_${{ inputs.plugin }}.linux_amd64.tar.gz
+      - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
         id: download_export_linux_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_export_${{ inputs.plugin }}.linux_amd64.tar.gz
+          name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
 
-      - name: Download steampipe_export_${{ inputs.plugin }}.linux_arm64.tar.gz
+      - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
         id: download_export_linux_arm64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_export_${{ inputs.plugin }}.linux_arm64.tar.gz
+          name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
-      - name: Download steampipe_export_${{ inputs.plugin }}.darwin_amd64.tar.gz
+      - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
         id: download_export_darwin_amd64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_export_${{ inputs.plugin }}.darwin_amd64.tar.gz
+          name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
 
-      - name: Download steampipe_export_${{ inputs.plugin }}.darwin_arm64.tar.gz
+      - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
         id: download_export_darwin_arm64
         uses: actions/download-artifact@v3
         with:
-          name: steampipe_export_${{ inputs.plugin }}.darwin_arm64.tar.gz
+          name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
 
       - name: Check Path
         run: |-
@@ -889,19 +955,19 @@ jobs:
           tag_name: ${{ env.VERSION }}
           repository: ${{ github.repository }}
           files: |-
-            ${{ steps.download_pg14_darwin_amd64.outputs.download-path }}/steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_amd64.tar.gz
-            ${{ steps.download_pg14_darwin_arm64.outputs.download-path }}/steampipe_postgres_${{ inputs.plugin }}.pg14.darwin_arm64.tar.gz
-            ${{ steps.download_pg14_linux_amd64.outputs.download-path }}/steampipe_postgres_${{ inputs.plugin }}.pg14.linux_amd64.tar.gz
+            ${{ steps.download_pg14_darwin_amd64.outputs.download-path }}/steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
+            ${{ steps.download_pg14_darwin_arm64.outputs.download-path }}/steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
+            ${{ steps.download_pg14_linux_amd64.outputs.download-path }}/steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
 
-            ${{ steps.download_pg15_darwin_amd64.outputs.download-path }}/steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_amd64.tar.gz
-            ${{ steps.download_pg15_darwin_arm64.outputs.download-path }}/steampipe_postgres_${{ inputs.plugin }}.pg15.darwin_arm64.tar.gz
-            ${{ steps.download_pg15_linux_amd64.outputs.download-path }}/steampipe_postgres_${{ inputs.plugin }}.pg15.linux_amd64.tar.gz
+            ${{ steps.download_pg15_darwin_amd64.outputs.download-path }}/steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
+            ${{ steps.download_pg15_darwin_arm64.outputs.download-path }}/steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
+            ${{ steps.download_pg15_linux_amd64.outputs.download-path }}/steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
 
-            ${{ steps.download_sqlite_darwin_amd64.outputs.download-path }}/steampipe_sqlite_${{ inputs.plugin }}.darwin_amd64.tar.gz
-            ${{ steps.download_sqlite_darwin_arm64.outputs.download-path }}/steampipe_sqlite_${{ inputs.plugin }}.darwin_arm64.tar.gz
-            ${{ steps.download_sqlite_linux_amd64.outputs.download-path }}/steampipe_sqlite_${{ inputs.plugin }}.linux_amd64.tar.gz
+            ${{ steps.download_sqlite_darwin_amd64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
+            ${{ steps.download_sqlite_darwin_arm64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+            ${{ steps.download_sqlite_linux_amd64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
 
-            ${{ steps.download_export_darwin_amd64.outputs.download-path }}/steampipe_export_${{ inputs.plugin }}.darwin_amd64.tar.gz
-            ${{ steps.download_export_darwin_arm64.outputs.download-path }}/steampipe_export_${{ inputs.plugin }}.darwin_arm64.tar.gz
-            ${{ steps.download_export_linux_amd64.outputs.download-path }}/steampipe_export_${{ inputs.plugin }}.linux_amd64.tar.gz
-            ${{ steps.download_export_linux_arm64.outputs.download-path }}/steampipe_export_${{ inputs.plugin }}.linux_arm64.tar.gz
+            ${{ steps.download_export_darwin_amd64.outputs.download-path }}/steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
+            ${{ steps.download_export_darwin_arm64.outputs.download-path }}/steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+            ${{ steps.download_export_linux_amd64.outputs.download-path }}/steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
+            ${{ steps.download_export_linux_arm64.outputs.download-path }}/steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
