@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: main
+          ref: hack-config-plugin
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -160,7 +160,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: main
+          ref: hack-config-plugin
 
       - name: Setup Golang
         uses: actions/setup-go@v4
@@ -241,7 +241,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: main
+          ref: hack-config-plugin
 
       - name: Setup Golang
         uses: actions/setup-go@v4
@@ -301,7 +301,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: main
+          ref: hack-config-plugin
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -436,7 +436,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: main
+          ref: hack-config-plugin
 
       - name: Setup Golang
         uses: actions/setup-go@v4
@@ -520,7 +520,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-postgres-fdw"
-          ref: main
+          ref: hack-config-plugin
 
       - name: Setup Golang
         uses: actions/setup-go@v4
@@ -579,7 +579,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-sqlite-extension"
-          ref: main
+          ref: hack-config-plugin
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -665,7 +665,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-sqlite-extension"
-          ref: main
+          ref: hack-config-plugin
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -708,7 +708,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-sqlite-extension"
-          ref: main
+          ref: hack-config-plugin
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -748,7 +748,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-table-dump"
-          ref: main
+          ref: hack-config-plugin
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
