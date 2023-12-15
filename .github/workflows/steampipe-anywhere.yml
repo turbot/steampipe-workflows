@@ -89,6 +89,12 @@ jobs:
       group: steampipe-darwin-arm-runners
 
     steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
       - name: Check out steampipe-postgres-fdw-anywhere
         uses: actions/checkout@v3
         with:
@@ -352,6 +358,12 @@ jobs:
       group: steampipe-darwin-arm-runners
 
     steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
       - name: Check out steampipe-postgres-fdw-anywhere
         uses: actions/checkout@v3
         with:
