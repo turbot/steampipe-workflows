@@ -104,6 +104,18 @@ jobs:
       - name: Check docker images available in runner
         run: docker images
 
+      - name: Remove existing images 
+        run: docker system prune -a
+
+      - name: Build image
+        run: |
+          docker build --pull -f Dockerfile -t steampipe_fdw_builder:14 --build-arg="pg_version=14" .
+          docker build --pull -f Dockerfile -t steampipe_fdw_builder:14 --build-arg="pg_version=14" .
+          docker build --pull -f Dockerfile -t steampipe_qlite_builder .
+
+      - name: Check if images have been built
+        run: docker images
+
       - name: Run build script
         run: |
           chmod +x ./scripts/build-linux-arm-pg14.sh
