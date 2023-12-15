@@ -589,6 +589,41 @@ jobs:
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           if-no-files-found: error
 
+  build-sqlite-extension-linux-arm64:
+    name: Build SQLite Extension for Linux - ARM64
+    runs-on: 
+      group: steampipe-darwin-arm-runners
+
+    steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
+      - name: Check out steampipe-sqlite-extension
+        uses: actions/checkout@v3
+        with:
+          repository: "turbot/steampipe-sqlite"
+          ref: self-hosted
+
+      - name: Check docker images available in runner
+        run: docker images
+
+      - name: Run build script
+        run: |
+          chmod +x ./scripts/build-linux-arm-sqlite.sh
+          bash ./scripts/build-linux-arm-sqlite.sh ${{ env.PLUGIN_NAME }}
+      
+      - name: Check if binaries are available
+        run: ls -l $GITHUB_WORKSPACE
+
+      - name: Save Linux Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
+          path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
+          if-no-files-found: error
 
   build-sqlite-extension-osx-amd64:
     name: Build SQLite Extension for Darwin - AMD64
@@ -762,7 +797,7 @@ jobs:
       - build-postgres-15-fdw-osx-arm64
       # SQLite
       - build-sqlite-extension-linux-amd64
-      # - build-sqlite-extension-linux-arm64
+      - build-sqlite-extension-linux-arm64
       - build-sqlite-extension-osx-amd64
       - build-sqlite-extension-osx-arm64
       # Export
@@ -828,11 +863,11 @@ jobs:
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
 
-      # - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
-      #   id: download_sqlite_linux_arm64
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm.tar.gz
+      - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
+        id: download_sqlite_linux_arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
         id: download_sqlite_darwin_amd64
@@ -903,6 +938,7 @@ jobs:
             ${{ steps.download_sqlite_darwin_amd64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
             ${{ steps.download_sqlite_darwin_arm64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
             ${{ steps.download_sqlite_linux_amd64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
+            ${{ steps.download_sqlite_linux_arm64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
             ${{ steps.download_export_darwin_amd64.outputs.download-path }}/steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
             ${{ steps.download_export_darwin_arm64.outputs.download-path }}/steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
