@@ -85,7 +85,8 @@ jobs:
 
   build-postgres-14-fdw-linux-arm64:
     name: Build Postgres 14 FDW for Linux - ARM64
-    runs-on: [self-hosted, macOS, ARM64, pskr-m1]
+    runs-on:
+      group: steampipe-darwin-arm-runners
 
     steps:
       - name: Check out steampipe-postgres-fdw-anywhere
@@ -347,7 +348,8 @@ jobs:
 
   build-postgres-15-fdw-linux-arm64:
     name: Build Postgres 15 FDW for Linux - ARM64
-    runs-on: [self-hosted, macOS, ARM64, pskr-m1]
+    runs-on:
+      group: steampipe-darwin-arm-runners
 
     steps:
       - name: Check out steampipe-postgres-fdw-anywhere
