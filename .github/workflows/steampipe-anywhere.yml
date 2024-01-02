@@ -483,7 +483,7 @@ jobs:
         run: brew install postgresql@15
 
       - name: Configure PATH for PostgreSQL
-        run: echo "/opt/homebrew/Cellar/postgresql@15/15.5_1/bin" >> $GITHUB_PATH
+        run: echo "/usr/local/Cellar/postgresql@15/15.5_1/bin" >> $GITHUB_PATH
         
       - name: PGConfig
         run: |-
