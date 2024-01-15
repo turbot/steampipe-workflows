@@ -481,9 +481,12 @@ jobs:
 
       - name: Install PostgreSQL@15
         run: brew install postgresql@15
+      
+      - name: Get the installation directory of the postgresql@15 formula
+        run: brew --prefix postgresql@15
 
       - name: Configure PATH for PostgreSQL
-        run: echo "/usr/local/Cellar/postgresql@15/15.5_3/bin" >> $GITHUB_PATH
+        run: echo $(brew --prefix postgresql@15)/bin >> $GITHUB_PATH
         
       - name: PGConfig
         run: |-
