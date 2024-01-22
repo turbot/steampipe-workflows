@@ -563,7 +563,7 @@ jobs:
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@v2
         with:
-          repository: "turbot/steampipe-sqlite-extension"
+          repository: "turbot/steampipe-sqlite"
           ref: disable-cgo
 
       - name: Setup GoLang
