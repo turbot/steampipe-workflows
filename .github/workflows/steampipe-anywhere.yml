@@ -722,8 +722,8 @@ jobs:
       - name: Check out steampipe-table-dump
         uses: actions/checkout@v2
         with:
-          repository: "turbot/steampipe-table-dump"
-          ref: main
+          repository: "turbot/steampipe-export"
+          ref: disable-cgo
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
