@@ -560,6 +560,9 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
+      - name: Check glibc version
+        run: ldd --version
+
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@v2
         with:
