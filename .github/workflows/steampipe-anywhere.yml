@@ -12,7 +12,7 @@ on:
 jobs:
   build-postgres-14-fdw-linux-amd64:
     name: Build Postgres 14 FDW for Linux - AMD64
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Set environment variables
@@ -281,7 +281,7 @@ jobs:
 
   build-postgres-15-fdw-linux-amd64:
     name: Build Postgres 15 FDW for Linux - AMD64
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Set environment variables
@@ -551,7 +551,7 @@ jobs:
 
   build-sqlite-extension-linux-amd64:
     name: Build SQLite Extension for Linux - AMD64
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Set environment variables
@@ -564,7 +564,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-sqlite"
-          ref: disable-cgo
+          ref: main
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
