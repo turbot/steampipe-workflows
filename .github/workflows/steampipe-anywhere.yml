@@ -552,8 +552,8 @@ jobs:
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
           if-no-files-found: error
 
-  build-sqlite-extension-linux-amd64:
-    name: Build SQLite Extension for Linux - AMD64
+  build-sqlite-extension:
+    name: Build SQLite Extension
     runs-on: ubuntu-latest
 
     steps:
@@ -566,7 +566,7 @@ jobs:
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@v2
         with:
-          repository: "turbot/steampipe-sqlite-extension"
+          repository: "turbot/steampipe-sqlite"
           ref: main
 
       - name: Setup GoLang
@@ -580,135 +580,40 @@ jobs:
           ls -ltr
           make build plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
-
-      - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
+      
+      - name: Run goreleaser
         run: |-
-          tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
+          make release-dry-run
+
+      - name: Check dist folder
+        run: ls -l dist/
 
       - name: Save Linux Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
-          path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
+          path: dist/steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           if-no-files-found: error
 
-  build-sqlite-extension-linux-arm64:
-    name: Build SQLite Extension for Linux - ARM64
-    runs-on: 
-      group: steampipe-darwin-arm-runners
-
-    steps:
-      - name: Set environment variables
-        run: |
-          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
-          echo $plugin_name
-          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
-
-      - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@v3
-        with:
-          repository: "turbot/steampipe-sqlite"
-          ref: self-hosted
-
-      - name: Check docker images available in runner
-        run: docker images
-
-      - name: Run build script
-        run: |
-          chmod +x ./scripts/build-linux-arm-sqlite.sh
-          bash ./scripts/build-linux-arm-sqlite.sh ${{ env.PLUGIN_NAME }}
-      
-      - name: Check if binaries are available
-        run: ls -l $GITHUB_WORKSPACE
-
-      - name: Save Linux Build Artifact - AMD64
+      - name: Save Linux Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
-          path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
+          path: dist/steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           if-no-files-found: error
-
-  build-sqlite-extension-osx-amd64:
-    name: Build SQLite Extension for Darwin - AMD64
-    runs-on: macos-latest
-
-    steps:
-      - name: Set environment variables
-        run: |
-          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
-          echo $plugin_name
-          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
-
-      - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@v2
-        with:
-          repository: "turbot/steampipe-sqlite-extension"
-          ref: main
-
-      - name: Setup GoLang
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.21
-
-      - name: Build steampipe-sqlite-extension
-        run: |
-          pwd
-          ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }}
-          ls -ltr
-
-      - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
-        run: |-
-          tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Darwin Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
-          path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
+          path: dist/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           if-no-files-found: error
-
-  build-sqlite-extension-osx-arm64:
-    name: Build SQLite Extension for Darwin - ARM64
-    runs-on: macos-14
-
-    steps:
-      - name: Set environment variables
-        run: |
-          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
-          echo $plugin_name
-          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
-
-      - name: Check architecture
-        run: uname -a
-
-      - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@v2
-        with:
-          repository: "turbot/steampipe-sqlite-extension"
-          ref: main
-
-      - name: Setup GoLang
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.21
-
-      - name: Build steampipe-sqlite-extension
-        run: |
-          pwd
-          ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }}
-          ls -ltr
-
-      - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
-        run: |-
-          tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Darwin Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-          path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+          path: dist/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
           if-no-files-found: error
 
   build-export-tool:
@@ -799,10 +704,7 @@ jobs:
       - build-postgres-15-fdw-osx-amd64
       - build-postgres-15-fdw-osx-arm64
       # SQLite
-      - build-sqlite-extension-linux-amd64
-      - build-sqlite-extension-linux-arm64
-      - build-sqlite-extension-osx-amd64
-      - build-sqlite-extension-osx-arm64
+      - build-sqlite-extension
       # Export
       - build-export-tool
     steps:
@@ -923,7 +825,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         id: create_draft_release
         with:
-          draft: true
+          draft: false
+          prerelease: false
           name: ${{ env.VERSION }}
           tag_name: ${{ env.VERSION }}
           repository: ${{ github.repository }}
