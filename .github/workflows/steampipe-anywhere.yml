@@ -200,7 +200,7 @@ jobs:
 
   build-postgres-14-fdw-osx-arm64:
     name: Build Postgres 14 FDW for Darwin - ARM64
-    runs-on: macos-latest-large
+    runs-on: macos-14
     steps:
       - name: Set environment variables
         run: |
@@ -468,7 +468,7 @@ jobs:
 
   build-postgres-15-fdw-osx-arm64:
     name: Build Postgres 15 FDW for Darwin - ARM64
-    runs-on: macos-latest-large
+    runs-on: macos-14
     steps:
       - name: Set environment variables
         run: |
@@ -670,7 +670,7 @@ jobs:
 
   build-sqlite-extension-osx-arm64:
     name: Build SQLite Extension for Darwin - ARM64
-    runs-on: macos-latest-large
+    runs-on: macos-14
 
     steps:
       - name: Set environment variables
