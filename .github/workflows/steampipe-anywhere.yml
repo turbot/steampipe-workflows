@@ -566,8 +566,8 @@ jobs:
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@v2
         with:
-          repository: "turbot/steampipe-sqlite-extension"
-          ref: 83-goreleaser-cross-compilation
+          repository: "turbot/steampipe-sqlite"
+          ref: main
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -585,7 +585,7 @@ jobs:
         run: |-
           make release-dry-run
 
-      - name: check dist folder
+      - name: Check dist folder
         run: ls -l dist/
 
       - name: Save Linux Build Artifact - AMD64
