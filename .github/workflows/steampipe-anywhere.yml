@@ -553,8 +553,7 @@ jobs:
 
   build-sqlite-extension:
     name: Build SQLite Extension
-    runs-on:
-      group: large-runners
+    runs-on: ubuntu_8_core
 
     steps:
       - name: Set environment variables
