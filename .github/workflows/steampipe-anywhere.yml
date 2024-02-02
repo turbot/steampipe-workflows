@@ -580,6 +580,15 @@ jobs:
           ls -ltr
           make build plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
+
+      - name: Increase swapfile
+        run: |
+          sudo swapoff -a
+          sudo fallocate -l 15G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          sudo swapon --show
       
       - name: Run goreleaser
         run: |-
