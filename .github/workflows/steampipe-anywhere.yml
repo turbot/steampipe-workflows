@@ -712,7 +712,7 @@ jobs:
 
   build-export-tool:
     name: Build Export Tool
-    runs-on: ubuntu-latest
+    runs-on: ubuntu_8_core
 
     steps:
       - name: Set environment variables
