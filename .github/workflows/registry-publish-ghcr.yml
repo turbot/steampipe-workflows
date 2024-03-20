@@ -37,9 +37,12 @@ jobs:
         run: |
           test -f .goreleaser.yml
 
-      - name: Get latest trimmed version tag
+      - name: Get latest version tag
         run: |-
           echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Get latest trimmed version tag
+        run: |-
           echo $VERSION
           trim=${VERSION#"v"}
           echo $trim
