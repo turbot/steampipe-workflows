@@ -134,7 +134,7 @@ jobs:
                     --arg title "$PLUGIN_NAME" \
                     --arg desc "$ORG" \
                     --arg version "$VERSION" \
-                    --arg timestamp "$(date +%FT%T%z)" \
+                    --arg timestamp "$(date +%FT%T%z | sed 's/\([0-9][0-9]\)\([0-9][0-9]\)$/\1:\2/')" \
                     --arg repo "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
                     --arg commit "$GITHUB_SHA" \
                     --arg vendor "Turbot HQ, Inc." \
