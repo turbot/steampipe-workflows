@@ -834,7 +834,9 @@ jobs:
       - name: Download and install Postgres FDW
         continue-on-error: true
         run: |-
-          echo | sudo -E TERM=xterm bash <(curl -fsSL https://steampipe.io/install/postgres.sh) aws latest 2>/dev/null
+          curl -fsSL -o install_postgres_fdw.sh https://steampipe.io/install/postgres.sh
+          sudo -E TERM=xterm bash install_postgres_fdw.sh aws latest
+          rm -f install_postgres_fdw.sh
 
       - name: Download and install SQLite Extension
         continue-on-error: true
