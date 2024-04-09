@@ -819,14 +819,41 @@ jobs:
             ${{ steps.download_export_linux_amd64.outputs.download-path }}/steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
             ${{ steps.download_export_linux_arm64.outputs.download-path }}/steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
-  check-installation:
-    name: Check Installation
+  check-installation-linux:
+    name: Check Installation(Linux)
     runs-on: ubuntu-latest
     needs: build-draft-release
     steps:
       - name: Install PostgreSQL14 Dev
         run: |-
           sudo apt-get -y install postgresql-server-dev-14
+
+      - name: Check pg_config version
+        run: pg_config --version
+
+      - name: Download and install Postgres FDW
+        run: |-
+          curl -fsSL -o install_postgres_fdw.sh https://steampipe.io/install/postgres.sh
+          echo | sudo -E TERM=xterm bash install_postgres_fdw.sh aws latest 2>/dev/null
+          rm -f install_postgres_fdw.sh
+
+      - name: Download and install SQLite Extension
+        run: |-
+          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) aws latest 2>/dev/null
+
+      - name: Download and install Export Tool
+        run: |-
+          curl -fsSL -o install_export.sh https://steampipe.io/install/export.sh
+          echo | sudo -E TERM=xterm bash install_export.sh aws latest 2>/dev/null
+          rm -f install_export.sh
+
+  check-installation-darwin:
+    name: Check Installation(Darwin)
+    runs-on: macos-latest
+    needs: build-draft-release
+    steps:
+      - name: Install PostgreSQL14
+        run: brew install postgresql@14
 
       - name: Check pg_config version
         run: pg_config --version
