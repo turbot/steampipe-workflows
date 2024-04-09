@@ -831,17 +831,14 @@ jobs:
       - name: Check pg_config version
         run: pg_config --version
 
-      - name: Set TERM environment variable
-        run: echo 'export TERM=xterm' >> $GITHUB_ENV
-
       - name: Download and install Postgres FDW
         run: |-
-          echo | bash <(curl -fsSL https://steampipe.io/install/postgres.sh) aws latest
+          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/postgres.sh) aws latest 2>/dev/null
 
       - name: Download and install SQLite Extension
         run: |-
-          echo | bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) aws latest
+          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) aws latest 2>/dev/null
 
       - name: Download and install Export Tool
         run: |-
-          echo | bash <(curl -fsSL https://steampipe.io/install/export.sh) aws latest
+          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/export.sh) aws latest 2>/dev/null
