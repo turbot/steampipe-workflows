@@ -831,9 +831,9 @@ jobs:
       - name: Check pg_config version
         run: pg_config --version
 
-      - name: Download and install Postgres FDW
-        run: |-
-          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/postgres.sh) aws latest 2>/dev/null
+      # - name: Download and install Postgres FDW
+      #   run: |-
+      #     echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/postgres.sh) aws latest 2>/dev/null
 
       - name: Download and install SQLite Extension
         run: |-
