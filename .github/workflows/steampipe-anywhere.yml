@@ -846,4 +846,6 @@ jobs:
       - name: Download and install Export Tool
         continue-on-error: true
         run: |-
-          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/export.sh) aws latest 2>/dev/null
+          curl -fsSL -o install_export.sh https://steampipe.io/install/export.sh
+          echo | sudo -E TERM=xterm bash install_export.sh aws latest 2>/dev/null
+          rm -f install_export.sh
