@@ -835,15 +835,15 @@ jobs:
         continue-on-error: true
         run: |-
           curl -fsSL -o install_postgres_fdw.sh https://steampipe.io/install/postgres.sh
-          sudo -E TERM=xterm bash install_postgres_fdw.sh aws latest 2>/dev/null
+          echo | sudo -E TERM=xterm bash install_postgres_fdw.sh aws latest 2>/dev/null
           rm -f install_postgres_fdw.sh
 
       - name: Download and install SQLite Extension
         continue-on-error: true
         run: |-
-          echo | sudo -E TERM=xterm bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) aws latest 2>/dev/null
+          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) aws latest 2>/dev/null
 
       - name: Download and install Export Tool
         continue-on-error: true
         run: |-
-          echo | sudo -E TERM=xterm bash <(curl -fsSL https://steampipe.io/install/export.sh) aws latest 2>/dev/null
+          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/export.sh) aws latest 2>/dev/null
