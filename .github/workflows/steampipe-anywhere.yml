@@ -835,7 +835,7 @@ jobs:
         continue-on-error: true
         run: |-
           curl -fsSL -o install_postgres_fdw.sh https://steampipe.io/install/postgres.sh
-          sudo -E TERM=xterm bash install_postgres_fdw.sh aws latest
+          sudo -E TERM=xterm bash install_postgres_fdw.sh aws latest 2>/dev/null
           rm -f install_postgres_fdw.sh
 
       - name: Download and install SQLite Extension
