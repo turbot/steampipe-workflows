@@ -853,6 +853,7 @@ jobs:
           sudo -u postgres psql -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
           sudo -u postgres psql -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
           sudo -u postgres psql -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
+          sudo -u postgres psql -c "SELECT * FROM pg_extension;"
 
       - name: Install SQLite3
         run: sudo apt-get install -y sqlite3
@@ -863,7 +864,7 @@ jobs:
 
       - name: Test SQLite Extension
         run: |
-          echo ".load ./steampipe_sqlite_extension_${{ env.PLUGIN_NAME }}.so" | sqlite3
+          echo ".load ./steampipe_sqlite_extension_${{ env.PLUGIN_NAME }}" | sqlite3
 
       - name: Download and install Export Tool
         run: |-
