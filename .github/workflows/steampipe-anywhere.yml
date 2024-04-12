@@ -909,12 +909,12 @@ jobs:
 
       - name: Download and install SQLite Extension
         run: |-
-          echo | bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) ${{ env.PLUGIN_NAME }} latest 2>/dev/null
 
       - name: Download and install Export Tool
         run: |-
           curl -fsSL -o install_export.sh https://steampipe.io/install/export.sh
-          echo | bash install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          echo | sudo -E TERM=xterm bash install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
           rm -f install_export.sh
 
       - name: Test Export Tool
