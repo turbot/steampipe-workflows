@@ -849,10 +849,6 @@ jobs:
       - name: Configure PostgreSQL
         run: |-
           sudo service postgresql start
-          sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
-          sudo -u postgres psql -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
-          sudo -u postgres psql -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
-          sudo -u postgres psql -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
 
       - name: Download and install SQLite Extension
         run: |-
