@@ -849,24 +849,48 @@ jobs:
       - name: Configure PostgreSQL
         run: |-
           sudo service postgresql start
+          sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          sudo -u postgres psql -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          sudo -u postgres psql -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
+          sudo -u postgres psql -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
+
+      - name: Install SQLite3
+        run: sudo apt-get install -y sqlite3
 
       - name: Download and install SQLite Extension
         run: |-
           echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+
+      - name: Test SQLite Extension
+        run: |
+          echo ".load ./steampipe_sqlite_extension_${{ env.PLUGIN_NAME }}.so" | sqlite3
 
       - name: Download and install Export Tool
         run: |-
           curl -fsSL -o install_export.sh https://steampipe.io/install/export.sh
           echo | sudo -E TERM=xterm bash install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
           rm -f install_export.sh
+      
+      - name: Test Export Tool
+        run: |
+          steampipe_export_${{ env.PLUGIN_NAME }} --help
 
   check-installation-darwin:
     name: Check Installation(Darwin)
     runs-on: macos-latest
     needs: build-draft-release
     steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
       - name: Install PostgreSQL14
         run: brew install postgresql@14
+
+      - name: Start PostgreSQL service
+        run: brew services start postgresql@14
 
       - name: Check pg_config version
         run: pg_config --version
@@ -877,6 +901,16 @@ jobs:
           echo | sudo -E TERM=xterm bash install_postgres_fdw.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
           rm -f install_postgres_fdw.sh
 
+      - name: Configure PostgreSQL
+        run: |-
+          psql -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          psql -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          psql -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
+          psql -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
+
+      - name: Install SQLite3
+        run: brew install sqlite3
+
       - name: Download and install SQLite Extension
         run: |-
           echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) ${{ env.PLUGIN_NAME }} latest 2>/dev/null
@@ -886,3 +920,7 @@ jobs:
           curl -fsSL -o install_export.sh https://steampipe.io/install/export.sh
           echo | sudo -E TERM=xterm bash install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
           rm -f install_export.sh
+
+      - name: Test Export Tool
+        run: |
+          steampipe_export_${{ env.PLUGIN_NAME }} --help
