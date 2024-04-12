@@ -896,7 +896,7 @@ jobs:
       - name: Download and install Postgres FDW
         run: |-
           curl -fsSL -o install_postgres_fdw.sh https://steampipe.io/install/postgres.sh
-          echo | bash install_postgres_fdw.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          echo | sudo -E TERM=xterm bash install_postgres_fdw.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
           rm -f install_postgres_fdw.sh
 
       - name: Configure PostgreSQL
