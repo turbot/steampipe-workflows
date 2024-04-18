@@ -636,10 +636,8 @@ jobs:
           go mod tidy
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5
-        with:
-          version: latest
-          args: release --snapshot --skip-publish --rm-dist
+        run: |
+          ./scripts/release.sh
 
       - name: Copy the gzipped binaries from dist
         run: |-
