@@ -635,6 +635,11 @@ jobs:
           ls -ltr
           go mod tidy
 
+      - name: Install GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          install-only: true
+
       - name: Run GoReleaser
         run: |
           ./scripts/release.sh
