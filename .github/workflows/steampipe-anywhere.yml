@@ -8,8 +8,34 @@ on:
         required: true
 
   workflow_call:
+    inputs:
+      version:
+        required: true
+        description: "Version tag to use"
+        type: "string"
 
 jobs:
+  get-version:
+    name: Get Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
+      - name: Version tag
+        run: echo "Using version ${{ inputs.version }}"
+
+      - name: Setup GoLang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+
+      - name: Fetch plugin module
+        run: go get github.com/turbot/steampipe-plugin-${{ env.PLUGIN_NAME }}@${{ inputs.version }}
+
   build-postgres-14-fdw-linux-amd64:
     name: Build Postgres 14 FDW for Linux - AMD64
     runs-on: ubuntu-20.04
