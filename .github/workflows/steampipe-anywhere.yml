@@ -1045,7 +1045,21 @@ jobs:
       
       - name: Test Export Tool
         run: |
-          steampipe_export_${{ env.PLUGIN_NAME }} --help
+          # Define the expected output based on environment variables and inputs
+          EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${{ inputs.version }}"
+          echo "Expected version output: $EXPECTED_OUTPUT"
+          
+          # Execute the command to get the actual version output
+          COMMAND_OUTPUT=$(steampipe_export_${{ env.PLUGIN_NAME }} --version)
+          echo "Actual command output version: $COMMAND_OUTPUT"
+          
+          # Compare the actual output with the expected output
+          if [ "$COMMAND_OUTPUT" == "$EXPECTED_OUTPUT" ]; then
+            echo "Version matches."
+          else
+            echo "Version does not match. Expected was $EXPECTED_OUTPUT, but got $COMMAND_OUTPUT."
+            exit 1  # This exits the step with an error status, failing the job
+          fi
 
   check-installation-darwin:
     name: Check Installation(Darwin)
@@ -1093,4 +1107,18 @@ jobs:
 
       - name: Test Export Tool
         run: |
-          steampipe_export_${{ env.PLUGIN_NAME }} --help
+          # Define the expected output based on environment variables and inputs
+          EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${{ inputs.version }}"
+          echo "Expected version output: $EXPECTED_OUTPUT"
+          
+          # Execute the command to get the actual version output
+          COMMAND_OUTPUT=$(steampipe_export_${{ env.PLUGIN_NAME }} --version)
+          echo "Actual command output version: $COMMAND_OUTPUT"
+          
+          # Compare the actual output with the expected output
+          if [ "$COMMAND_OUTPUT" == "$EXPECTED_OUTPUT" ]; then
+            echo "Version matches."
+          else
+            echo "Version does not match. Expected was $EXPECTED_OUTPUT, but got $COMMAND_OUTPUT."
+            exit 1  # This exits the step with an error status, failing the job
+          fi
