@@ -10,8 +10,38 @@ on:
   workflow_call:
 
 jobs:
+  get-version:
+    name: Get Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out steampipe-export
+        uses: actions/checkout@v2
+        with:
+          repository: "turbot/steampipe-export"
+          ref: main
+
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
+      - name: Get latest version tag
+        run: |-
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
+
+      - name: Setup GoLang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+
+      - name: Fetch plugin module
+        run: go get github.com/turbot/steampipe-plugin-${{ env.PLUGIN_NAME }}@$VERSION
+
   build-postgres-14-fdw-linux-amd64:
     name: Build Postgres 14 FDW for Linux - AMD64
+    needs: get-version
     runs-on: ubuntu-20.04
 
     steps:
@@ -85,6 +115,7 @@ jobs:
 
   build-postgres-14-fdw-linux-arm64:
     name: Build Postgres 14 FDW for Linux - ARM64
+    needs: get-version
     runs-on: 
       group: steampipe-darwin-arm-runners
 
@@ -120,6 +151,7 @@ jobs:
 
   build-postgres-14-fdw-osx-amd64:
     name: Build Postgres 14 FDW for Darwin - AMD64
+    needs: get-version
     runs-on: macos-latest
     steps:
       - name: Set environment variables
@@ -198,6 +230,7 @@ jobs:
 
   build-postgres-14-fdw-osx-arm64:
     name: Build Postgres 14 FDW for Darwin - ARM64
+    needs: get-version
     runs-on: macos-14
     steps:
       - name: Set environment variables
@@ -279,6 +312,7 @@ jobs:
 
   build-postgres-15-fdw-linux-amd64:
     name: Build Postgres 15 FDW for Linux - AMD64
+    needs: get-version
     runs-on: ubuntu-20.04
 
     steps:
@@ -352,6 +386,7 @@ jobs:
 
   build-postgres-15-fdw-linux-arm64:
     name: Build Postgres 15 FDW for Linux - ARM64
+    needs: get-version
     runs-on: 
       group: steampipe-darwin-arm-runners
 
@@ -387,6 +422,7 @@ jobs:
 
   build-postgres-15-fdw-osx-amd64:
     name: Build Postgres 15 FDW for Darwin - AMD64
+    needs: get-version
     runs-on: macos-latest
     steps:
       - name: Set environment variables
@@ -465,6 +501,7 @@ jobs:
 
   build-postgres-15-fdw-osx-arm64:
     name: Build Postgres 15 FDW for Darwin - ARM64
+    needs: get-version
     runs-on: macos-14
     steps:
       - name: Set environment variables
@@ -551,6 +588,7 @@ jobs:
 
   build-sqlite-extension-linux-amd64:
     name: Build SQLite Extension for Linux - AMD64
+    needs: get-version
     runs-on: ubuntu-latest
 
     steps:
@@ -591,6 +629,7 @@ jobs:
 
   build-sqlite-extension-linux-arm64:
     name: Build SQLite Extension for Linux - ARM64
+    needs: get-version
     runs-on: 
       group: steampipe-darwin-arm-runners
 
@@ -626,6 +665,7 @@ jobs:
 
   build-sqlite-extension-osx-amd64:
     name: Build SQLite Extension for Darwin - AMD64
+    needs: get-version
     runs-on: macos-latest
 
     steps:
@@ -666,6 +706,7 @@ jobs:
 
   build-sqlite-extension-osx-arm64:
     name: Build SQLite Extension for Darwin - ARM64
+    needs: get-version
     runs-on: macos-14
 
     steps:
@@ -709,6 +750,7 @@ jobs:
 
   build-export-tool:
     name: Build Export Tool
+    needs: get-version
     runs-on: ubuntu-latest
 
     steps:
@@ -718,10 +760,10 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
-      - name: Check out steampipe-table-dump
+      - name: Check out steampipe-export
         uses: actions/checkout@v2
         with:
-          repository: "turbot/steampipe-table-dump"
+          repository: "turbot/steampipe-export"
           ref: main
 
       - name: Setup GoLang
@@ -729,7 +771,7 @@ jobs:
         with:
           go-version: 1.21
 
-      - name: Build steampipe-table-dump
+      - name: Build steampipe-export
         run: |
           pwd
           ls -ltr
@@ -737,11 +779,14 @@ jobs:
           ls -ltr
           go mod tidy
 
-      - name: Run GoReleaser
+      - name: Install GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
-          version: latest
-          args: release --snapshot --skip-publish --rm-dist
+          install-only: true
+
+      - name: Run GoReleaser
+        run: |
+          ./scripts/release.sh
 
       - name: Copy the gzipped binaries from dist
         run: |-
@@ -956,6 +1001,11 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
+      - name: Get latest version tag
+        run: |-
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
+
       - name: Install PostgreSQL14 Dev
         run: |-
           sudo apt-get -y install postgresql-server-dev-14
@@ -997,7 +1047,21 @@ jobs:
       
       - name: Test Export Tool
         run: |
-          steampipe_export_${{ env.PLUGIN_NAME }} --help
+          # Define the expected output based on environment variables and inputs
+          EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${VERSION}"
+          echo "Expected version output: $EXPECTED_OUTPUT"
+          
+          # Execute the command to get the actual version output
+          COMMAND_OUTPUT=$(steampipe_export_${{ env.PLUGIN_NAME }} --version)
+          echo "Actual command output version: $COMMAND_OUTPUT"
+          
+          # Compare the actual output with the expected output
+          if [ "$COMMAND_OUTPUT" == "$EXPECTED_OUTPUT" ]; then
+            echo "Version matches."
+          else
+            echo "Version does not match. Expected was $EXPECTED_OUTPUT, but got $COMMAND_OUTPUT."
+            exit 1  # This exits the step with an error status, failing the job
+          fi
 
   check-installation-darwin:
     name: Check Installation(Darwin)
@@ -1009,6 +1073,11 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
+      - name: Get latest version tag
+        run: |-
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
 
       - name: Install PostgreSQL14
         run: brew install postgresql@14
@@ -1045,4 +1114,18 @@ jobs:
 
       - name: Test Export Tool
         run: |
-          steampipe_export_${{ env.PLUGIN_NAME }} --help
+          # Define the expected output based on environment variables and inputs
+          EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${VERSION}"
+          echo "Expected version output: $EXPECTED_OUTPUT"
+          
+          # Execute the command to get the actual version output
+          COMMAND_OUTPUT=$(steampipe_export_${{ env.PLUGIN_NAME }} --version)
+          echo "Actual command output version: $COMMAND_OUTPUT"
+          
+          # Compare the actual output with the expected output
+          if [ "$COMMAND_OUTPUT" == "$EXPECTED_OUTPUT" ]; then
+            echo "Version matches."
+          else
+            echo "Version does not match. Expected was $EXPECTED_OUTPUT, but got $COMMAND_OUTPUT."
+            exit 1  # This exits the step with an error status, failing the job
+          fi
