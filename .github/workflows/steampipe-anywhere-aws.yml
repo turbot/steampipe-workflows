@@ -782,11 +782,14 @@ jobs:
           ls -ltr
           go mod tidy
 
-      - name: Run GoReleaser
+      - name: Install GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
-          version: latest
-          args: release --snapshot --skip-publish --rm-dist
+          install-only: true
+  
+      - name: Run GoReleaser
+        run: |
+          ./scripts/release.sh
 
       - name: Copy the gzipped binaries from dist
         run: |-
