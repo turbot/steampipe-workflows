@@ -766,10 +766,10 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
-      - name: Check out steampipe-table-dump
+      - name: Check out steampipe-export
         uses: actions/checkout@v2
         with:
-          repository: "turbot/steampipe-table-dump"
+          repository: "turbot/steampipe-export"
           ref: main
 
       - name: Setup GoLang
@@ -777,7 +777,7 @@ jobs:
         with:
           go-version: 1.21
 
-      - name: Build steampipe-table-dump
+      - name: Build steampipe-export
         run: |
           pwd
           ls -ltr
