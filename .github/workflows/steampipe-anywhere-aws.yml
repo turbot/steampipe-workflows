@@ -8,11 +8,6 @@ on:
         required: true
 
   workflow_call:
-    inputs:
-      version:
-        required: true
-        description: "Version tag to use"
-        type: "string"
         
 jobs:
   get-version:
@@ -31,8 +26,10 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
-      - name: Version tag
-        run: echo "Using version ${{ inputs.version }}"
+      - name: Get latest version tag
+        run: |-
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -40,7 +37,7 @@ jobs:
           go-version: 1.21
 
       - name: Fetch plugin module
-        run: go get github.com/turbot/steampipe-plugin-${{ env.PLUGIN_NAME }}@${{ inputs.version }}
+        run: go get github.com/turbot/steampipe-plugin-${{ env.PLUGIN_NAME }}@$VERSION
 
   build-postgres-14-fdw-linux-amd64:
     name: Build Postgres 14 FDW for Linux - AMD64
@@ -850,14 +847,6 @@ jobs:
       # Export
       - build-export-tool
     steps:
-      - name: Set up job environment
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-          else
-            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-          fi
-
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -1012,6 +1001,11 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
+      - name: Get latest version tag
+        run: |-
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
+
       - name: Install PostgreSQL14 Dev
         run: |-
           sudo apt-get -y install postgresql-server-dev-14
@@ -1055,7 +1049,7 @@ jobs:
       - name: Test Export Tool
         run: |
           # Define the expected output based on environment variables and inputs
-          EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${{ inputs.version }}"
+          EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${VERSION}"
           echo "Expected version output: $EXPECTED_OUTPUT"
           
           # Execute the command to get the actual version output
@@ -1080,6 +1074,11 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
+      - name: Get latest version tag
+        run: |-
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
 
       - name: Install PostgreSQL14
         run: brew install postgresql@14
@@ -1118,7 +1117,7 @@ jobs:
       - name: Test Export Tool
         run: |
           # Define the expected output based on environment variables and inputs
-          EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${{ inputs.version }}"
+          EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${VERSION}"
           echo "Expected version output: $EXPECTED_OUTPUT"
           
           # Execute the command to get the actual version output
