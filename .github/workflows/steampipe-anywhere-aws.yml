@@ -31,6 +31,15 @@ jobs:
           echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
           echo "Version: ${VERSION}"
 
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
+
       - name: Setup GoLang
         uses: actions/setup-go@v4
         with:
@@ -962,6 +971,15 @@ jobs:
           trim=${VERSION#"v"}
           echo $trim
           echo "VERSION=${trim}" >> $GITHUB_ENV
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
           
       - name: Create a draft release
         uses: softprops/action-gh-release@v1
@@ -1007,6 +1025,15 @@ jobs:
       - name: Get latest version tag
         run: |-
           echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
           echo "Version: ${VERSION}"
 
       - name: Install PostgreSQL14 Dev
@@ -1081,6 +1108,15 @@ jobs:
       - name: Get latest version tag
         run: |-
           echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
           echo "Version: ${VERSION}"
 
       - name: Install PostgreSQL14
