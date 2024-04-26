@@ -45,6 +45,9 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -120,6 +123,9 @@ jobs:
       group: steampipe-darwin-arm-runners
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -152,8 +158,11 @@ jobs:
   build-postgres-14-fdw-osx-amd64:
     name: Build Postgres 14 FDW for Darwin - AMD64
     needs: get-version
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -233,6 +242,9 @@ jobs:
     needs: get-version
     runs-on: macos-14
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -316,6 +328,9 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -391,6 +406,9 @@ jobs:
       group: steampipe-darwin-arm-runners
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -423,8 +441,11 @@ jobs:
   build-postgres-15-fdw-osx-amd64:
     name: Build Postgres 15 FDW for Darwin - AMD64
     needs: get-version
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -510,6 +531,9 @@ jobs:
     needs: get-version
     runs-on: macos-14
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -598,6 +622,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -640,6 +667,9 @@ jobs:
       group: steampipe-darwin-arm-runners
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -672,9 +702,12 @@ jobs:
   build-sqlite-extension-osx-amd64:
     name: Build SQLite Extension for Darwin - AMD64
     needs: get-version
-    runs-on: macos-latest
+    runs-on: macos-13
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -716,6 +749,9 @@ jobs:
     runs-on: macos-14
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -1001,6 +1037,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-draft-release
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -1074,6 +1113,9 @@ jobs:
     runs-on: macos-latest
     needs: build-draft-release
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
