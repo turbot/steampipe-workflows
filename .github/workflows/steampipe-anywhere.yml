@@ -742,7 +742,7 @@ jobs:
     name: Build SQLite Extension for Linux - ARM64
     needs: get-version
     runs-on: 
-      group: steampipe-darwin-arm-runners
+      group: linux-arm64-runners
 
     steps:
       - name: Check architecture
