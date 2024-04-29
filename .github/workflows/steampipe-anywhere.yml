@@ -147,8 +147,8 @@ jobs:
         run: |-
           sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          sudo env ACCEPT_EULA=Y apt-get update
-          sudo env ACCEPT_EULA=Y apt-get upgrade
+          sudo env ACCEPT_EULA=Y apt-get update -y
+          sudo env ACCEPT_EULA=Y apt-get upgrade -y
 
       - name: Install PostgreSQL14 Dev
         run: |-
@@ -469,8 +469,8 @@ jobs:
         run: |-
           sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          sudo env ACCEPT_EULA=Y apt-get update
-          sudo env ACCEPT_EULA=Y apt-get upgrade
+          sudo env ACCEPT_EULA=Y apt-get update -y
+          sudo env ACCEPT_EULA=Y apt-get upgrade -y
 
       - name: Install PostgreSQL15 Dev
         run: |-
@@ -764,6 +764,9 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: 1.21
+
+      - name: Install make
+        run: sudo apt-get install make -y
 
       - name: Build steampipe-sqlite-extension
         run: |
