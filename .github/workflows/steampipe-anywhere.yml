@@ -150,6 +150,9 @@ jobs:
           sudo env ACCEPT_EULA=Y apt-get update -y
           sudo env ACCEPT_EULA=Y apt-get upgrade -y
 
+      - name: Install make
+        run: sudo apt-get install make -y
+
       - name: Install PostgreSQL14 Dev
         run: |-
           sudo apt-get -y install postgresql-server-dev-14
@@ -471,6 +474,9 @@ jobs:
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
           sudo env ACCEPT_EULA=Y apt-get update -y
           sudo env ACCEPT_EULA=Y apt-get upgrade -y
+
+      - name: Install make
+        run: sudo apt-get install make -y
 
       - name: Install PostgreSQL15 Dev
         run: |-
