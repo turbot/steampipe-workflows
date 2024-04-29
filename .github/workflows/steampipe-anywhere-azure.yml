@@ -50,10 +50,14 @@ jobs:
         
   build-postgres-14-fdw-linux-amd64:
     name: Build Postgres 14 FDW for Linux - AMD64
+    needs: get-version
     runs-on:
       group: large-runners
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -124,10 +128,14 @@ jobs:
 
   build-postgres-14-fdw-linux-arm64:
     name: Build Postgres 14 FDW for Linux - ARM64
+    needs: get-version
     runs-on: 
       group: steampipe-darwin-arm-runners
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -160,8 +168,12 @@ jobs:
 
   build-postgres-14-fdw-osx-amd64:
     name: Build Postgres 14 FDW for Darwin - AMD64
-    runs-on: macos-latest
+    needs: get-version
+    runs-on: macos-13
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -238,8 +250,12 @@ jobs:
 
   build-postgres-14-fdw-osx-arm64:
     name: Build Postgres 14 FDW for Darwin - ARM64
+    needs: get-version
     runs-on: macos-14
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -319,10 +335,14 @@ jobs:
 
   build-postgres-15-fdw-linux-amd64:
     name: Build Postgres 15 FDW for Linux - AMD64
+    needs: get-version
     runs-on:
       group: large-runners
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -393,10 +413,14 @@ jobs:
 
   build-postgres-15-fdw-linux-arm64:
     name: Build Postgres 15 FDW for Linux - ARM64
+    needs: get-version
     runs-on: 
       group: steampipe-darwin-arm-runners
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -429,8 +453,12 @@ jobs:
 
   build-postgres-15-fdw-osx-amd64:
     name: Build Postgres 15 FDW for Darwin - AMD64
-    runs-on: macos-latest
+    needs: get-version
+    runs-on: macos-13
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -440,13 +468,20 @@ jobs:
       - name: Install PostgreSQL@15
         run: brew install postgresql@15
 
+      - name: Get the installation directory of the postgresql@15 formula
+        run: brew --prefix postgresql@15
+
+      - name: Configure PATH for PostgreSQL
+        run: echo $(brew --prefix postgresql@15)/bin >> $GITHUB_PATH
+        
       - name: PGConfig
         run: |-
           which pg_config
+          pg_config
           ls -l $(which pg_config)
           PGXS=$(pg_config --pgxs)
-          SERVER_LIB=$(pg_config --includedir)/server
-          INTERNAL_LIB=$(pg_config --includedir)/internal
+          SERVER_LIB=$(pg_config --includedir)/postgresql/server
+          INTERNAL_LIB=$(pg_config --includedir)/postgresql/internal
 
           echo $PGXS
           echo $SERVER_LIB
@@ -474,11 +509,10 @@ jobs:
           which pg_config
           pg_config --version
 
-          export PATH=$(pg_config --bindir):$PATH
           export PGXS=$(pg_config --pgxs)
 
-          export SERVER_LIB=$(pg_config --includedir)/server
-          export INTERNAL_LIB=$(pg_config --includedir)/internal
+          export SERVER_LIB=$(pg_config --includedir)/postgresql/server
+          export INTERNAL_LIB=$(pg_config --includedir)/postgresql/internal
 
           export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
           export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
@@ -507,8 +541,12 @@ jobs:
 
   build-postgres-15-fdw-osx-arm64:
     name: Build Postgres 15 FDW for Darwin - ARM64
+    needs: get-version
     runs-on: macos-14
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -593,10 +631,14 @@ jobs:
 
   build-sqlite-extension-linux-amd64:
     name: Build SQLite Extension for Linux - AMD64
+    needs: get-version
     runs-on:
       group: large-runners
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -634,10 +676,14 @@ jobs:
 
   build-sqlite-extension-linux-arm64:
     name: Build SQLite Extension for Linux - ARM64
+    needs: get-version
     runs-on: 
       group: steampipe-darwin-arm-runners
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -670,9 +716,13 @@ jobs:
 
   build-sqlite-extension-osx-amd64:
     name: Build SQLite Extension for Darwin - AMD64
-    runs-on: macos-latest
+    needs: get-version
+    runs-on: macos-13
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -710,9 +760,13 @@ jobs:
 
   build-sqlite-extension-osx-arm64:
     name: Build SQLite Extension for Darwin - ARM64
+    needs: get-version
     runs-on: macos-14
 
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -753,6 +807,7 @@ jobs:
 
   build-export-tool:
     name: Build Export Tool
+    needs: get-version
     runs-on:
       group: large-runners
 
@@ -967,6 +1022,15 @@ jobs:
           trim=${VERSION#"v"}
           echo $trim
           echo "VERSION=${trim}" >> $GITHUB_ENV
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
           
       - name: Create a draft release
         uses: softprops/action-gh-release@v1
@@ -1003,11 +1067,28 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-draft-release
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
+      - name: Get latest version tag
+        run: |-
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
       - name: Install PostgreSQL14 Dev
         run: |-
@@ -1025,6 +1106,7 @@ jobs:
       - name: Test Postgres FDW
         run: |-
           sudo service postgresql start
+          sudo -u postgres psql -c "CREATE EXTENSION ltree;"
           sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
           sudo -u postgres psql -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
           sudo -u postgres psql -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
@@ -1050,18 +1132,120 @@ jobs:
       
       - name: Test Export Tool
         run: |
-          steampipe_export_${{ env.PLUGIN_NAME }} --help
+          # Define the expected output based on environment variables and inputs
+          EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${VERSION}"
+          echo "Expected version output: $EXPECTED_OUTPUT"
+          
+          # Execute the command to get the actual version output
+          COMMAND_OUTPUT=$(steampipe_export_${{ env.PLUGIN_NAME }} --version)
+          echo "Actual command output version: $COMMAND_OUTPUT"
+          
+          # Compare the actual output with the expected output
+          if [ "$COMMAND_OUTPUT" == "$EXPECTED_OUTPUT" ]; then
+            echo "Version matches."
+          else
+            echo "Version does not match. Expected was $EXPECTED_OUTPUT, but got $COMMAND_OUTPUT."
+            exit 1  # This exits the step with an error status, failing the job
+          fi
   
-  check-installation-darwin:
-    name: Check Installation(Darwin)
+  check-installation-darwin-arm64:
+    name: Check Installation(Darwin ARM64)
     runs-on: macos-latest
     needs: build-draft-release
     steps:
+      - name: Check architecture
+        run: uname -a
+
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
+      - name: Get latest version tag
+        run: |-
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
+
+      - name: Install PostgreSQL14
+        run: brew install postgresql@14
+
+      - name: Start PostgreSQL service
+        run: brew services start postgresql@14
+
+      - name: Check pg_config version
+        run: pg_config --version
+
+      - name: Download and install Postgres FDW
+        run: |-
+          curl -fsSL -o install_postgres_fdw.sh https://steampipe.io/install/postgres.sh
+          echo | sudo -E TERM=xterm bash install_postgres_fdw.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          rm -f install_postgres_fdw.sh
+
+      - name: Configure PostgreSQL
+        run: |-
+          psql -d postgres -c "CREATE EXTENSION ltree;"
+          psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "SELECT * FROM pg_extension;"
+
+      - name: Download and install SQLite Extension
+        run: |-
+          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+
+      - name: Download and install Export Tool
+        run: |-
+          curl -fsSL -o install_export.sh https://steampipe.io/install/export.sh
+          echo | sudo -E TERM=xterm bash install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          rm -f install_export.sh
+
+          - name: Test Export Tool
+          run: |
+            # Define the expected output based on environment variables and inputs
+            EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${VERSION}"
+            echo "Expected version output: $EXPECTED_OUTPUT"
+            
+            # Execute the command to get the actual version output
+            COMMAND_OUTPUT=$(steampipe_export_${{ env.PLUGIN_NAME }} --version)
+            echo "Actual command output version: $COMMAND_OUTPUT"
+            
+            # Compare the actual output with the expected output
+            if [ "$COMMAND_OUTPUT" == "$EXPECTED_OUTPUT" ]; then
+              echo "Version matches."
+            else
+              echo "Version does not match. Expected was $EXPECTED_OUTPUT, but got $COMMAND_OUTPUT."
+              exit 1  # This exits the step with an error status, failing the job
+            fi
+
+  check-installation-darwin-amd64:
+    name: Check Installation(Darwin AMD64)
+    runs-on: macos-13
+    needs: build-draft-release
+    steps:
+      - name: Check architecture
+        run: uname -a
+
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
+      - name: Get latest version tag
+        run: |-
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
 
       - name: Install PostgreSQL14
         run: brew install postgresql@14
@@ -1098,4 +1282,19 @@ jobs:
 
       - name: Test Export Tool
         run: |
-          steampipe_export_${{ env.PLUGIN_NAME }} --help
+          # Define the expected output based on environment variables and inputs
+          EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${VERSION}"
+          echo "Expected version output: $EXPECTED_OUTPUT"
+          
+          # Execute the command to get the actual version output
+          COMMAND_OUTPUT=$(steampipe_export_${{ env.PLUGIN_NAME }} --version)
+          echo "Actual command output version: $COMMAND_OUTPUT"
+          
+          # Compare the actual output with the expected output
+          if [ "$COMMAND_OUTPUT" == "$EXPECTED_OUTPUT" ]; then
+            echo "Version matches."
+          else
+            echo "Version does not match. Expected was $EXPECTED_OUTPUT, but got $COMMAND_OUTPUT."
+            exit 1  # This exits the step with an error status, failing the job
+          fi
+            
