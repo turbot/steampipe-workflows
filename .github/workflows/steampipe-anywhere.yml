@@ -778,6 +778,8 @@ jobs:
         run: |
           pwd
           ls -ltr
+          export GOARCH=arm64
+          export GOOS=linux
           make build plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
 
