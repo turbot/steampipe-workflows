@@ -120,7 +120,7 @@ jobs:
     name: Build Postgres 14 FDW for Linux - ARM64
     needs: get-version
     runs-on: 
-      group: linux-arm64-runners
+      group: steampipe-darwin-arm-runners
 
     steps:
       - name: Check architecture
@@ -131,61 +131,23 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
-    
-      - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@v2
+
+      - name: Check out steampipe-postgres-fdw-anywhere
+        uses: actions/checkout@v3
         with:
           repository: "turbot/steampipe-postgres-fdw"
           ref: main
 
-      - name: Setup GoLang
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.21
+      - name: Check docker images available in runner
+        run: docker images
 
-      - name: Setup apt-get
-        run: |-
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          sudo env ACCEPT_EULA=Y apt-get update
-          sudo env ACCEPT_EULA=Y apt-get upgrade
-
-      - name: Install PostgreSQL14 Dev
-        run: |-
-          sudo apt-get -y install postgresql-server-dev-14
-
-      - name: Find stuff and set env
-        run: |-
-
-          which pg_config
-          pg_config --version
-
-          export PATH=$(pg_config --bindir):$PATH
-          export PGXS=$(pg_config --pgxs)
-
-          export SERVER_LIB=$(pg_config --includedir)/14/server
-          export INTERNAL_LIB=$(pg_config --includedir)/internal
-
-          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-
-          export LDFLAGS=$(pg_config --ldflags)
-          export PG_LDFLAGS=$(pg_config --ldflags)
-
-          ls -la $SERVER_LIB
-          ls -la $INTERNAL_LIB
-
-      - name: Build steampipe-postgres-fdw-anywhere
+      - name: Run build script
         run: |
-          pwd
-          ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }}
-          ls -ltr
-
-      - name: Rename and zip the build-Linux folder
-        run: |-
-          mv build-Linux steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64
-          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64
+          chmod +x ./scripts/build-linux-arm-pg14.sh
+          bash ./scripts/build-linux-arm-pg14.sh ${{ env.PLUGIN_NAME }}
+      
+      - name: Check if binaries are available
+        run: ls -l $GITHUB_WORKSPACE
 
       - name: Save Linux Build Artifact - ARM64
         uses: actions/upload-artifact@v3
@@ -442,7 +404,7 @@ jobs:
     name: Build Postgres 15 FDW for Linux - ARM64
     needs: get-version
     runs-on: 
-      group: linux-arm64-runners
+      group: steampipe-darwin-arm-runners
 
     steps:
       - name: Check architecture
@@ -454,60 +416,22 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
-      - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@v2
+      - name: Check out steampipe-postgres-fdw-anywhere
+        uses: actions/checkout@v3
         with:
           repository: "turbot/steampipe-postgres-fdw"
           ref: main
 
-      - name: Setup GoLang
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.21
+      - name: Check docker images available in runner
+        run: docker images
 
-      - name: Setup apt-get
-        run: |-
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          sudo env ACCEPT_EULA=Y apt-get update
-          sudo env ACCEPT_EULA=Y apt-get upgrade
-
-      - name: Install PostgreSQL15 Dev
-        run: |-
-          sudo apt-get -y install postgresql-server-dev-15
-
-      - name: Find stuff and set env
-        run: |-
-
-          which pg_config
-          pg_config --version
-
-          export PATH=$(pg_config --bindir):$PATH
-          export PGXS=$(pg_config --pgxs)
-
-          export SERVER_LIB=$(pg_config --includedir)/15/server
-          export INTERNAL_LIB=$(pg_config --includedir)/internal
-
-          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-
-          export LDFLAGS=$(pg_config --ldflags)
-          export PG_LDFLAGS=$(pg_config --ldflags)
-
-          ls -la $SERVER_LIB
-          ls -la $INTERNAL_LIB
-
-      - name: Build steampipe-postgres-fdw-anywhere
+      - name: Run build script
         run: |
-          pwd
-          ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }}
-          ls -ltr
-
-      - name: Rename and zip the build-Linux folder
-        run: |-
-          mv build-Linux steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64
-          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64
+          chmod +x ./scripts/build-linux-arm-pg15.sh
+          bash ./scripts/build-linux-arm-pg15.sh ${{ env.PLUGIN_NAME }}
+      
+      - name: Check if binaries are available
+        run: ls -l $GITHUB_WORKSPACE
 
       - name: Save Linux Build Artifact - ARM64
         uses: actions/upload-artifact@v3
@@ -742,7 +666,7 @@ jobs:
     name: Build SQLite Extension for Linux - ARM64
     needs: get-version
     runs-on: 
-      group: linux-arm64-runners
+      group: steampipe-darwin-arm-runners
 
     steps:
       - name: Check architecture
@@ -760,21 +684,16 @@ jobs:
           repository: "turbot/steampipe-sqlite"
           ref: main
 
-      - name: Setup GoLang
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.21
+      - name: Check docker images available in runner
+        run: docker images
 
-      - name: Build steampipe-sqlite-extension
+      - name: Run build script
         run: |
-          pwd
-          ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }}
-          ls -ltr
-
-      - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
-        run: |-
-          tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
+          chmod +x ./scripts/build-linux-arm-sqlite.sh
+          bash ./scripts/build-linux-arm-sqlite.sh ${{ env.PLUGIN_NAME }}
+      
+      - name: Check if binaries are available
+        run: ls -l $GITHUB_WORKSPACE
 
       - name: Save Linux Build Artifact - ARM64
         uses: actions/upload-artifact@v3
@@ -1151,6 +1070,7 @@ jobs:
       - name: Test Postgres FDW
         run: |-
           sudo service postgresql start
+          sudo -u postgres psql -c "CREATE EXTENSION ltree;"
           sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
           sudo -u postgres psql -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
           sudo -u postgres psql -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
@@ -1228,6 +1148,7 @@ jobs:
 
       - name: Configure PostgreSQL
         run: |-
+          sudo -u postgres psql -c "CREATE EXTENSION ltree;"
           psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
@@ -1298,6 +1219,7 @@ jobs:
 
       - name: Configure PostgreSQL
         run: |-
+          sudo -u postgres psql -c "CREATE EXTENSION ltree;"
           psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
