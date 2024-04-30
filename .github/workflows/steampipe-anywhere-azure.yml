@@ -968,13 +968,14 @@ jobs:
         with:
           go-version: 1.21
 
-      - name: Build steampipe-table-dump
+      - name: Build steampipe-export
         run: |
           pwd
           ls -ltr
           make build plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
           go mod tidy
+
       - name: Increase swapfile
         run: |
           sudo swapoff -a
@@ -983,11 +984,15 @@ jobs:
           sudo mkswap /swapfile
           sudo swapon /swapfile
           sudo swapon --show
-      - name: Run GoReleaser
+
+      - name: Install GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
-          version: latest
-          args: release --snapshot --skip-publish --rm-dist
+          install-only: true
+  
+      - name: Run GoReleaser
+        run: |
+          ./scripts/release.sh
 
       - name: Copy the gzipped binaries from dist
         run: |-
