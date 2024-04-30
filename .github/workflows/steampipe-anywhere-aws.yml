@@ -1377,6 +1377,15 @@ jobs:
           echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
           echo "Version: ${VERSION}"
 
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
+
       - name: Install PostgreSQL14
         run: brew install postgresql@14
 
