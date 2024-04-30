@@ -141,8 +141,8 @@ jobs:
           sudo mkdir -p /etc/apt/sources.list.d \
             && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
             && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
-            && sudo echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list \
-            && sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list \
+            && sudo bash -c 'echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list' \
+            && sudo bash -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list' \
             && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
           sudo apt-get update
@@ -479,8 +479,8 @@ jobs:
           sudo mkdir -p /etc/apt/sources.list.d \
             && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
             && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
-            && sudo echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list \
-            && sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list \
+            && sudo bash -c 'echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list' \
+            && sudo bash -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list' \
             && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
           sudo apt-get update
@@ -795,8 +795,8 @@ jobs:
           sudo mkdir -p /etc/apt/sources.list.d \
             && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
             && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
-            && sudo echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list \
-            && sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list \
+            && sudo bash -c 'echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list' \
+            && sudo bash -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list' \
             && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
           sudo apt-get update
