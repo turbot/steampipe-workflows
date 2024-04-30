@@ -1287,7 +1287,7 @@ jobs:
 
       - name: Configure PostgreSQL
         run: |-
-          sudo -u postgres psql -c "CREATE EXTENSION ltree;"
+          sudo -d postgres -c "CREATE EXTENSION ltree;"
           psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
@@ -1358,7 +1358,7 @@ jobs:
 
       - name: Configure PostgreSQL
         run: |-
-          sudo -u postgres psql -c "CREATE EXTENSION ltree;"
+          sudo -d postgres -c "CREATE EXTENSION ltree;"
           psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
