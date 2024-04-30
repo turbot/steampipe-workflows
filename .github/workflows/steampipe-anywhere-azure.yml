@@ -130,7 +130,7 @@ jobs:
     name: Build Postgres 14 FDW for Linux - ARM64
     needs: get-version
     runs-on: 
-      group: steampipe-darwin-arm-runners
+      group: linux-arm64-runners
 
     steps:
       - name: Check architecture
@@ -142,24 +142,78 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
-      - name: Check out steampipe-postgres-fdw-anywhere
+      - name: Setup # this is required because the Linux ARM runners do not have the required packages installed
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          export DEBCONF_NONINTERACTIVE_SEEN=true
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends apt-transport-https dirmngr gnupg curl ca-certificates
+          sudo mkdir -p /etc/apt/sources.list.d \
+            && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
+            && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
+            && sudo bash -c 'echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list' \
+            && sudo bash -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list' \
+            && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends golang-1.21 \
+            postgresql-14 postgresql-server-dev-14 libpq-dev wget make build-essential \
+            libgcc-7-dev \
+            locales \
+            tzdata \
+            git \
+            && sudo rm -rf \
+            /var/lib/apt/lists/* \
+            /var/cache/debconf \
+            /tmp/* \
+            && sudo apt-get clean
+
+          sudo ln -s /usr/lib/go-1.21/bin/go /usr/bin/go
+          sudo locale-gen en_US.UTF-8
+          export LANG=en_US.UTF-8
+          export LC_ALL=en_US.UTF-8
+
+      - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v3
         with:
           repository: "turbot/steampipe-postgres-fdw"
           ref: main
 
-      - name: Check docker images available in runner
-        run: docker images
+      - name: Find path and set env variables
+        run: |-
 
-      - name: Run build script
+          ls -l /usr/bin/pg_config
+          export PATH=$PATH:/usr/bin
+          pg_config --version
+
+          export PATH=$(pg_config --bindir):$PATH
+          export PGXS=$(pg_config --pgxs)
+
+          export SERVER_LIB=$(pg_config --includedir)/14/server
+          export INTERNAL_LIB=$(pg_config --includedir)/internal
+
+          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+
+          export LDFLAGS=$(pg_config --ldflags)
+          export PG_LDFLAGS=$(pg_config --ldflags)
+
+          ls -la $SERVER_LIB
+          ls -la $INTERNAL_LIB
+
+      - name: Build steampipe-postgres-fdw-anywhere
         run: |
-          chmod +x ./scripts/build-linux-arm-pg14.sh
-          bash ./scripts/build-linux-arm-pg14.sh ${{ env.PLUGIN_NAME }}
-      
-      - name: Check if binaries are available
-        run: ls -l $GITHUB_WORKSPACE
+          pwd
+          ls -ltr
+          make standalone plugin=${{ env.PLUGIN_NAME }}
+          ls -ltr
 
-      - name: Save Linux Build Artifact - AMD64
+      - name: Rename and zip the build-Linux folder
+        run: |-
+          mv build-Linux steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64
+          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64
+
+      - name: Save Linux Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
@@ -415,7 +469,7 @@ jobs:
     name: Build Postgres 15 FDW for Linux - ARM64
     needs: get-version
     runs-on: 
-      group: steampipe-darwin-arm-runners
+      group: linux-arm64-runners
 
     steps:
       - name: Check architecture
@@ -427,24 +481,78 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
+      - name: Setup # this is required because the Linux ARM runners do not have the required packages installed
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          export DEBCONF_NONINTERACTIVE_SEEN=true
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends apt-transport-https dirmngr gnupg curl ca-certificates
+          sudo mkdir -p /etc/apt/sources.list.d \
+            && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
+            && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
+            && sudo bash -c 'echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list' \
+            && sudo bash -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list' \
+            && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends golang-1.21 \
+            postgresql-15 postgresql-server-dev-15 libpq-dev wget make build-essential \
+            libgcc-7-dev \
+            locales \
+            tzdata \
+            git \
+            && sudo rm -rf \
+            /var/lib/apt/lists/* \
+            /var/cache/debconf \
+            /tmp/* \
+            && sudo apt-get clean
+
+          sudo ln -s /usr/lib/go-1.21/bin/go /usr/bin/go
+          sudo locale-gen en_US.UTF-8
+          export LANG=en_US.UTF-8
+          export LC_ALL=en_US.UTF-8
+
       - name: Check out steampipe-postgres-fdw-anywhere
         uses: actions/checkout@v3
         with:
           repository: "turbot/steampipe-postgres-fdw"
           ref: main
 
-      - name: Check docker images available in runner
-        run: docker images
+      - name: Find stuff and set env
+        run: |-
 
-      - name: Run build script
+          ls -l /usr/bin/pg_config
+          export PATH=$PATH:/usr/bin
+          pg_config --version
+
+          export PATH=$(pg_config --bindir):$PATH
+          export PGXS=$(pg_config --pgxs)
+
+          export SERVER_LIB=$(pg_config --includedir)/15/server
+          export INTERNAL_LIB=$(pg_config --includedir)/internal
+
+          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+
+          export LDFLAGS=$(pg_config --ldflags)
+          export PG_LDFLAGS=$(pg_config --ldflags)
+
+          ls -la $SERVER_LIB
+          ls -la $INTERNAL_LIB
+
+      - name: Build steampipe-postgres-fdw-anywhere
         run: |
-          chmod +x ./scripts/build-linux-arm-pg15.sh
-          bash ./scripts/build-linux-arm-pg15.sh ${{ env.PLUGIN_NAME }}
-      
-      - name: Check if binaries are available
-        run: ls -l $GITHUB_WORKSPACE
+          pwd
+          ls -ltr
+          make standalone plugin=${{ env.PLUGIN_NAME }}
+          ls -ltr
 
-      - name: Save Linux Build Artifact - AMD64
+      - name: Rename and zip the build-Linux folder
+        run: |-
+          mv build-Linux steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64
+          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64
+
+      - name: Save Linux Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
@@ -678,7 +786,7 @@ jobs:
     name: Build SQLite Extension for Linux - ARM64
     needs: get-version
     runs-on: 
-      group: steampipe-darwin-arm-runners
+      group: linux-arm64-runners
 
     steps:
       - name: Check architecture
@@ -690,24 +798,55 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
+      - name: Setup # this is required because the Linux ARM runners do not have the required packages installed
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          export DEBCONF_NONINTERACTIVE_SEEN=true
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends apt-transport-https dirmngr gnupg curl ca-certificates
+          sudo mkdir -p /etc/apt/sources.list.d \
+            && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
+            && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
+            && sudo bash -c 'echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list' \
+            && sudo bash -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list' \
+            && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends golang-1.21 \
+            postgresql-15 postgresql-server-dev-15 libpq-dev wget make build-essential \
+            libgcc-7-dev \
+            locales \
+            tzdata \
+            git \
+            && sudo rm -rf \
+            /var/lib/apt/lists/* \
+            /var/cache/debconf \
+            /tmp/* \
+            && sudo apt-get clean
+
+          sudo ln -s /usr/lib/go-1.21/bin/go /usr/bin/go
+          sudo locale-gen en_US.UTF-8
+          export LANG=en_US.UTF-8
+          export LC_ALL=en_US.UTF-8
+
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@v3
         with:
           repository: "turbot/steampipe-sqlite"
           ref: main
 
-      - name: Check docker images available in runner
-        run: docker images
-
-      - name: Run build script
+      - name: Build steampipe-sqlite-extension
         run: |
-          chmod +x ./scripts/build-linux-arm-sqlite.sh
-          bash ./scripts/build-linux-arm-sqlite.sh ${{ env.PLUGIN_NAME }}
-      
-      - name: Check if binaries are available
-        run: ls -l $GITHUB_WORKSPACE
+          pwd
+          ls -ltr
+          make build plugin=${{ env.PLUGIN_NAME }}
+          ls -ltr
 
-      - name: Save Linux Build Artifact - AMD64
+      - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
+        run: |-
+          tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
+
+      - name: Save Linux Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
@@ -1264,6 +1403,7 @@ jobs:
 
       - name: Configure PostgreSQL
         run: |-
+          psql -d postgres -c "CREATE EXTENSION ltree;"
           psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
