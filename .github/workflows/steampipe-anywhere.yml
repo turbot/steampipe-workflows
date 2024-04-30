@@ -139,11 +139,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends apt-transport-https dirmngr gnupg curl ca-certificates
           sudo mkdir -p /etc/apt/sources.list.d \
-            && apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
-            && apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
-            && echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list \
-            && echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list \
-            && curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+            && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
+            && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
+            && sudo echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list \
+            && sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list \
+            && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends golang-1.21 \
@@ -152,11 +152,11 @@ jobs:
             locales \
             tzdata \
             git \
-            && rm -rf \
+            && sudo rm -rf \
             /var/lib/apt/lists/* \
             /var/cache/debconf \
             /tmp/* \
-            && apt-get clean
+            && sudo apt-get clean
 
           sudo ln -s /usr/lib/go-1.21/bin/go /usr/bin/go
           sudo locale-gen en_US.UTF-8
@@ -477,11 +477,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends apt-transport-https dirmngr gnupg curl ca-certificates
           sudo mkdir -p /etc/apt/sources.list.d \
-            && apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
-            && apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
-            && echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list \
-            && echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list \
-            && curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+            && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
+            && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
+            && sudo echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list \
+            && sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list \
+            && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends golang-1.21 \
@@ -490,11 +490,11 @@ jobs:
             locales \
             tzdata \
             git \
-            && rm -rf \
+            && sudo rm -rf \
             /var/lib/apt/lists/* \
             /var/cache/debconf \
             /tmp/* \
-            && apt-get clean
+            && sudo apt-get clean
 
           sudo ln -s /usr/lib/go-1.21/bin/go /usr/bin/go
           sudo locale-gen en_US.UTF-8
@@ -793,11 +793,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends apt-transport-https dirmngr gnupg curl ca-certificates
           sudo mkdir -p /etc/apt/sources.list.d \
-            && apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
-            && apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
-            && echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list \
-            && echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list \
-            && curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+            && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
+            && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
+            && sudo echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list \
+            && sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list \
+            && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends golang-1.21 \
@@ -806,11 +806,11 @@ jobs:
             locales \
             tzdata \
             git \
-            && rm -rf \
+            && sudo rm -rf \
             /var/lib/apt/lists/* \
             /var/cache/debconf \
             /tmp/* \
-            && apt-get clean
+            && sudo apt-get clean
 
           sudo ln -s /usr/lib/go-1.21/bin/go /usr/bin/go
           sudo locale-gen en_US.UTF-8
