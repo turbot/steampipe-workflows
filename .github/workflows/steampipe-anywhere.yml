@@ -169,7 +169,7 @@ jobs:
           repository: "turbot/steampipe-postgres-fdw"
           ref: main
 
-      - name: Find stuff and set env
+      - name: Find path and set env variables
         run: |-
 
           ls -l /usr/bin/pg_config
