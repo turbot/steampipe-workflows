@@ -347,7 +347,7 @@ jobs:
         with:
           repository: "turbot/steampipe-osquery"
           ref: main
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
