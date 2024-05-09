@@ -745,7 +745,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-sqlite"
-          ref: main
+          ref: dont-mutate
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -821,7 +821,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: "turbot/steampipe-sqlite"
-          ref: main
+          ref: dont-mutate
 
       - name: Build steampipe-sqlite-extension
         run: |
@@ -860,7 +860,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-sqlite-extension"
-          ref: main
+          ref: dont-mutate
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -907,7 +907,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-sqlite-extension"
-          ref: main
+          ref: dont-mutate
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
