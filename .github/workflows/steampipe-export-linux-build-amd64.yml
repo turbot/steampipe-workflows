@@ -38,7 +38,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }}
+          make build plugin=aws
           ls -ltr
           go mod tidy
 
@@ -54,14 +54,14 @@ jobs:
       - name: Copy the gzipped binaries from dist
         run: |-
           ls -al dist/
-          cp dist/steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
+          cp dist/steampipe_export_aws.linux_amd64.tar.gz steampipe_export_aws.linux_amd64.tar.gz
           ls -al
 
       - name: Save Linux Build Artifact - AMD64
         uses: actions/upload-artifact@v3
         with:
-          name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
-          path: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
+          name: steampipe_export_aws.linux_amd64.tar.gz
+          path: steampipe_export_aws.linux_amd64.tar.gz
           if-no-files-found: error
 
 
