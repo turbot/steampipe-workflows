@@ -7,8 +7,8 @@ on:
         description: "The branch that will be used to create the Linux AMD64 build"
         required: true
 
-env:
-  PLUGIN_NAME: steampipe-plugin-aws
+# env:
+#   PLUGIN_NAME: steampipe-plugin-aws
 
 jobs:
   build-export-tool:
@@ -17,11 +17,11 @@ jobs:
     runs-on: ubuntu_8_core
 
     steps:
-      - name: Set environment variables
-        run: |
-          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
-          echo $plugin_name
-          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+      # - name: Set environment variables
+      #   run: |
+      #     plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+      #     echo $plugin_name
+      #     echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-export
         uses: actions/checkout@v2
