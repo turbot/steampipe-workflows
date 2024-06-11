@@ -6,6 +6,9 @@ on:
       branch:
         description: "The branch that will be used to create the Linux AMD64 build"
         required: true
+      version:
+        description: "Version"
+        required: true
 
 # env:
 #   PLUGIN_NAME: steampipe-plugin-aws
@@ -17,11 +20,25 @@ jobs:
     runs-on: ubuntu_8_core
 
     steps:
-      # - name: Set environment variables
-      #   run: |
-      #     plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
-      #     echo $plugin_name
-      #     echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
+      - name: Get latest version tag
+        run: |-
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
       - name: Check out steampipe-export
         uses: actions/checkout@v2
