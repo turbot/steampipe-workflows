@@ -10,8 +10,6 @@ on:
 env:
   PLUGIN_NAME: steampipe-plugin-aws
 
-  workflow_call:
-
 jobs:
   build-export-tool:
     name: Build Export Tool
