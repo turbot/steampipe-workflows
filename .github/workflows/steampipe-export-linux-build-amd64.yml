@@ -1,0 +1,69 @@
+name: AWS Export Tool Linux Build Artifact - AMD64
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "The branch that will be used to create the Linux AMD64 build"
+        required: true
+
+env:
+  PLUGIN_NAME: steampipe-plugin-aws
+
+  workflow_call:
+
+jobs:
+  build-export-tool:
+    name: Build Export Tool
+    # needs: get-version
+    runs-on: ubuntu_8_core
+
+    steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
+      - name: Check out steampipe-export
+        uses: actions/checkout@v2
+        with:
+          repository: "turbot/steampipe-export"
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Setup GoLang
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+
+      - name: Build steampipe-export
+        run: |
+          pwd
+          ls -ltr
+          make build plugin=${{ env.PLUGIN_NAME }}
+          ls -ltr
+          go mod tidy
+
+      - name: Install GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          install-only: true
+
+      - name: Run GoReleaser
+        run: |
+          ./scripts/release.sh
+
+      - name: Copy the gzipped binaries from dist
+        run: |-
+          ls -al dist/
+          cp dist/steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
+          ls -al
+
+      - name: Save Linux Build Artifact - AMD64
+        uses: actions/upload-artifact@v3
+        with:
+          name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
+          path: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
+          if-no-files-found: error
+
+
