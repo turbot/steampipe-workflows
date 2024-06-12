@@ -281,7 +281,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }}
+          make release plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
           go mod tidy
 
@@ -292,6 +292,7 @@ jobs:
   
       - name: Run GoReleaser
         run: |
+          chmod +x scripts/release.sh
           ./scripts/release.sh
 
       - name: Copy the gzipped binaries from dist
