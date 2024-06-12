@@ -948,7 +948,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-export"
-          ref: main
+          ref: fix-release-issue
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
@@ -970,8 +970,7 @@ jobs:
 
       - name: Run GoReleaser
         run: |
-          chmod +x work/scripts/release.sh
-          ./work/scripts/release.sh
+          ./scripts/release.sh
 
       - name: Copy the gzipped binaries from dist
         run: |-
