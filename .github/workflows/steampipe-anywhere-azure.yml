@@ -992,6 +992,7 @@ jobs:
   
       - name: Run GoReleaser
         run: |
+          chmod +x scripts/release.sh
           ./scripts/release.sh
 
       - name: Copy the gzipped binaries from dist
