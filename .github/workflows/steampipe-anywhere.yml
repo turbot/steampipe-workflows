@@ -959,7 +959,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }}
+          make release plugin=${{ env.PLUGIN_NAME }}
           ls -ltr
           go mod tidy
 
