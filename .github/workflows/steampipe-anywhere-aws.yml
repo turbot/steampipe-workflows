@@ -979,7 +979,7 @@ jobs:
   
       - name: Run GoReleaser
         run: |
-          ./scripts/release.sh
+          ./work/scripts/release.sh
 
       - name: Copy the gzipped binaries from dist
         run: |-
