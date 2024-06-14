@@ -84,7 +84,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: release --rm-dist --skip-publish --timeout=${{ inputs.releaseTimeout }}
+          args: release --clean --skip=publish --timeout=${{ inputs.releaseTimeout }}
 
       - name: List Build Artifacts
         run: ls -laR ./dist
