@@ -1036,7 +1036,18 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "turbot/steampipe-export"
-          ref: main
+
+      - name: Fetch all tags
+        run: git fetch --tags
+  
+      - name: Get the latest tag
+        id: get_latest_tag
+        run: |
+          latest_tag=$(git tag --sort=-v:refname | grep -Ev 'alpha|beta|rc|dev' | head -n 1)
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+
+      - name: Checkout the latest tag
+        run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
