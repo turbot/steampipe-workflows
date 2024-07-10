@@ -408,8 +408,8 @@ jobs:
           export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC -ffunction-sections -fdata-sections"
           export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC -ffunction-sections -fdata-sections"
 
-          export LDFLAGS="$(pg_config --ldflags) -mcmodel=large -Wl,--gc-sections -Wl,-use_ld64"
-          export PG_LDFLAGS="$(pg_config --ldflags) -mcmodel=large -Wl,--gc-sections -Wl,-use_ld64"
+          export LDFLAGS="$(pg_config --ldflags) -mcmodel=large -Wl,-dead_strip"
+          export PG_LDFLAGS="$(pg_config --ldflags) -mcmodel=large -Wl,-dead_strip"
 
           echo "CFLAGS=${CFLAGS}" >> $GITHUB_ENV
           echo "LDFLAGS=${LDFLAGS}" >> $GITHUB_ENV
@@ -419,7 +419,7 @@ jobs:
           pwd
           ls -ltr
           make clean
-          make standalone plugin=${{ env.PLUGIN_NAME }} CFLAGS="${{ env.CFLAGS }}" LDFLAGS="${{ env.LDFLAGS }}"
+          make V=1 standalone plugin=${{ env.PLUGIN_NAME }} CFLAGS="${{ env.CFLAGS }}" LDFLAGS="${{ env.LDFLAGS }}"
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
@@ -806,8 +806,8 @@ jobs:
           export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC -ffunction-sections -fdata-sections"
           export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC -ffunction-sections -fdata-sections"
 
-          export LDFLAGS="$(pg_config --ldflags) -mcmodel=large -Wl,--gc-sections -Wl,-use_ld64"
-          export PG_LDFLAGS="$(pg_config --ldflags) -mcmodel=large -Wl,--gc-sections -Wl,-use_ld64"
+          export LDFLAGS="$(pg_config --ldflags) -mcmodel=large -Wl,-dead_strip"
+          export PG_LDFLAGS="$(pg_config --ldflags) -mcmodel=large -Wl,-dead_strip"
 
           echo "CFLAGS=${CFLAGS}" >> $GITHUB_ENV
           echo "LDFLAGS=${LDFLAGS}" >> $GITHUB_ENV
@@ -817,7 +817,7 @@ jobs:
           pwd
           ls -ltr
           make clean
-          make standalone plugin=${{ env.PLUGIN_NAME }} CFLAGS="${{ env.CFLAGS }}" LDFLAGS="${{ env.LDFLAGS }}"
+          make V=1 standalone plugin=${{ env.PLUGIN_NAME }} CFLAGS="${{ env.CFLAGS }}" LDFLAGS="${{ env.LDFLAGS }}"
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
