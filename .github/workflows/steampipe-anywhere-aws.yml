@@ -411,11 +411,15 @@ jobs:
           export LDFLAGS="$(pg_config --ldflags) -mcmodel=large"
           export PG_LDFLAGS="$(pg_config --ldflags) -mcmodel=large"
 
+          echo "CFLAGS=${CFLAGS}" >> $GITHUB_ENV
+          echo "LDFLAGS=${LDFLAGS}" >> $GITHUB_ENV
+
       - name: Build steampipe-postgres-fdw-anywhere
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+          make clean
+          make standalone plugin=${{ env.PLUGIN_NAME }} CFLAGS="${{ env.CFLAGS }}" LDFLAGS="${{ env.LDFLAGS }}"
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
@@ -423,7 +427,7 @@ jobs:
           mv build-Darwin steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64
 
-      - name: Save MacOS Build Artifact - AMD64
+      - name: Save MacOS Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
@@ -805,11 +809,15 @@ jobs:
           export LDFLAGS="$(pg_config --ldflags) -mcmodel=large"
           export PG_LDFLAGS="$(pg_config --ldflags) -mcmodel=large"
 
+          echo "CFLAGS=${CFLAGS}" >> $GITHUB_ENV
+          echo "LDFLAGS=${LDFLAGS}" >> $GITHUB_ENV
+
       - name: Build steampipe-postgres-fdw-anywhere
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+          make clean
+          make standalone plugin=${{ env.PLUGIN_NAME }} CFLAGS="${{ env.CFLAGS }}" LDFLAGS="${{ env.LDFLAGS }}"
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
