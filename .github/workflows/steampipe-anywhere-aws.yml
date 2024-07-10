@@ -405,17 +405,17 @@ jobs:
           export SERVER_LIB=$(pg_config --includedir)/server
           export INTERNAL_LIB=$(pg_config --includedir)/internal
 
-          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC"
+          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC"
 
-          export LDFLAGS=$(pg_config --ldfalgs)
-          export PG_LDFLAGS=$(pg_config --ldfalgs)
+          export LDFLAGS="$(pg_config --ldflags) -mcmodel=large"
+          export PG_LDFLAGS="$(pg_config --ldflags) -mcmodel=large"
 
       - name: Build steampipe-postgres-fdw-anywhere
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }}
+          make standalone plugin=${{ env.PLUGIN_NAME }} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
@@ -793,22 +793,23 @@ jobs:
           which pg_config
           pg_config --version
 
+          export PATH=$(pg_config --bindir):$PATH
           export PGXS=$(pg_config --pgxs)
 
-          export SERVER_LIB=$(pg_config --includedir)/postgresql/server
-          export INTERNAL_LIB=$(pg_config --includedir)/postgresql/internal
+          export SERVER_LIB=$(pg_config --includedir)/server
+          export INTERNAL_LIB=$(pg_config --includedir)/internal
 
-          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
+          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC"
+          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC"
 
-          export LDFLAGS=$(pg_config --ldfalgs)
-          export PG_LDFLAGS=$(pg_config --ldfalgs)
+          export LDFLAGS="$(pg_config --ldflags) -mcmodel=large"
+          export PG_LDFLAGS="$(pg_config --ldflags) -mcmodel=large"
 
       - name: Build steampipe-postgres-fdw-anywhere
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }}
+          make standalone plugin=${{ env.PLUGIN_NAME }} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
