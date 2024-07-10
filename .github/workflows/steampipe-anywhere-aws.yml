@@ -405,11 +405,11 @@ jobs:
           export SERVER_LIB=$(pg_config --includedir)/server
           export INTERNAL_LIB=$(pg_config --includedir)/internal
 
-          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC"
-          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC"
+          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC -ffunction-sections -fdata-sections"
+          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC -ffunction-sections -fdata-sections"
 
-          export LDFLAGS="$(pg_config --ldflags) -mcmodel=large"
-          export PG_LDFLAGS="$(pg_config --ldflags) -mcmodel=large"
+          export LDFLAGS="$(pg_config --ldflags) -mcmodel=large -Wl,--gc-sections -Wl,-use_ld64"
+          export PG_LDFLAGS="$(pg_config --ldflags) -mcmodel=large -Wl,--gc-sections -Wl,-use_ld64"
 
           echo "CFLAGS=${CFLAGS}" >> $GITHUB_ENV
           echo "LDFLAGS=${LDFLAGS}" >> $GITHUB_ENV
@@ -803,11 +803,11 @@ jobs:
           export SERVER_LIB=$(pg_config --includedir)/server
           export INTERNAL_LIB=$(pg_config --includedir)/internal
 
-          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC"
-          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC"
+          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC -ffunction-sections -fdata-sections"
+          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g -mcmodel=large -fPIC -ffunction-sections -fdata-sections"
 
-          export LDFLAGS="$(pg_config --ldflags) -mcmodel=large"
-          export PG_LDFLAGS="$(pg_config --ldflags) -mcmodel=large"
+          export LDFLAGS="$(pg_config --ldflags) -mcmodel=large -Wl,--gc-sections -Wl,-use_ld64"
+          export PG_LDFLAGS="$(pg_config --ldflags) -mcmodel=large -Wl,--gc-sections -Wl,-use_ld64"
 
           echo "CFLAGS=${CFLAGS}" >> $GITHUB_ENV
           echo "LDFLAGS=${LDFLAGS}" >> $GITHUB_ENV
