@@ -1454,23 +1454,23 @@ jobs:
           echo | sudo -E TERM=xterm bash install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
           rm -f install_export.sh
 
-          - name: Test Export Tool
-          run: |
-            # Define the expected output based on environment variables and inputs
-            EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${VERSION}"
-            echo "Expected version output: $EXPECTED_OUTPUT"
-            
-            # Execute the command to get the actual version output
-            COMMAND_OUTPUT=$(steampipe_export_${{ env.PLUGIN_NAME }} --version)
-            echo "Actual command output version: $COMMAND_OUTPUT"
-            
-            # Compare the actual output with the expected output
-            if [ "$COMMAND_OUTPUT" == "$EXPECTED_OUTPUT" ]; then
-              echo "Version matches."
-            else
-              echo "Version does not match. Expected was $EXPECTED_OUTPUT, but got $COMMAND_OUTPUT."
-              exit 1  # This exits the step with an error status, failing the job
-            fi
+      - name: Test Export Tool
+        run: |
+          # Define the expected output based on environment variables and inputs
+          EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${VERSION}"
+          echo "Expected version output: $EXPECTED_OUTPUT"
+          
+          # Execute the command to get the actual version output
+          COMMAND_OUTPUT=$(steampipe_export_${{ env.PLUGIN_NAME }} --version)
+          echo "Actual command output version: $COMMAND_OUTPUT"
+          
+          # Compare the actual output with the expected output
+          if [ "$COMMAND_OUTPUT" == "$EXPECTED_OUTPUT" ]; then
+            echo "Version matches."
+          else
+            echo "Version does not match. Expected was $EXPECTED_OUTPUT, but got $COMMAND_OUTPUT."
+            exit 1  # This exits the step with an error status, failing the job
+          fi
 
   check-installation-darwin-amd64:
     name: Check Installation(Darwin AMD64)
