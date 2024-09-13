@@ -552,9 +552,9 @@ jobs:
           sudo env ACCEPT_EULA=Y apt-get update
           sudo env ACCEPT_EULA=Y apt-get upgrade
 
-      - name: Install PostgreSQL14 Dev
+      - name: Install PostgreSQL15 Dev
         run: |-
-          sudo apt-get -y install postgresql-server-dev-14
+          sudo apt-get -y install postgresql-server-dev-15
 
       - name: Find path and set env variables
         run: |-
