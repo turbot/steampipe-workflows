@@ -43,7 +43,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.22
 
       - name: Fetch plugin module
         run: go get github.com/turbot/steampipe-plugin-${{ env.PLUGIN_NAME }}@$VERSION
@@ -83,7 +83,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.22
 
       - name: Setup apt-get
         run: |-
@@ -166,7 +166,7 @@ jobs:
             && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends golang-1.21 \
+          sudo apt-get install -y --no-install-recommends golang-1.22 \
             postgresql-14 postgresql-server-dev-14 libpq-dev wget make build-essential \
             libgcc-7-dev \
             locales \
@@ -178,7 +178,7 @@ jobs:
             /tmp/* \
             && sudo apt-get clean
 
-          sudo ln -s /usr/lib/go-1.21/bin/go /usr/bin/go
+          sudo ln -s /usr/lib/go-1.22/bin/go /usr/bin/go
           sudo locale-gen en_US.UTF-8
           export LANG=en_US.UTF-8
           export LC_ALL=en_US.UTF-8
@@ -294,7 +294,7 @@ jobs:
       - name: Setup Golang
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.22
 
       - name: Find stuff and set env
         run: |-
@@ -469,7 +469,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.22
 
       - name: Setup apt-get
         run: |-
@@ -552,7 +552,7 @@ jobs:
             && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends golang-1.21 \
+          sudo apt-get install -y --no-install-recommends golang-1.22 \
             postgresql-15 postgresql-server-dev-15 libpq-dev wget make build-essential \
             libgcc-7-dev \
             locales \
@@ -564,7 +564,7 @@ jobs:
             /tmp/* \
             && sudo apt-get clean
 
-          sudo ln -s /usr/lib/go-1.21/bin/go /usr/bin/go
+          sudo ln -s /usr/lib/go-1.22/bin/go /usr/bin/go
           sudo locale-gen en_US.UTF-8
           export LANG=en_US.UTF-8
           export LC_ALL=en_US.UTF-8
@@ -687,7 +687,7 @@ jobs:
       - name: Setup Golang
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.22
 
       - name: Find stuff and set env
         run: |-
@@ -856,7 +856,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.22
 
       - name: Build steampipe-sqlite-extension
         run: |
@@ -906,7 +906,7 @@ jobs:
             && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends golang-1.21 \
+          sudo apt-get install -y --no-install-recommends golang-1.22 \
             postgresql-15 postgresql-server-dev-15 libpq-dev wget make build-essential \
             libgcc-7-dev \
             locales \
@@ -918,7 +918,7 @@ jobs:
             /tmp/* \
             && sudo apt-get clean
 
-          sudo ln -s /usr/lib/go-1.21/bin/go /usr/bin/go
+          sudo ln -s /usr/lib/go-1.22/bin/go /usr/bin/go
           sudo locale-gen en_US.UTF-8
           export LANG=en_US.UTF-8
           export LC_ALL=en_US.UTF-8
@@ -971,7 +971,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.22
 
       - name: Build steampipe-sqlite-extension
         run: |
@@ -1018,7 +1018,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.22
 
       - name: Build steampipe-sqlite-extension
         run: |
@@ -1070,7 +1070,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.22
 
       - name: Build steampipe-export
         run: |
