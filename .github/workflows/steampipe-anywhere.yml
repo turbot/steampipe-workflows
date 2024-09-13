@@ -143,37 +143,6 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
-      # - name: Setup # this is required because the Linux ARM runners do not have the required packages installed
-      #   run: |
-      #     export DEBIAN_FRONTEND=noninteractive
-      #     export DEBCONF_NONINTERACTIVE_SEEN=true
-      #     sudo apt-get update
-      #     sudo apt-get install -y --no-install-recommends apt-transport-https dirmngr gnupg curl ca-certificates
-      #     sudo mkdir -p /etc/apt/sources.list.d \
-      #       && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
-      #       && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
-      #       && sudo bash -c 'echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list' \
-      #       && sudo bash -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list' \
-      #       && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-
-      #     sudo apt-get update
-      #     sudo apt-get install -y --no-install-recommends golang-1.22 \
-      #       postgresql-14 postgresql-server-dev-14 libpq-dev wget make build-essential \
-      #       libgcc-7-dev \
-      #       locales \
-      #       tzdata \
-      #       git \
-      #       && sudo rm -rf \
-      #       /var/lib/apt/lists/* \
-      #       /var/cache/debconf \
-      #       /tmp/* \
-      #       && sudo apt-get clean
-
-      #     sudo ln -s /usr/lib/go-1.22/bin/go /usr/bin/go
-      #     sudo locale-gen en_US.UTF-8
-      #     export LANG=en_US.UTF-8
-      #     export LC_ALL=en_US.UTF-8
-
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@v3
         with:
@@ -541,37 +510,6 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
-      # - name: Setup # this is required because the Linux ARM runners do not have the required packages installed
-      #   run: |
-      #     export DEBIAN_FRONTEND=noninteractive
-      #     export DEBCONF_NONINTERACTIVE_SEEN=true
-      #     sudo apt-get update
-      #     sudo apt-get install -y --no-install-recommends apt-transport-https dirmngr gnupg curl ca-certificates
-      #     sudo mkdir -p /etc/apt/sources.list.d \
-      #       && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
-      #       && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
-      #       && sudo bash -c 'echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list' \
-      #       && sudo bash -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list' \
-      #       && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-
-      #     sudo apt-get update
-      #     sudo apt-get install -y --no-install-recommends golang-1.22 \
-      #       postgresql-15 postgresql-server-dev-15 libpq-dev wget make build-essential \
-      #       libgcc-7-dev \
-      #       locales \
-      #       tzdata \
-      #       git \
-      #       && sudo rm -rf \
-      #       /var/lib/apt/lists/* \
-      #       /var/cache/debconf \
-      #       /tmp/* \
-      #       && sudo apt-get clean
-
-      #     sudo ln -s /usr/lib/go-1.22/bin/go /usr/bin/go
-      #     sudo locale-gen en_US.UTF-8
-      #     export LANG=en_US.UTF-8
-      #     export LC_ALL=en_US.UTF-8
-
       - name: Check out steampipe-postgres-fdw-anywhere
         uses: actions/checkout@v3
         with:
@@ -904,37 +842,6 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
-
-      # - name: Setup # this is required because the Linux ARM runners do not have the required packages installed
-      #   run: |
-      #     export DEBIAN_FRONTEND=noninteractive
-      #     export DEBCONF_NONINTERACTIVE_SEEN=true
-      #     sudo apt-get update
-      #     sudo apt-get install -y --no-install-recommends apt-transport-https dirmngr gnupg curl ca-certificates
-      #     sudo mkdir -p /etc/apt/sources.list.d \
-      #       && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 56A3D45E \
-      #       && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
-      #       && sudo bash -c 'echo "deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu bionic main" > /etc/apt/sources.list.d/golang.list' \
-      #       && sudo bash -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" > /etc/apt/sources.list.d/pgdb.list' \
-      #       && sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-
-      #     sudo apt-get update
-      #     sudo apt-get install -y --no-install-recommends golang-1.22 \
-      #       postgresql-15 postgresql-server-dev-15 libpq-dev wget make build-essential \
-      #       libgcc-7-dev \
-      #       locales \
-      #       tzdata \
-      #       git \
-      #       && sudo rm -rf \
-      #       /var/lib/apt/lists/* \
-      #       /var/cache/debconf \
-      #       /tmp/* \
-      #       && sudo apt-get clean
-
-      #     sudo ln -s /usr/lib/go-1.22/bin/go /usr/bin/go
-      #     sudo locale-gen en_US.UTF-8
-      #     export LANG=en_US.UTF-8
-      #     export LC_ALL=en_US.UTF-8
 
       - name: Setup GoLang
         uses: actions/setup-go@v4
