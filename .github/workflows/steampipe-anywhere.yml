@@ -31,11 +31,20 @@ jobs:
           echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
           echo "Version: ${VERSION}"
 
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
+  
       - name: Setup GoLang
         uses: actions/setup-go@v4
         with:
           go-version: 1.22
-
+  
       - name: Fetch plugin module
         run: go get github.com/turbot/steampipe-plugin-${{ env.PLUGIN_NAME }}@$VERSION
 
@@ -399,7 +408,7 @@ jobs:
           mv build-Darwin steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64
 
-      - name: Save MacOS Build Artifact - AMD64
+      - name: Save MacOS Build Artifact - ARM64
         uses: actions/upload-artifact@v3
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
@@ -1193,6 +1202,15 @@ jobs:
           trim=${VERSION#"v"}
           echo $trim
           echo "VERSION=${trim}" >> $GITHUB_ENV
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
           
       - name: Create a draft release
         uses: softprops/action-gh-release@v1
@@ -1241,6 +1259,15 @@ jobs:
       - name: Get latest version tag
         run: |-
           echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
           echo "Version: ${VERSION}"
 
       - name: Install PostgreSQL14 Dev
@@ -1320,6 +1347,15 @@ jobs:
           echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
           echo "Version: ${VERSION}"
 
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
+
       - name: Install PostgreSQL14
         run: brew install postgresql@14
 
@@ -1389,6 +1425,15 @@ jobs:
       - name: Get latest version tag
         run: |-
           echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
           echo "Version: ${VERSION}"
 
       - name: Install PostgreSQL14
