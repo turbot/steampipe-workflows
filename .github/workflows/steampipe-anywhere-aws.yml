@@ -942,60 +942,60 @@ jobs:
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           if-no-files-found: error
 
-  build-sqlite-extension-osx-arm64:
-    name: Build SQLite Extension for Darwin - ARM64
-    needs: get-version
-    runs-on: macos-14
+  # build-sqlite-extension-osx-arm64:
+  #   name: Build SQLite Extension for Darwin - ARM64
+  #   needs: get-version
+  #   runs-on: macos-14
 
-    steps:
-      - name: Check architecture
-        run: uname -a
+  #   steps:
+  #     - name: Check architecture
+  #       run: uname -a
 
-      - name: Set environment variables
-        run: |
-          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
-          echo $plugin_name
-          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+  #     - name: Set environment variables
+  #       run: |
+  #         plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+  #         echo $plugin_name
+  #         echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
-      - name: Check architecture
-        run: uname -a
+  #     - name: Check architecture
+  #       run: uname -a
 
-      - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@v2
-        with:
-          repository: "turbot/steampipe-sqlite-extension"
-          ref: main
+  #     - name: Check out steampipe-sqlite-extension
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: "turbot/steampipe-sqlite-extension"
+  #         ref: main
 
-      - name: Setup GoLang
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.22
+  #     - name: Setup GoLang
+  #       uses: actions/setup-go@v4
+  #       with:
+  #         go-version: 1.22
 
-      - name: Increase swapfile
-        run: |
-          sudo fallocate -l 15G /swapfile || dd if=/dev/zero of=/swapfile bs=1m count=15360
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
-          sudo swapon --show
+  #     - name: Increase swapfile
+  #       run: |
+  #         sudo fallocate -l 15G /swapfile || dd if=/dev/zero of=/swapfile bs=1m count=15360
+  #         sudo chmod 600 /swapfile
+  #         sudo mkswap /swapfile
+  #         sudo swapon /swapfile
+  #         sudo swapon --show
 
-      - name: Build steampipe-sqlite-extension
-        run: |
-          pwd
-          ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }}
-          ls -ltr
+  #     - name: Build steampipe-sqlite-extension
+  #       run: |
+  #         pwd
+  #         ls -ltr
+  #         make build plugin=${{ env.PLUGIN_NAME }}
+  #         ls -ltr
 
-      - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
-        run: |-
-          tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
+  #     - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
+  #       run: |-
+  #         tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
-      - name: Save Darwin Build Artifact - ARM64
-        uses: actions/upload-artifact@v3
-        with:
-          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-          path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-          if-no-files-found: error
+  #     - name: Save Darwin Build Artifact - ARM64
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+  #         path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+  #         if-no-files-found: error
 
   build-export-tool:
     name: Build Export Tool
@@ -1180,11 +1180,11 @@ jobs:
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
 
-      - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-        id: download_sqlite_darwin_arm64
-        uses: actions/download-artifact@v3
-        with:
-          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+      # - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+      #   id: download_sqlite_darwin_arm64
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
         id: download_export_linux_amd64
@@ -1251,7 +1251,7 @@ jobs:
             ${{ steps.download_pg15_linux_arm64.outputs.download-path }}/steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
 
             ${{ steps.download_sqlite_darwin_amd64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
-            ${{ steps.download_sqlite_darwin_arm64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+            # ${{ steps.download_sqlite_darwin_arm64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
             ${{ steps.download_sqlite_linux_amd64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
             ${{ steps.download_sqlite_linux_arm64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
