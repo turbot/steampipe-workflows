@@ -30,7 +30,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          path: $${{ inputs.pipeling }}-plugin
+          path: ${{ inputs.pipeling }}-plugin
           fetch-depth: 0
 
       - name: Checkout Pipe Fittings Components repository
