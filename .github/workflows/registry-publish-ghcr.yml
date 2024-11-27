@@ -114,8 +114,8 @@ jobs:
       # Copy artifacts into working dir
       - name: Copy artifacts to working dir
         run: |
-          cd ${{ inputs.pipeling }}-plugin
-          cp ./dist/*.gz .
+          cp ./${{ inputs.pipeling }}-plugin/dist/*.gz .
+          ls -al
       
       # Create files for registry
       - name: Create config file
@@ -177,7 +177,7 @@ jobs:
       
       # Publish to GHCR
       - name: Push to the container registry
-        run: |-
+        run: |
           REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:$VERSION"
           oras push $REF \
             --config config.json:application/vnd.turbot.${{ inputs.pipeling }}.config.v1+json \
