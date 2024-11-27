@@ -151,8 +151,15 @@ jobs:
                   }' )
             echo $JSON_STRING > annotations.json
 
-      - run: cat annotations.json
-      - run: cat README.md
+      - name: View annotations
+        run: |
+          cd ${{ inputs.pipeling }}-plugin 
+          cat annotations.json
+
+      - name: View README
+        run: |
+          cd ${{ inputs.pipeling }}-plugin
+          cat README.md
 
       # Setup ORAS
       - name: Install specific version of ORAS
@@ -167,7 +174,7 @@ jobs:
         with:
           registry: ${{ env.CR }}
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GH_ACCESS_TOKEN }}
       
       # Publish to GHCR
       - name: Push to the container registry
