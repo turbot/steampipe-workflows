@@ -30,6 +30,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          path: $${{ inputs.pipeling }}-plugin
           fetch-depth: 0
 
       - name: Checkout Pipe Fittings Components repository
@@ -57,14 +58,16 @@ jobs:
       # Exit early if we don't need to build
       - name: Exit if goreleaser file is missing
         run: |
+          cd ${{ inputs.pipeling }}-plugin
           test -f .goreleaser.yml
 
       - name: Get latest version tag
-        run: |-
+        run: |
+          cd ${{ inputs.pipeling }}-plugin
           echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Get latest trimmed version tag
-        run: |-
+        run: |
           echo $VERSION
           trim=${VERSION#"v"}
           echo $trim
@@ -99,15 +102,20 @@ jobs:
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
+          workdir: ${{ inputs.pipeling }}-plugin
           version: latest
           args: release --clean --skip=publish --timeout=${{ inputs.releaseTimeout }}
       
       - name: List Build Artifacts
-        run: ls -laR ./dist
+        run: |
+          cd ${{ inputs.pipeling }}-plugin
+          ls -laR ./dist
 
       # Copy artifacts into working dir
       - name: Copy artifacts to working dir
-        run: cp ./dist/*.gz .
+        run: |
+          cd ${{ inputs.pipeling }}-plugin
+          cp ./dist/*.gz .
       
       # Create files for registry
       - name: Create config file
