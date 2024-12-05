@@ -112,9 +112,13 @@ jobs:
           ls -laR ./dist
 
       # Copy artifacts into working dir
-      - name: Copy artifacts to working dir
+      - name: Copy artifacts, docs and config to working dir
         run: |
           cp ./${{ inputs.pipeling }}-plugin/dist/*.gz .
+          mkdir docs
+          cp -R ./${{ inputs.pipeling }}-plugin/docs docs
+          mkdir config
+          cp -R ./${{ inputs.pipeling }}-plugin/config config
           ls -al
       
       # Create files for registry
@@ -176,7 +180,7 @@ jobs:
           password: ${{ secrets.GH_ACCESS_TOKEN }}
       
       # Publish to GHCR
-      - name: Push to the container registry (${{ inputs.pipeling }})
+      - name: Push to the container registry (tailpipe)
         # run only if inputs.pipeling = tailpipe
         if: ${{ inputs.pipeling }} == 'tailpipe'
         run: |
@@ -194,7 +198,7 @@ jobs:
           oras tag $REF $LATEST_REF
 
       # Publish to GHCR
-      - name: Push to the container registry (${{ inputs.pipeling }})
+      - name: Push to the container registry (steampipe)
         # run only if inputs.pipeling = steampipe
         if: ${{ inputs.pipeling }} == 'steampipe'
         run: |
