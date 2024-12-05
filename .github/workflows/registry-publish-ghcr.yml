@@ -193,7 +193,7 @@ jobs:
             ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-arm64.layer.v1+gzip \
             ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-amd64.layer.v1+gzip \
             ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip \
-            docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar \
+            docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar
           oras tag $REF $GITHUB_RUN_ID
           oras tag $REF $LATEST_REF
 
