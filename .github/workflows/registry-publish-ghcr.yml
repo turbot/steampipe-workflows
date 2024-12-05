@@ -176,15 +176,38 @@ jobs:
           password: ${{ secrets.GH_ACCESS_TOKEN }}
       
       # Publish to GHCR
-      - name: Push to the container registry
+      - name: Push to the container registry (${{ inputs.pipeling }})
+        # run only if inputs.pipeling = tailpipe
+        if: ${{ inputs.pipeling }} == 'tailpipe'
         run: |
           REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:$VERSION"
+          LATEST_REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:latest"
           oras push $REF \
             --config config.json:application/vnd.turbot.${{ inputs.pipeling }}.config.v1+json \
             --annotation-file annotations.json \
             ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-amd64.layer.v1+gzip \
             ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-arm64.layer.v1+gzip \
             ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-amd64.layer.v1+gzip \
-            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip \
+            docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar \
           oras tag $REF $GITHUB_RUN_ID
-      
+          oras tag $REF $LATEST_REF
+
+      # Publish to GHCR
+      - name: Push to the container registry (${{ inputs.pipeling }})
+        # run only if inputs.pipeling = steampipe
+        if: ${{ inputs.pipeling }} == 'steampipe'
+        run: |
+          REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:$VERSION"
+          LATEST_REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:latest"
+          oras push $REF \
+            --config config.json:application/vnd.turbot.${{ inputs.pipeling }}.config.v1+json \
+            --annotation-file annotations.json \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-amd64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-arm64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-amd64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip \
+            docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar \
+            config:application/vnd.turbot.${{ inputs.pipeling }}.plugin.spc.layer.v1+tar
+          oras tag $REF $GITHUB_RUN_ID
+          oras tag $REF $LATEST_REF
