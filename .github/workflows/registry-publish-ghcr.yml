@@ -50,7 +50,7 @@ jobs:
         with:
           repository: turbot/tailpipe-plugin-sdk
           path: tailpipe-plugin-sdk
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TAILPIPE_GH_ACCESS_TOKEN }}
           ref: develop
 
       # Setup Env
