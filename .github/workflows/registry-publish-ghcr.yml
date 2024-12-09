@@ -50,7 +50,7 @@ jobs:
         with:
           repository: turbot/tailpipe-plugin-sdk
           path: tailpipe-plugin-sdk
-          token: ${{ secrets.GH_ACCESS_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           ref: develop
 
       # Setup Env
@@ -181,7 +181,7 @@ jobs:
         with:
           registry: ${{ env.CR }}
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.GH_ACCESS_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       
       # Publish to GHCR
       - name: Push to the container registry (tailpipe)
