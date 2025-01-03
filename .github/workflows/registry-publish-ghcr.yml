@@ -51,7 +51,7 @@ jobs:
           repository: turbot/tailpipe-plugin-sdk
           path: tailpipe-plugin-sdk
           token: ${{ secrets.TAILPIPE_GH_ACCESS_TOKEN }}
-          ref: develop
+          ref: source_plugin_rebase
 
       # Setup Env
       - name: Set environment variables
@@ -117,12 +117,23 @@ jobs:
           ls -laR ./dist
 
       # Copy artifacts into working dir
-      - name: Copy artifacts, docs and config to working dir
+      - name: Copy artifacts, docs and config to working dir (steampipe)
+        # run only if inputs.pipeling = steampipe
+        if: ${{ env.PIPELING_NAME == 'steampipe' }}
         run: |
           cp ./${{ inputs.pipeling }}-plugin/dist/*.gz .
           cp -R ./${{ inputs.pipeling }}-plugin/docs .
           mkdir config
           cp -R ./${{ inputs.pipeling }}-plugin/config config
+          ls -al
+
+      # Copy artifacts into working dir
+      - name: Copy artifacts and docs to working dir (tailpipe)
+        # run only if inputs.pipeling = tailpipe
+        if: ${{ env.PIPELING_NAME == 'tailpipe' }}
+        run: |
+          cp ./${{ inputs.pipeling }}-plugin/dist/*.gz .
+          cp -R ./${{ inputs.pipeling }}-plugin/docs .
           ls -al
       
       # Create files for registry
