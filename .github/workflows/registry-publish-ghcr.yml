@@ -51,7 +51,7 @@ jobs:
           repository: turbot/tailpipe-plugin-sdk
           path: tailpipe-plugin-sdk
           token: ${{ secrets.TAILPIPE_GH_ACCESS_TOKEN }}
-          ref: source_plugin_rebase
+          ref: develop
 
       # Setup Env
       - name: Set environment variables
