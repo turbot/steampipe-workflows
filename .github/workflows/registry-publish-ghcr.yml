@@ -38,21 +38,6 @@ jobs:
           path: ${{ inputs.pipeling }}-plugin
           fetch-depth: 0
 
-      - name: Checkout Pipe Fittings Components repository
-        uses: actions/checkout@v4
-        with:
-          repository: turbot/pipe-fittings
-          path: pipe-fittings
-          ref: develop
-
-      - name: Checkout Tailpipe plugin SDK repository
-        uses: actions/checkout@v4
-        with:
-          repository: turbot/tailpipe-plugin-sdk
-          path: tailpipe-plugin-sdk
-          token: ${{ secrets.TAILPIPE_GH_ACCESS_TOKEN }}
-          ref: develop
-
       # Setup Env
       - name: Set environment variables
         run: |
