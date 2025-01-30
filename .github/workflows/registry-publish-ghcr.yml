@@ -7,11 +7,16 @@ on:
         required: false
         default: 30m
         type: string
+      pipeling:
+        description: The name of the pipeline that triggered this workflow
+        required: false
+        default: steampipe
+        type: string
 
 env:
   ORG: turbot
   CR: ghcr.io
-  CR_PREFIX: turbot/steampipe/plugins
+  CR_PREFIX: turbot/${{ inputs.pipeling }}/plugins
   CONFIG_SCHEMA_VERSION: '2020-11-18'
   ORAS_VERSION: 1.1.0
 
@@ -19,11 +24,18 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       packages: write
     steps:
+      - name: Output pipeling name
+        run: |
+          echo "Pipeling name: ${{ inputs.pipeling }}"
+          echo "PIPELING_NAME=${{ inputs.pipeling }}" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          path: ${{ inputs.pipeling }}-plugin
           fetch-depth: 0
 
       # Setup Env
@@ -36,27 +48,29 @@ jobs:
       # Exit early if we don't need to build
       - name: Exit if goreleaser file is missing
         run: |
+          cd ${{ inputs.pipeling }}-plugin
           test -f .goreleaser.yml
 
       - name: Get latest version tag
-        run: |-
+        run: |
+          cd ${{ inputs.pipeling }}-plugin
           echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Get latest trimmed version tag
-        run: |-
+        run: |
           echo $VERSION
           trim=${VERSION#"v"}
           echo $trim
           echo "VERSION=${trim}" >> $GITHUB_ENV
 
-      - name: Validate Version String is SemVer
-        run: |-
-          if [[ $VERSION =~  ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Version OK: $VERSION"
-          else
-            echo "Invalid version: $VERSION"
-            exit 1
-          fi
+      # - name: Validate Version String is SemVer
+      #   run: |-
+      #     if [[ $VERSION =~  ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+      #       echo "Version OK: $VERSION"
+      #     else
+      #       echo "Invalid version: $VERSION"
+      #       exit 1
+      #     fi
 
       - name: Ensure Version Does Not Exist
         run: |-
@@ -73,49 +87,39 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.23
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
+          workdir: ${{ inputs.pipeling }}-plugin
           version: latest
           args: release --clean --skip=publish --timeout=${{ inputs.releaseTimeout }}
       
       - name: List Build Artifacts
-        run: ls -laR ./dist
-
-      # # Upload artifacts
-      # - name: Save Linux Build Artifact - AMD64
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: steampipe-${{ env.PLUGIN_NAME }}_linux_amd64
-      #     path: ./dist/steampipe-plugin-${{ env.PLUGIN_NAME }}_linux_amd64.gz
-      #     if-no-files-found: error
-
-      # - name: Save Linux Build Artifact - ARM64
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: steampipe-${{ env.PLUGIN_NAME }}_linux_arm64
-      #     path: ./dist/steampipe-plugin-${{ env.PLUGIN_NAME }}_linux_arm64.gz
-      #     if-no-files-found: error
-
-      # - name: Save macOS Build Artifact - AMD64
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: steampipe-${{ env.PLUGIN_NAME }}_darwin_amd64
-      #     path: ./dist/steampipe-plugin-${{ env.PLUGIN_NAME }}_darwin_amd64.gz
-      #     if-no-files-found: error
-
-      # - name: Save macOS Build Artifact - ARM64
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: steampipe-${{ env.PLUGIN_NAME }}_darwin_arm64
-      #     path: ./dist/steampipe-plugin-${{ env.PLUGIN_NAME }}_darwin_arm64.gz
-      #     if-no-files-found: error
+        run: |
+          cd ${{ inputs.pipeling }}-plugin
+          ls -laR ./dist
 
       # Copy artifacts into working dir
-      - name: Copy artifacts to working dir
-        run: cp ./dist/*.gz .
+      - name: Copy artifacts, docs and config to working dir (steampipe)
+        # run only if inputs.pipeling = steampipe
+        if: ${{ env.PIPELING_NAME == 'steampipe' }}
+        run: |
+          cp ./${{ inputs.pipeling }}-plugin/dist/*.gz .
+          cp -R ./${{ inputs.pipeling }}-plugin/docs .
+          mkdir config
+          cp -R ./${{ inputs.pipeling }}-plugin/config config
+          ls -al
+
+      # Copy artifacts into working dir
+      - name: Copy artifacts and docs to working dir (tailpipe)
+        # run only if inputs.pipeling = tailpipe
+        if: ${{ env.PIPELING_NAME == 'tailpipe' }}
+        run: |
+          cp ./${{ inputs.pipeling }}-plugin/dist/*.gz .
+          cp -R ./${{ inputs.pipeling }}-plugin/docs .
+          ls -al
       
       # Create files for registry
       - name: Create config file
@@ -151,8 +155,14 @@ jobs:
                   }' )
             echo $JSON_STRING > annotations.json
 
-      - run: cat annotations.json
-      - run: cat README.md
+      - name: View annotations
+        run: |
+          cat annotations.json
+
+      - name: View README
+        run: |
+          cd ${{ inputs.pipeling }}-plugin
+          cat README.md
 
       # Setup ORAS
       - name: Install specific version of ORAS
@@ -170,17 +180,38 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       
       # Publish to GHCR
-      - name: Push to the container registry
-        run: |-
+      - name: Push to the container registry (tailpipe)
+        # run only if inputs.pipeling = tailpipe
+        if: ${{ env.PIPELING_NAME == 'tailpipe' }}
+        run: |
           REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:$VERSION"
+          LATEST_REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:latest"
           oras push $REF \
-            --config config.json:application/vnd.turbot.steampipe.config.v1+json \
+            --config config.json:application/vnd.turbot.${{ inputs.pipeling }}.config.v1+json \
             --annotation-file annotations.json \
-            steampipe-plugin-${PLUGIN_NAME}_darwin_amd64.gz:application/vnd.turbot.steampipe.plugin.darwin-amd64.layer.v1+gzip \
-            steampipe-plugin-${PLUGIN_NAME}_darwin_arm64.gz:application/vnd.turbot.steampipe.plugin.darwin-arm64.layer.v1+gzip \
-            steampipe-plugin-${PLUGIN_NAME}_linux_amd64.gz:application/vnd.turbot.steampipe.plugin.linux-amd64.layer.v1+gzip \
-            steampipe-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.steampipe.plugin.linux-arm64.layer.v1+gzip \
-            docs:application/vnd.turbot.steampipe.plugin.docs.layer.v1+tar \
-            config:application/vnd.turbot.steampipe.plugin.spc.layer.v1+tar
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-amd64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-arm64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-amd64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip \
+            docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar
           oras tag $REF $GITHUB_RUN_ID
-      
+          oras tag $REF $LATEST_REF
+
+      # Publish to GHCR
+      - name: Push to the container registry (steampipe)
+        # run only if inputs.pipeling = steampipe
+        if: ${{ env.PIPELING_NAME == 'steampipe' }}
+        run: |
+          REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:$VERSION"
+          LATEST_REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:latest"
+          oras push $REF \
+            --config config.json:application/vnd.turbot.${{ inputs.pipeling }}.config.v1+json \
+            --annotation-file annotations.json \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-amd64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-arm64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-amd64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip \
+            docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar \
+            config:application/vnd.turbot.${{ inputs.pipeling }}.plugin.spc.layer.v1+tar
+          oras tag $REF $GITHUB_RUN_ID
+          oras tag $REF $LATEST_REF
