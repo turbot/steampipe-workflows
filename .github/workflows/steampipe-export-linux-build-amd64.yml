@@ -78,7 +78,7 @@ jobs:
           ls -al
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_export_aws.linux_amd64.tar.gz
           path: steampipe_export_aws.linux_amd64.tar.gz
