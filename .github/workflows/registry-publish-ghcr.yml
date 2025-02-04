@@ -108,8 +108,7 @@ jobs:
         run: |
           cp ./${{ inputs.pipeling }}-plugin/dist/*.gz .
           cp -R ./${{ inputs.pipeling }}-plugin/docs .
-          mkdir config
-          cp -R ./${{ inputs.pipeling }}-plugin/config config
+          cp -R ./${{ inputs.pipeling }}-plugin/config .
           ls -al
 
       # Copy artifacts into working dir
