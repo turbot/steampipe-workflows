@@ -131,7 +131,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
@@ -221,7 +221,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
@@ -314,7 +314,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64
 
       - name: Save MacOS Build Artifact - AMD64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
@@ -410,7 +410,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64
 
       - name: Save MacOS Build Artifact - AMD64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
@@ -499,7 +499,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
@@ -589,7 +589,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
@@ -688,7 +688,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64
 
       - name: Save MacOS Build Artifact - AMD64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
@@ -789,7 +789,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64
 
       - name: Save MacOS Build Artifact - ARM64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
@@ -834,7 +834,7 @@ jobs:
           tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
@@ -886,7 +886,7 @@ jobs:
           tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
@@ -930,7 +930,7 @@ jobs:
           tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Darwin Build Artifact - AMD64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
@@ -977,7 +977,7 @@ jobs:
           tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Darwin Build Artifact - ARM64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
@@ -1055,28 +1055,28 @@ jobs:
           ls -al
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           path: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           if-no-files-found: error
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           path: steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           if-no-files-found: error
 
       - name: Save Darwin Build Artifact - AMD64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           path: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           if-no-files-found: error
 
       - name: Save Darwin Build Artifact - ARM64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
           path: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
@@ -1113,97 +1113,97 @@ jobs:
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
         id: download_pg14_linux_amd64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
         id: download_pg14_linux_arm64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
         id: download_pg14_darwin_amd64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
         id: download_pg14_darwin_arm64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
         id: download_pg15_linux_amd64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
         id: download_pg15_linux_arm64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
         id: download_pg15_darwin_amd64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
         id: download_pg15_darwin_arm64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
         id: download_sqlite_linux_amd64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
         id: download_sqlite_linux_arm64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
         id: download_sqlite_darwin_amd64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
         id: download_sqlite_darwin_arm64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
         id: download_export_linux_amd64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
         id: download_export_linux_arm64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
         id: download_export_darwin_amd64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
         id: download_export_darwin_arm64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
 
