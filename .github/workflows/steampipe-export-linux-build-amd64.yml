@@ -17,7 +17,8 @@ jobs:
   build-export-tool:
     name: Build Export Tool
     # needs: get-version
-    runs-on: ubuntu_8_core
+    runs-on:
+      group: large-runners
 
     steps:
       - name: Set environment variables
