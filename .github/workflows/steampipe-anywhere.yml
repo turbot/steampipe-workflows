@@ -796,7 +796,7 @@ jobs:
   build-sqlite-extension-linux-amd64:
     name: Build SQLite Extension for Linux - AMD64
     needs: get-version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Check architecture
