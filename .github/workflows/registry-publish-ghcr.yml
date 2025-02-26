@@ -221,5 +221,14 @@ jobs:
             ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip \
             docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar \
             config:application/vnd.turbot.${{ inputs.pipeling }}.plugin.spc.layer.v1+tar
+          
+          # tag the image with the GitHub Run ID for traceability
           oras tag $REF $GITHUB_RUN_ID
-          oras tag $REF $LATEST_REF
+
+          # check if the version is NOT an rc version before tagging as latest
+          if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tagging as latest: $LATEST_REF"
+            oras tag $REF $LATEST_REF
+          else
+            echo "Skipping latest tag for rc version: $VERSION"
+          fi
