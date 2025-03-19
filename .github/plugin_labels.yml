@@ -38,7 +38,7 @@
   description: This issue should be worked on for an upcoming release
   color: 'E3DA48'
 - name: query-review
-  description: Triggers an automated workflow to review queries using AI for optimization, accuracy, and best practices
+  description: Triggers an AI-powered workflow to review and validate queries
   color: 'd876e3'
 - name: stale
   description: No recent activity has been detected on this issue/PR and it will be closed
