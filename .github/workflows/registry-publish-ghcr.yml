@@ -12,6 +12,11 @@ on:
         required: false
         default: steampipe
         type: string
+      useCgo:
+        description: Whether to use CGO for the build
+        required: false
+        default: false
+        type: boolean
 
 env:
   ORG: turbot
@@ -19,6 +24,7 @@ env:
   CR_PREFIX: turbot/${{ inputs.pipeling }}/plugins
   CONFIG_SCHEMA_VERSION: '2020-11-18'
   ORAS_VERSION: 1.1.0
+  GOLANG_CROSS_VERSION: v1.24
 
 jobs:
   build-deploy:
@@ -87,14 +93,28 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.23
+          go-version: 1.24
 
-      - name: Run GoReleaser
+      - name: Run GoReleaser (steampipe)
+        if: ${{ inputs.useCgo }} == false
         uses: goreleaser/goreleaser-action@v2
         with:
           workdir: ${{ inputs.pipeling }}-plugin
           version: latest
           args: release --clean --skip=publish --timeout=${{ inputs.releaseTimeout }}
+
+      - name: Run GoReleaser (tailpipe)
+        if: ${{ inputs.useCgo }} == true
+        run: |-
+          cd ${{ inputs.pipeling }}-plugin
+          docker run \
+            --rm \
+            -e CGO_ENABLED=1 \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v $PWD:/go/src/plugin \
+            -w /go/src/plugin \
+            ghcr.io/goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
+            release --clean --skip=publish --skip=validate --timeout=${{ inputs.releaseTimeout }}
       
       - name: List Build Artifacts
         run: |
