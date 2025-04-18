@@ -1495,4 +1495,36 @@ jobs:
             echo "Version does not match. Expected was $EXPECTED_OUTPUT, but got $COMMAND_OUTPUT."
             exit 1  # This exits the step with an error status, failing the job
           fi
+
+  notify-slack:
+    name: Notify Slack
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - get-version
+      - build-postgres-14-fdw-linux-amd64
+      - build-postgres-14-fdw-linux-arm64
+      - build-postgres-14-fdw-osx-amd64
+      - build-postgres-14-fdw-osx-arm64
+      - build-postgres-15-fdw-linux-amd64
+      - build-postgres-15-fdw-linux-arm64
+      - build-postgres-15-fdw-osx-amd64
+      - build-postgres-15-fdw-osx-arm64
+      - build-sqlite-extension-linux-amd64
+      - build-sqlite-extension-linux-arm64
+      - build-sqlite-extension-osx-amd64
+      - build-sqlite-extension-osx-arm64
+      - build-export-tool
+      - build-draft-release
+      - check-installation-linux
+      - check-installation-darwin-arm64
+      - check-installation-darwin-amd64
+    steps:
+      - name: Send Slack Notification
+        uses: act10ns/slack@v1
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+          channel: "#steampipe-plugin-anywhere-release-updates"
+          webhook-url: ${{ secrets.STEAMPIPE_PLUGIN_ANYWHERE_RELEASE_COMPONENT_SLACK_WEBHOOK_URL }}
         
