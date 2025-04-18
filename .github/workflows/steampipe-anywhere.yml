@@ -51,7 +51,7 @@ jobs:
   build-postgres-14-fdw-linux-amd64:
     name: Build Postgres 14 FDW for Linux - AMD64
     needs: get-version
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Check architecture
@@ -418,7 +418,7 @@ jobs:
   build-postgres-15-fdw-linux-amd64:
     name: Build Postgres 15 FDW for Linux - AMD64
     needs: get-version
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Check architecture
@@ -796,7 +796,7 @@ jobs:
   build-sqlite-extension-linux-amd64:
     name: Build SQLite Extension for Linux - AMD64
     needs: get-version
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Check architecture
@@ -1245,7 +1245,7 @@ jobs:
 
   check-installation-linux:
     name: Check Installation(Linux)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: build-draft-release
     steps:
       - name: Check architecture
