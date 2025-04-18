@@ -1259,7 +1259,7 @@ jobs:
 
   check-installation-linux:
     name: Check Installation(Linux)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: build-draft-release
     steps:
       - name: Check architecture
