@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           fetch-depth: 0
 
@@ -45,7 +45,7 @@ jobs:
           test -f .goreleaser.yml
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@be3c94b385c4f180051c996d336f57a34c397495 # v3.6.1
         with:
           go-version: 1.22
 
@@ -81,7 +81,7 @@ jobs:
           fi
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@b953231f81b8dfd023c58e0854a721e35037f28b # v2.9.1
         with:
           version: latest
           args: release --clean --skip=publish --timeout=${{ inputs.releaseTimeout }}
@@ -90,28 +90,28 @@ jobs:
         run: ls -laR ./dist
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe-${{ env.PLUGIN_NAME }}_linux_amd64
           path: ./dist/steampipe-plugin-${{ env.PLUGIN_NAME }}_linux_amd64.gz
           if-no-files-found: error
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe-${{ env.PLUGIN_NAME }}_linux_arm64
           path: ./dist/steampipe-plugin-${{ env.PLUGIN_NAME }}_linux_arm64.gz
           if-no-files-found: error
 
       - name: Save MacOS Build Artifact - AMD64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe-${{ env.PLUGIN_NAME }}_darwin_amd64
           path: ./dist/steampipe-plugin-${{ env.PLUGIN_NAME }}_darwin_amd64.gz
           if-no-files-found: error
 
       - name: Save MacOS Build Artifact - ARM64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe-${{ env.PLUGIN_NAME }}_darwin_arm64
           path: ./dist/steampipe-plugin-${{ env.PLUGIN_NAME }}_darwin_arm64.gz
@@ -125,7 +125,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
 
       - name: Set environment variables
         run: |
@@ -134,7 +134,7 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
       # Setup gcloud CLI
-      - uses: google-github-actions/setup-gcloud@v0.2.0
+      - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7 # v0.2.0
         with:
           service_account_key: ${{ secrets.STEAMPIPE_REGISTRY_SA_KEY }}
           project_id: ${{ env.PROJECT_ID }}
@@ -156,22 +156,22 @@ jobs:
           oras version
 
       - name: Download linux-amd64 artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe-${{ env.PLUGIN_NAME }}_linux_amd64
 
       - name: Download linux_arm64 artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe-${{ env.PLUGIN_NAME }}_linux_arm64
 
       - name: Download darwin_amd64 artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe-${{ env.PLUGIN_NAME }}_darwin_amd64
 
       - name: Download darwin_arm64 artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe-${{ env.PLUGIN_NAME }}_darwin_arm64
 
@@ -260,7 +260,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
 
       - name: Set environment variables
         run: |
@@ -269,7 +269,7 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
       # Setup gcloud CLI
-      - uses: google-github-actions/setup-gcloud@v0.2.0
+      - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7 # v0.2.0
         with:
           service_account_key: ${{ secrets.STEAMPIPE_REGISTRY_SA_KEY }}
           project_id: ${{ env.PROJECT_ID }}

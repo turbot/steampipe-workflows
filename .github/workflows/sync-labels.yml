@@ -15,14 +15,14 @@ jobs:
 
       - name: Sync plugin labels
         if: steps.repo-type.outputs.repo-type == 'plugin'
-        uses: EndBug/label-sync@v2
+        uses: EndBug/label-sync@52074158190acb45f3077f9099fea818aa43f97a # v2.3.3
         with:
           config-file: 'https://raw.githubusercontent.com/turbot/steampipe-workflows/main/.github/plugin_labels.yml'
           delete-other-labels: true
 
       - name: Sync mod labels
         if: steps.repo-type.outputs.repo-type == 'mod'
-        uses: EndBug/label-sync@v2
+        uses: EndBug/label-sync@52074158190acb45f3077f9099fea818aa43f97a # v2.3.3
         with:
           config-file: 'https://raw.githubusercontent.com/turbot/steampipe-workflows/main/.github/mod_labels.yml'
           delete-other-labels: true

@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out steampipe-export
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-export"
           ref: main
@@ -41,7 +41,7 @@ jobs:
           echo "Version: ${VERSION}"
 
       - name: Setup GoLang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -65,7 +65,7 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
     
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
 
@@ -82,7 +82,7 @@ jobs:
         run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup GoLang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -131,7 +131,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
@@ -154,7 +154,7 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
 
@@ -171,7 +171,7 @@ jobs:
         run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup GoLang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -221,7 +221,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
@@ -261,7 +261,7 @@ jobs:
           ls -l $INTERNAL_LIB
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
 
@@ -278,7 +278,7 @@ jobs:
         run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup Golang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -314,7 +314,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64
 
       - name: Save MacOS Build Artifact - AMD64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
@@ -357,7 +357,7 @@ jobs:
           ls -l $INTERNAL_LIB
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
 
@@ -374,7 +374,7 @@ jobs:
         run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup Golang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -410,7 +410,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64
 
       - name: Save MacOS Build Artifact - AMD64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
@@ -433,7 +433,7 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
 
@@ -450,7 +450,7 @@ jobs:
         run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup GoLang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -499,7 +499,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
@@ -522,7 +522,7 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-postgres-fdw-anywhere
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
 
@@ -539,7 +539,7 @@ jobs:
         run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup GoLang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -589,7 +589,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
@@ -636,7 +636,7 @@ jobs:
           ls -l $INTERNAL_LIB
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
 
@@ -653,7 +653,7 @@ jobs:
         run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup Golang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -688,7 +688,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64
 
       - name: Save MacOS Build Artifact - AMD64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
@@ -737,7 +737,7 @@ jobs:
           ls -l $INTERNAL_LIB
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
 
@@ -754,7 +754,7 @@ jobs:
         run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup Golang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -789,7 +789,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64
 
       - name: Save MacOS Build Artifact - ARM64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
@@ -812,13 +812,13 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-sqlite"
           ref: main
 
       - name: Setup GoLang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -834,7 +834,7 @@ jobs:
           tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
@@ -857,7 +857,7 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
       - name: Setup GoLang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
     
@@ -869,7 +869,7 @@ jobs:
           sudo env ACCEPT_EULA=Y apt-get upgrade
 
       - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           repository: "turbot/steampipe-sqlite"
           ref: main
@@ -886,7 +886,7 @@ jobs:
           tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
@@ -908,13 +908,13 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
 
       - name: Setup GoLang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -930,7 +930,7 @@ jobs:
           tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Darwin Build Artifact - AMD64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
@@ -955,13 +955,13 @@ jobs:
         run: uname -a
 
       - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
 
       - name: Setup GoLang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -977,7 +977,7 @@ jobs:
           tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Darwin Build Artifact - ARM64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
@@ -997,7 +997,7 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-table-dump
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-table-dump"
 
@@ -1014,7 +1014,7 @@ jobs:
         run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup GoLang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.22
 
@@ -1036,7 +1036,7 @@ jobs:
           sudo swapon --show
 
       - name: Install GoReleaser
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@5742e2a039330cbb23ebf35f046f814d4c6ff811 # v5.1.0
         with:
           install-only: true
   
@@ -1055,28 +1055,28 @@ jobs:
           ls -al
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           path: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           if-no-files-found: error
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           path: steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           if-no-files-found: error
 
       - name: Save Darwin Build Artifact - AMD64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           path: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           if-no-files-found: error
 
       - name: Save Darwin Build Artifact - ARM64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
           path: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
@@ -1113,97 +1113,97 @@ jobs:
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
         id: download_pg14_linux_amd64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
         id: download_pg14_linux_arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
         id: download_pg14_darwin_amd64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
         id: download_pg14_darwin_arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
         id: download_pg15_linux_amd64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
         id: download_pg15_linux_arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
         id: download_pg15_darwin_amd64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
         id: download_pg15_darwin_arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
         id: download_sqlite_linux_amd64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
         id: download_sqlite_linux_arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
         id: download_sqlite_darwin_amd64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
         id: download_sqlite_darwin_arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
         id: download_export_linux_amd64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
         id: download_export_linux_arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
         id: download_export_darwin_amd64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
         id: download_export_darwin_arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
 
@@ -1228,7 +1228,7 @@ jobs:
           echo "Version: ${VERSION}"
           
       - name: Create a draft release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         id: create_draft_release
         with:
           draft: false

@@ -42,13 +42,13 @@ jobs:
           echo "Version: ${VERSION}"
 
       - name: Check out steampipe-export
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-export"
           ref: ${{ github.event.inputs.branch }}
 
       - name: Setup GoLang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
           go-version: 1.21
 
@@ -64,7 +64,7 @@ jobs:
           go mod tidy
 
       - name: Install GoReleaser
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@5742e2a039330cbb23ebf35f046f814d4c6ff811 # v5.1.0
         with:
           install-only: true
 
@@ -79,7 +79,7 @@ jobs:
           ls -al
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: steampipe_export_aws.linux_amd64.tar.gz
           path: steampipe_export_aws.linux_amd64.tar.gz
