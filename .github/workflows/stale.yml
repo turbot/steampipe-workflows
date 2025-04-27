@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Stale issues and PRs
         id: stale-issues-and-prs
-        uses: actions/stale@v5
+        uses: actions/stale@f7176fd3007623b69d27091f9b9d4ab7995f0a06 # v5.2.1
         with:
           close-issue-message: |
             This issue was closed because it has been stalled for 90 days with no activity.
