@@ -1,0 +1,255 @@
+name: Build and Deploy OCI Image - GHCR
+on:
+  workflow_call:
+    inputs:
+      releaseTimeout:
+        description: Timeout for the GoReleaser release command
+        required: false
+        default: 30m
+        type: string
+      pipeling:
+        description: The name of the pipeline that triggered this workflow
+        required: false
+        default: steampipe
+        type: string
+      useCgo:
+        description: Whether to use CGO for the build
+        required: false
+        default: false
+        type: boolean
+
+env:
+  ORG: turbot
+  CR: ghcr.io
+  CR_PREFIX: turbot/${{ inputs.pipeling }}/plugins
+  CONFIG_SCHEMA_VERSION: '2020-11-18'
+  ORAS_VERSION: 1.1.0
+  GOLANG_CROSS_VERSION: v1.24
+
+jobs:
+  build-deploy:
+    runs-on:
+      group: large-runners
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Output pipeling name
+        run: |
+          echo "Pipeling name: ${{ inputs.pipeling }}"
+          echo "PIPELING_NAME=${{ inputs.pipeling }}" >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: ${{ inputs.pipeling }}-plugin
+          fetch-depth: 0
+
+      # Setup Env
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+
+      # Exit early if we don't need to build
+      - name: Exit if goreleaser file is missing
+        run: |
+          cd ${{ inputs.pipeling }}-plugin
+          test -f .goreleaser.yml
+
+      - name: Get latest version tag
+        run: |
+          cd ${{ inputs.pipeling }}-plugin
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Get latest trimmed version tag
+        run: |
+          echo $VERSION
+          trim=${VERSION#"v"}
+          echo $trim
+          echo "VERSION=${trim}" >> $GITHUB_ENV
+
+      - name: Validate Version String (only accept prod & rc)
+        run: |-
+          if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]; then
+            echo "Version OK: $VERSION"
+          else
+            echo "Invalid version: $VERSION"
+            exit 1
+          fi
+
+      - name: Ensure Version Does Not Exist
+        run: |-
+          URL=https://$CR/v2/$CR_PREFIX/$ORG/$PLUGIN_NAME/tags/list
+          IDX=$(curl -L -H "Authorization: Bearer $(base64 <<< $GITHUB_TOKEN)" $URL | jq ".tags | index(\"$VERSION\")")
+          if [ $IDX == "null" ]; then
+            echo "OK - Version does not exist: $VERSION"
+          else
+            echo "Version already exists: $VERSION"
+            exit 1
+          fi
+
+      # Setup go & build
+      - name: Set up Go
+        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
+        with:
+          go-version: 1.24
+
+      - name: Run GoReleaser (steampipe)
+        if: ${{ inputs.useCgo == false || inputs.useCgo == 'false' }} 
+        uses: goreleaser/goreleaser-action@b953231f81b8dfd023c58e0854a721e35037f28b # v2.9.1
+        with:
+          workdir: ${{ inputs.pipeling }}-plugin
+          version: latest
+          args: release --clean --skip=publish --timeout=${{ inputs.releaseTimeout }}
+
+      - name: Run GoReleaser (tailpipe)
+        if: ${{ inputs.useCgo == true || inputs.useCgo == 'true' }} 
+        run: |-
+          cd ${{ inputs.pipeling }}-plugin
+          docker run \
+            --rm \
+            -e CGO_ENABLED=1 \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v $PWD:/go/src/plugin \
+            -w /go/src/plugin \
+            ghcr.io/goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
+            release --clean --skip=publish --skip=validate --timeout=${{ inputs.releaseTimeout }}
+      
+      - name: List Build Artifacts
+        run: |
+          cd ${{ inputs.pipeling }}-plugin
+          ls -laR ./dist
+
+      # Copy artifacts into working dir
+      - name: Copy artifacts, docs and config to working dir (steampipe)
+        # run only if inputs.pipeling = steampipe
+        if: ${{ env.PIPELING_NAME == 'steampipe' }}
+        run: |
+          cp ./${{ inputs.pipeling }}-plugin/dist/*.gz .
+          cp -R ./${{ inputs.pipeling }}-plugin/docs .
+          cp -R ./${{ inputs.pipeling }}-plugin/config .
+          ls -al
+
+      # Copy artifacts into working dir
+      - name: Copy artifacts and docs to working dir (tailpipe)
+        # run only if inputs.pipeling = tailpipe
+        if: ${{ env.PIPELING_NAME == 'tailpipe' }}
+        run: |
+          cp ./${{ inputs.pipeling }}-plugin/dist/*.gz .
+          cp -R ./${{ inputs.pipeling }}-plugin/docs .
+          ls -al
+      
+      # Create files for registry
+      - name: Create config file
+        run: |-
+          JSON_STRING=$( jq -n \
+                    --arg name "$PLUGIN_NAME" \
+                    --arg organization "$ORG" \
+                    --arg version "$VERSION" \
+                    --arg schemaVersion "$CONFIG_SCHEMA_VERSION" \
+                    '{schemaVersion: $schemaVersion, plugin: { name: $name, organization: $organization, version: $version} }' )
+          echo $JSON_STRING > config.json
+
+      - name: Create annotations file
+        run: |-
+           JSON_STRING=$( jq -n \
+                    --arg title "$PLUGIN_NAME" \
+                    --arg desc "$ORG" \
+                    --arg version "$VERSION" \
+                    --arg timestamp "$(date +%FT%T%z | sed 's/\([0-9][0-9]\)\([0-9][0-9]\)$/\1:\2/')" \
+                    --arg repo "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+                    --arg commit "$GITHUB_SHA" \
+                    --arg vendor "Turbot HQ, Inc." \
+                  '{
+                    "$manifest": {
+                        "org.opencontainers.image.title": $title,
+                        "org.opencontainers.image.description": $desc,
+                        "org.opencontainers.image.version": $version,
+                        "org.opencontainers.image.created": $timestamp,
+                        "org.opencontainers.image.source": $repo,
+                        "org.opencontainers.image.revision": $commit,
+                        "org.opencontainers.image.vendor":  $vendor
+                    }
+                  }' )
+            echo $JSON_STRING > annotations.json
+
+      - name: View annotations
+        run: |
+          cat annotations.json
+
+      - name: View README
+        run: |
+          cd ${{ inputs.pipeling }}-plugin
+          cat README.md
+
+      # Setup ORAS
+      - name: Install specific version of ORAS
+        run: |
+          curl -LO https://github.com/oras-project/oras/releases/download/v${ORAS_VERSION}/oras_${ORAS_VERSION}_linux_amd64.tar.gz
+          sudo tar xzf oras_${ORAS_VERSION}_linux_amd64.tar.gz -C /usr/local/bin oras
+          oras version
+
+      # Login to GHCR
+      - name: Log in to the Container registry
+        uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
+        with:
+          registry: ${{ env.CR }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      # Publish to GHCR
+      - name: Push to the container registry (tailpipe)
+        # run only if inputs.pipeling = tailpipe
+        if: ${{ env.PIPELING_NAME == 'tailpipe' }}
+        run: |
+          REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:$VERSION"
+          LATEST_REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:latest"
+          oras push $REF \
+            --config config.json:application/vnd.turbot.${{ inputs.pipeling }}.config.v1+json \
+            --annotation-file annotations.json \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-amd64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-arm64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-amd64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip \
+            docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar
+
+          # tag the image with the GitHub Run ID for traceability
+          oras tag $REF $GITHUB_RUN_ID
+
+          # check if the version is NOT an rc version before tagging as latest
+          if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tagging as latest: $LATEST_REF"
+            oras tag $REF $LATEST_REF
+          else
+            echo "Skipping latest tag for rc version: $VERSION"
+          fi
+
+      # Publish to GHCR
+      - name: Push to the container registry (steampipe)
+        # run only if inputs.pipeling = steampipe
+        if: ${{ env.PIPELING_NAME == 'steampipe' }}
+        run: |
+          REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:$VERSION"
+          LATEST_REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:latest"
+          oras push $REF \
+            --config config.json:application/vnd.turbot.${{ inputs.pipeling }}.config.v1+json \
+            --annotation-file annotations.json \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-amd64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-arm64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-amd64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip \
+            docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar \
+            config:application/vnd.turbot.${{ inputs.pipeling }}.plugin.spc.layer.v1+tar
+          
+          # tag the image with the GitHub Run ID for traceability
+          oras tag $REF $GITHUB_RUN_ID
+
+          # check if the version is NOT an rc version before tagging as latest
+          if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tagging as latest: $LATEST_REF"
+            oras tag $REF $LATEST_REF
+          else
+            echo "Skipping latest tag for rc version: $VERSION"
+          fi
