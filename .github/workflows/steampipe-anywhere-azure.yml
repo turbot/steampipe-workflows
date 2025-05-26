@@ -995,13 +995,26 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
-          echo "PLUGIN_VERSION=${{ github.event.inputs.plugin_version }}" >> $GITHUB_ENV
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-table-dump
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-table-dump"
+
+      - name: Get latest version tag
+        run: |-
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "Version: ${VERSION}"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
       - name: Fetch all tags
         run: git fetch --tags
@@ -1024,7 +1037,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make release plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.PLUGIN_VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
+          make release plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
           go mod tidy
 
