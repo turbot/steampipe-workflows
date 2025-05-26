@@ -1650,3 +1650,45 @@ jobs:
             exit 1  # This exits the step with an error status, failing the job
           fi
             
+  notify-slack:
+    name: Notify Slack
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - get-version
+      - build-postgres-14-fdw-linux-amd64
+      - build-postgres-14-fdw-linux-arm64
+      - build-postgres-14-fdw-osx-amd64
+      - build-postgres-14-fdw-osx-arm64
+      - build-postgres-15-fdw-linux-amd64
+      - build-postgres-15-fdw-linux-arm64
+      - build-postgres-15-fdw-osx-amd64
+      - build-postgres-15-fdw-osx-arm64
+      - build-sqlite-extension-linux-amd64
+      - build-sqlite-extension-linux-arm64
+      - build-sqlite-extension-osx-amd64
+      - build-sqlite-extension-osx-arm64
+      - build-export-tool
+      - build-draft-release
+      - check-installation-linux
+      - check-installation-darwin-arm64
+      - check-installation-darwin-amd64
+    steps:
+      - name: Check for failures
+        id: check_failures
+        run: |
+          if [[ "${{ needs.*.result }}" == *"failure"* ]]; then
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "message=One or more jobs failed" >> $GITHUB_OUTPUT
+          else
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "message=All jobs completed successfully" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send Slack Notification
+        uses: act10ns/slack@87c73aef9f8838eb6feae81589a6b1487a4a9e08 # v1.6.0
+        with:
+          status: ${{ steps.check_failures.outputs.status }}
+          text: ${{ steps.check_failures.outputs.message }}
+          channel: "#steampipe-plugin-anywhere-release-updates"
+          webhook-url: ${{ secrets.STEAMPIPE_PLUGIN_ANYWHERE_RELEASE_COMPONENT_SLACK_WEBHOOK_URL }}
