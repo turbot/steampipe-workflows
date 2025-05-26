@@ -40,14 +40,6 @@ jobs:
           fi
           echo "Version: ${VERSION}"
 
-      # TODO: Re-enable once rc versions are supported
-      - name: Skip workflow for RC versions
-        run: |
-          if [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
-            echo "Skipping builds for rc version: $VERSION"
-            exit 0
-          fi
-
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
@@ -254,6 +246,8 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_VERSION=${{ github.event.inputs.plugin_version }}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}"
 
       - name: Check out steampipe-export
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
@@ -281,7 +275,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make release plugin=${{ env.PLUGIN_NAME }}
+          make release plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.PLUGIN_VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
           go mod tidy
 
