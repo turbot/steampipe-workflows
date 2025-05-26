@@ -992,7 +992,7 @@ jobs:
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
           echo "PLUGIN_VERSION=${{ github.event.inputs.plugin_version }}" >> $GITHUB_ENV
-          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}"
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-export
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
