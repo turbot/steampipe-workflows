@@ -1347,13 +1347,22 @@ jobs:
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           fi
           echo "Version: ${VERSION}"
+
+      - name: Check if pre-release
+        id: check_prerelease
+        run: |
+          if [[ "${{ env.VERSION }}" =~ (alpha|beta|rc|dev) ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+          fi
           
       - name: Create a draft release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         id: create_draft_release
         with:
           draft: false
-          prerelease: false
+          prerelease: ${{ steps.check_prerelease.outputs.is_prerelease }}
           name: ${{ env.VERSION }}
           tag_name: ${{ env.VERSION }}
           repository: ${{ github.repository }}
