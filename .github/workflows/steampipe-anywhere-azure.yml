@@ -25,6 +25,7 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Get latest version tag
         run: |-
@@ -63,11 +64,21 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
     
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
       - name: Fetch all tags
         run: git fetch --tags
@@ -122,7 +133,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }}
+          make standalone plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
 
       - name: Rename and zip the build-Linux folder
@@ -152,11 +163,21 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
       - name: Fetch all tags
         run: git fetch --tags
@@ -212,7 +233,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }}
+          make standalone plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
 
       - name: Rename and zip the build-Linux folder
@@ -240,6 +261,7 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Install PostgreSQL@14
         run: brew install postgresql@14
@@ -264,6 +286,15 @@ jobs:
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
       - name: Fetch all tags
         run: git fetch --tags
@@ -305,7 +336,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }}
+          make standalone plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
@@ -333,6 +364,7 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check architecture
         run: uname -a
@@ -360,6 +392,15 @@ jobs:
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
       - name: Fetch all tags
         run: git fetch --tags
@@ -401,7 +442,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }}
+          make standalone plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
@@ -431,11 +472,21 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
       - name: Fetch all tags
         run: git fetch --tags
@@ -490,7 +541,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }}
+          make standalone plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
 
       - name: Rename and zip the build-Linux folder
@@ -520,11 +571,21 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-postgres-fdw-anywhere
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
       - name: Fetch all tags
         run: git fetch --tags
@@ -580,7 +641,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }}
+          make standalone plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
 
       - name: Rename and zip the build-Linux folder
@@ -608,6 +669,7 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Install PostgreSQL@15
         run: brew install postgresql@15
@@ -639,6 +701,15 @@ jobs:
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-postgres-fdw"
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
       - name: Fetch all tags
         run: git fetch --tags
@@ -679,7 +750,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }}
+          make standalone plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
@@ -707,6 +778,7 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check architecture
         run: uname -a
@@ -741,6 +813,15 @@ jobs:
         with:
           repository: "turbot/steampipe-postgres-fdw"
 
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
+
       - name: Fetch all tags
         run: git fetch --tags
 
@@ -780,7 +861,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }}
+          make standalone plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
 
       - name: Rename and zip the build-Darwin folder
@@ -810,12 +891,22 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-sqlite"
           ref: main
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
@@ -826,7 +917,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }}
+          make build plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
 
       - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
@@ -855,6 +946,7 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
@@ -874,11 +966,20 @@ jobs:
           repository: "turbot/steampipe-sqlite"
           ref: main
 
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
+
       - name: Build steampipe-sqlite-extension
         run: |
           pwd
           ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }}
+          make build plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
 
       - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
@@ -906,12 +1007,22 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
+
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
@@ -922,7 +1033,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }}
+          make build plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
 
       - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
@@ -950,6 +1061,7 @@ jobs:
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
           echo $plugin_name
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check architecture
         run: uname -a
@@ -960,6 +1072,15 @@ jobs:
           repository: "turbot/steampipe-sqlite-extension"
           ref: main
 
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
+
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
@@ -969,7 +1090,7 @@ jobs:
         run: |
           pwd
           ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }}
+          make build plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
           ls -ltr
 
       - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
