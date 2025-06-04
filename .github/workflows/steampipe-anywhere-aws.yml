@@ -1052,63 +1052,6 @@ jobs:
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           if-no-files-found: error
 
-  build-sqlite-extension-osx-arm64:
-    name: Build SQLite Extension for Darwin - ARM64
-    needs: get-version
-    runs-on: macos-14
-
-    steps:
-      - name: Check architecture
-        run: uname -a
-
-      - name: Set environment variables
-        run: |
-          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
-          echo $plugin_name
-          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
-          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
-
-      - name: Check architecture
-        run: uname -a
-
-      - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
-        with:
-          repository: "turbot/steampipe-sqlite-extension"
-          ref: main
-
-      - name: If workflow_dispatch, get version from input
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-          else
-            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-          fi
-          echo "Version: ${VERSION}"
-
-      - name: Setup GoLang
-        uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
-        with:
-          go-version: 1.22
-
-      - name: Build steampipe-sqlite-extension
-        run: |
-          pwd
-          ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
-          ls -ltr
-
-      - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
-        run: |-
-          tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
-
-      - name: Save Darwin Build Artifact - ARM64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-          path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-          if-no-files-found: error
-
   build-export-tool:
     name: Build Export Tool
     needs: get-version
@@ -1232,7 +1175,6 @@ jobs:
       - build-sqlite-extension-linux-amd64
       - build-sqlite-extension-linux-arm64
       - build-sqlite-extension-osx-amd64
-      - build-sqlite-extension-osx-arm64
       # Export
       - build-export-tool
     steps:
@@ -1308,12 +1250,6 @@ jobs:
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
 
-      - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-        id: download_sqlite_darwin_arm64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
-        with:
-          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
         id: download_export_linux_amd64
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
@@ -1388,7 +1324,6 @@ jobs:
             ${{ steps.download_pg15_linux_arm64.outputs.download-path }}/steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
 
             ${{ steps.download_sqlite_darwin_amd64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
-            ${{ steps.download_sqlite_darwin_arm64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
             ${{ steps.download_sqlite_linux_amd64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
             ${{ steps.download_sqlite_linux_arm64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
@@ -1542,10 +1477,6 @@ jobs:
           psql -d postgres -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "SELECT * FROM pg_extension;"
 
-      - name: Download and install SQLite Extension
-        run: |-
-          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) ${{ env.PLUGIN_NAME }} latest 2>/dev/null
-
       - name: Download and install Export Tool
         run: |-
           curl -fsSL -o install_export.sh https://steampipe.io/install/export.sh
@@ -1650,3 +1581,44 @@ jobs:
             exit 1  # This exits the step with an error status, failing the job
           fi
             
+  notify-slack:
+    name: Notify Slack
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - get-version
+      - build-postgres-14-fdw-linux-amd64
+      - build-postgres-14-fdw-linux-arm64
+      - build-postgres-14-fdw-osx-amd64
+      - build-postgres-14-fdw-osx-arm64
+      - build-postgres-15-fdw-linux-amd64
+      - build-postgres-15-fdw-linux-arm64
+      - build-postgres-15-fdw-osx-amd64
+      - build-postgres-15-fdw-osx-arm64
+      - build-sqlite-extension-linux-amd64
+      - build-sqlite-extension-linux-arm64
+      - build-sqlite-extension-osx-amd64
+      - build-export-tool
+      - build-draft-release
+      - check-installation-linux
+      - check-installation-darwin-arm64
+      - check-installation-darwin-amd64
+    steps:
+      - name: Check for failures
+        id: check_failures
+        run: |
+          if [[ "${{ needs.*.result }}" == *"failure"* ]]; then
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "message=One or more jobs failed" >> $GITHUB_OUTPUT
+          else
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "message=All jobs completed successfully" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send Slack Notification
+        uses: act10ns/slack@87c73aef9f8838eb6feae81589a6b1487a4a9e08 # v1.6.0
+        with:
+          status: ${{ steps.check_failures.outputs.status }}
+          text: ${{ steps.check_failures.outputs.message }}
+          channel: "#steampipe-plugin-anywhere-release-updates"
+          webhook-url: ${{ secrets.STEAMPIPE_PLUGIN_ANYWHERE_RELEASE_COMPONENT_SLACK_WEBHOOK_URL }}
