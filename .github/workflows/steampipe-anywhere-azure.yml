@@ -1690,12 +1690,61 @@ jobs:
         run: |
           failed_jobs=""
           
-          # Check each job's status
-          for job in get-version build-postgres-14-fdw-linux-amd64 build-postgres-14-fdw-linux-arm64 build-postgres-14-fdw-osx-amd64 build-postgres-14-fdw-osx-arm64 build-postgres-15-fdw-linux-amd64 build-postgres-15-fdw-linux-arm64 build-postgres-15-fdw-osx-amd64 build-postgres-15-fdw-osx-arm64 build-sqlite-extension-linux-amd64 build-sqlite-extension-linux-arm64 build-sqlite-extension-osx-amd64 build-sqlite-extension-osx-arm64 build-export-tool build-draft-release check-installation-linux check-installation-darwin-arm64 check-installation-darwin-amd64; do
-            if [[ "${{ needs[job].result }}" == "failure" ]]; then
-              failed_jobs="$failed_jobs\n- $job"
-            fi
-          done
+          # Check each job's status using static checks
+          if [[ "${{ needs.get-version.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- get-version"
+          fi
+          if [[ "${{ needs.build-postgres-14-fdw-linux-amd64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-postgres-14-fdw-linux-amd64"
+          fi
+          if [[ "${{ needs.build-postgres-14-fdw-linux-arm64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-postgres-14-fdw-linux-arm64"
+          fi
+          if [[ "${{ needs.build-postgres-14-fdw-osx-amd64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-postgres-14-fdw-osx-amd64"
+          fi
+          if [[ "${{ needs.build-postgres-14-fdw-osx-arm64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-postgres-14-fdw-osx-arm64"
+          fi
+          if [[ "${{ needs.build-postgres-15-fdw-linux-amd64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-postgres-15-fdw-linux-amd64"
+          fi
+          if [[ "${{ needs.build-postgres-15-fdw-linux-arm64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-postgres-15-fdw-linux-arm64"
+          fi
+          if [[ "${{ needs.build-postgres-15-fdw-osx-amd64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-postgres-15-fdw-osx-amd64"
+          fi
+          if [[ "${{ needs.build-postgres-15-fdw-osx-arm64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-postgres-15-fdw-osx-arm64"
+          fi
+          if [[ "${{ needs.build-sqlite-extension-linux-amd64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-sqlite-extension-linux-amd64"
+          fi
+          if [[ "${{ needs.build-sqlite-extension-linux-arm64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-sqlite-extension-linux-arm64"
+          fi
+          if [[ "${{ needs.build-sqlite-extension-osx-amd64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-sqlite-extension-osx-amd64"
+          fi
+          if [[ "${{ needs.build-sqlite-extension-osx-arm64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-sqlite-extension-osx-arm64"
+          fi
+          if [[ "${{ needs.build-export-tool.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-export-tool"
+          fi
+          if [[ "${{ needs.build-draft-release.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-draft-release"
+          fi
+          if [[ "${{ needs.check-installation-linux.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- check-installation-linux"
+          fi
+          if [[ "${{ needs.check-installation-darwin-arm64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- check-installation-darwin-arm64"
+          fi
+          if [[ "${{ needs.check-installation-darwin-amd64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- check-installation-darwin-amd64"
+          fi
           
           if [[ -n "$failed_jobs" ]]; then
             echo "status=failure" >> $GITHUB_OUTPUT
