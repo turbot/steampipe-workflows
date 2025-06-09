@@ -43,7 +43,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Fetch plugin module
         run: go get github.com/turbot/steampipe-plugin-${{ env.PLUGIN_NAME }}@$VERSION
@@ -93,7 +93,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Setup apt-get
         run: |-
@@ -192,7 +192,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Setup apt-get
         run: |-
@@ -309,7 +309,7 @@ jobs:
       - name: Setup Golang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Find stuff and set env
         run: |-
@@ -415,7 +415,7 @@ jobs:
       - name: Setup Golang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Find stuff and set env
         run: |-
@@ -504,7 +504,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Setup apt-get
         run: |-
@@ -603,7 +603,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Setup apt-get
         run: |-
@@ -727,7 +727,7 @@ jobs:
       - name: Setup Golang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Find stuff and set env
         run: |-
@@ -838,7 +838,7 @@ jobs:
       - name: Setup Golang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Find stuff and set env
         run: |-
@@ -916,7 +916,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Build steampipe-sqlite-extension
         run: |
@@ -956,7 +956,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
   
       - name: Setup apt-get
         run: |-
@@ -1017,7 +1017,7 @@ jobs:
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
-          repository: "turbot/steampipe-sqlite-extension"
+          repository: "turbot/steampipe-sqlite"
           ref: main
 
       - name: If workflow_dispatch, get version from input
@@ -1032,7 +1032,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Build steampipe-sqlite-extension
         run: |
@@ -1074,7 +1074,7 @@ jobs:
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
-          repository: "turbot/steampipe-sqlite-extension"
+          repository: "turbot/steampipe-sqlite"
           ref: main
 
       - name: If workflow_dispatch, get version from input
@@ -1089,7 +1089,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Build steampipe-sqlite-extension
         run: |
@@ -1157,7 +1157,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Build steampipe-export
         run: |
