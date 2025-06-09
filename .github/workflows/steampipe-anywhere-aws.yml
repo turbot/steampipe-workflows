@@ -902,7 +902,7 @@ jobs:
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           repository: "turbot/steampipe-sqlite"
-          ref: main
+          ref: linkmodeext
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -969,7 +969,7 @@ jobs:
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           repository: "turbot/steampipe-sqlite"
-          ref: main
+          ref: linkmodeext
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -1017,8 +1017,8 @@ jobs:
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
-          repository: "turbot/steampipe-sqlite-extension"
-          ref: main
+          repository: "turbot/steampipe-sqlite"
+          ref: linkmodeext
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -1074,8 +1074,8 @@ jobs:
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
-          repository: "turbot/steampipe-sqlite-extension"
-          ref: main
+          repository: "turbot/steampipe-sqlite"
+          ref: linkmodeext
 
       - name: If workflow_dispatch, get version from input
         run: |
