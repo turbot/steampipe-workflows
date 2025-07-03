@@ -38,23 +38,17 @@
   description: No recent activity has been detected on this issue/PR and it will be closed
   color: "eb7134"
 - name: aws
-  description: Related to AWS mods or issues
+  description: AWS mod issues
   color: "FF9900"
 - name: azure
-  description: Related to Azure mods or issues
+  description: Azure mod issues
   color: "0072C6"
 - name: gcp
-  description: Related to GCP mods or issues
+  description: GCP mod issues
   color: "4285F4"
-- name: tailpipe
-  description: Related to Tailpipe functionality
-  color: "8E44AD"
-- name: steampipe
-  description: Related to Steampipe core or features
-  color: "2ECC40"
 - name: powerpipe
-  description: Related to Powerpipe features or issues
+  description: Powerpipe mod issues
   color: "E67E22"
 - name: flowpipe
-  description: Related to Flowpipe features or issues
+  description: Flowpipe mod issues
   color: "16A085"

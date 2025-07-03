@@ -44,23 +44,18 @@
   description: No recent activity has been detected on this issue/PR and it will be closed
   color: "eb7134"
 - name: aws
-  description: Related to AWS plugins or issues
+  description: AWS plugin issues
   color: "FF9900"
 - name: azure
-  description: Related to Azure plugins or issues
+  description: Azure plugin issues
   color: "0072C6"
 - name: gcp
-  description: Related to GCP plugins or issues
+  description: GCP plugin issues
   color: "4285F4"
 - name: tailpipe
-  description: Related to Tailpipe functionality
+  description: Tailpipe plugin issues
   color: "8E44AD"
 - name: steampipe
-  description: Related to Steampipe core or features
+  description: Steampipe plugin issues
   color: "2ECC40"
-- name: powerpipe
-  description: Related to Powerpipe features or issues
-  color: "E67E22"
-- name: flowpipe
-  description: Related to Flowpipe features or issues
-  color: "16A085"
+
