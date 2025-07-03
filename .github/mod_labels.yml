@@ -1,39 +1,54 @@
 - name: blocked
   description: Work on this issue is currently blocked
-  color: 'ff0000'
+  color: "ff0000"
 - name: bug
   description: Something isn't working
-  color: 'd73a4a'
+  color: "d73a4a"
 - name: documentation
   description: Improvements or additions to documentation
-  color: '0075ca'
+  color: "0075ca"
 - name: duplicate
   description: This issue or pull request already exists
-  color: 'cfd3d7'
+  color: "cfd3d7"
 - name: enhancement
   description: New feature or request
-  color: 'a2eeef'
+  color: "a2eeef"
 - name: good first issue
   description: Good for newcomers
-  color: '7057ff'
+  color: "7057ff"
 - name: hacktoberfest-accepted
   description: This pull request has been accepted for Hacktoberfest
-  color: 'D93F0B'
+  color: "D93F0B"
 - name: help wanted
   description: We are asking the community to submit a PR to resolve this issue
-  color: '008672'
-- name: 'priority:high'
+  color: "008672"
+- name: "priority:high"
   description: This issue requires immediate attention
-  color: 'DB421D'
-- name: 'priority:low'
+  color: "DB421D"
+- name: "priority:low"
   description: This issue can be worked on at any time
-  color: '6F9FBA'
-- name: 'priority:medium'
+  color: "6F9FBA"
+- name: "priority:medium"
   description: This issue should be worked on for an upcoming release
-  color: 'E3DA48'
+  color: "E3DA48"
 - name: question
   description: Further information is requested
-  color: 'd876e3'
+  color: "d876e3"
 - name: stale
   description: No recent activity has been detected on this issue/PR and it will be closed
-  color: 'eb7134'
+  color: "eb7134"
+- name: aws
+  description: AWS mod issues
+  color: "FF9900"
+- name: azure
+  description: Azure mod issues
+  color: "0072C6"
+- name: gcp
+  description: GCP mod issues
+  color: "4285F4"
+- name: powerpipe
+  description: Powerpipe mod issues
+  color: "E67E22"
+- name: flowpipe
+  description: Flowpipe mod issues
+  color: "16A085"
