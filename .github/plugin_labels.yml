@@ -45,17 +45,31 @@
   color: "eb7134"
 - name: aws
   description: AWS plugin issues
-  color: "FF9900"
+  color: "cfd3d7"
 - name: azure
   description: Azure plugin issues
-  color: "0072C6"
+  color: "cfd3d7"
 - name: gcp
   description: GCP plugin issues
-  color: "4285F4"
+  color: "cfd3d7"
 - name: tailpipe
   description: Tailpipe plugin issues
   color: "8E44AD"
 - name: steampipe
   description: Steampipe plugin issues
   color: "2ECC40"
-
+- name: github
+  description: GitHub plugin issues
+  color: "cfd3d7"
+- name: github
+  description: GitHub plugin issues
+  color: "cfd3d7"
+- name: jira
+  description: GitHub plugin issues
+  color: "cfd3d7"
+- name: oci
+  description: GitHub plugin issues
+  color: "cfd3d7"
+- name: cloudflare
+  description: GitHub plugin issues
+  color: "cfd3d7"
