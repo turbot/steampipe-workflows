@@ -61,15 +61,30 @@
 - name: github
   description: GitHub plugin issues
   color: "cfd3d7"
-- name: github
-  description: GitHub plugin issues
-  color: "cfd3d7"
 - name: jira
-  description: GitHub plugin issues
+  description: Jira plugin issues
   color: "cfd3d7"
 - name: oci
-  description: GitHub plugin issues
+  description: OCI plugin issues
   color: "cfd3d7"
 - name: cloudflare
-  description: GitHub plugin issues
+  description: Cloudflare plugin issues
+  color: "cfd3d7"
+- name: datadog
+  description: Datadog plugin issues
+  color: "cfd3d7"
+- name: wiz
+  description: Wiz plugin issues
+  color: "cfd3d7"
+- name: jira
+  description: Jira plugin issues
+  color: "cfd3d7"
+- name: digitalocean
+  description: DigitalOcean plugin issues
+  color: "cfd3d7"
+- name: azuread
+  description: AzureAD plugin issues
+  color: "cfd3d7"
+- name: crowdstrike
+  description: CrowdStrike plugin issues
   color: "cfd3d7"
