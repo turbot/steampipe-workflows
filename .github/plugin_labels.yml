@@ -76,9 +76,6 @@
 - name: wiz
   description: Wiz plugin issues
   color: "cfd3d7"
-- name: jira
-  description: Jira plugin issues
-  color: "cfd3d7"
 - name: digitalocean
   description: DigitalOcean plugin issues
   color: "cfd3d7"
