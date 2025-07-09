@@ -85,3 +85,6 @@
 - name: crowdstrike
   description: CrowdStrike plugin issues
   color: "cfd3d7"
+- name: trivy
+  description: Trivy plugin issues
+  color: "cfd3d7"
