@@ -57,7 +57,7 @@
   color: "8E44AD"
 - name: steampipe
   description: Steampipe plugin issues
-  color: "2ECC40"
+  color: "E99695"
 - name: github
   description: GitHub plugin issues
   color: "cfd3d7"
