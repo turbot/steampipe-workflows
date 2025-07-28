@@ -17,5 +17,5 @@ jobs:
       - name: Add issue to project
         uses: actions/add-to-project@v1.0.2
         with:
-          project-url: https://github.com/orgs/turbot/projects/25
+          project-url: https://github.com/orgs/turbot/projects/34
           github-token: ${{ secrets.GH_PROJECT_PAT }}
