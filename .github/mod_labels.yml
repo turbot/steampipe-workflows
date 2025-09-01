@@ -55,3 +55,6 @@
 - name: github
   description: GitHub mod issues
   color: "cfd3d7"
+- name: community-contribution
+  description: Pull requests for mods contributed by the community
+  color: "2196F3"
