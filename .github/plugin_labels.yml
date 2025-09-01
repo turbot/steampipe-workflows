@@ -88,3 +88,6 @@
 - name: trivy
   description: Trivy plugin issues
   color: "cfd3d7"
+- name: community-contribution
+  description: Pull requests for plugins contributed by the community
+  color: "2196F3"
