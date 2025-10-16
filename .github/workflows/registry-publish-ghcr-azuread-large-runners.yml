@@ -105,11 +105,12 @@ jobs:
 
       # ---- Build: Darwin (no clean; keep Linux artifacts) ----
       - name: Run GoReleaser (Darwin)
-        uses: goreleaser/goreleaser-action@b953231f81b8dfd023c58e0854a721e35037f28b # v2.9.1
+        uses: goreleaser/goreleaser-action@b953231f81b8dfd023c58e0854a721e35037f28b
         with:
           workdir: ${{ inputs.pipeling }}-plugin
           version: latest
-          args: release --skip=publish --timeout=${{ inputs.releaseTimeout }} -f .goreleaser.darwin.yml
+          args: release --skip=publish --skip=validate --timeout=${{ inputs.releaseTimeout }} -f .goreleaser.darwin.yml
+
 
       - name: List Build Artifacts
         run: |
