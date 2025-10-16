@@ -120,7 +120,8 @@ jobs:
       # Copy artifacts into working dir (steampipe)
       - name: Copy artifacts, docs and config to working dir
         run: |
-          cp ./${{ inputs.pipeling }}-plugin/dist/*.gz .
+          cp ./${{ inputs.pipeling }}-plugin/dist-linux/*.gz .
+          cp ./${{ inputs.pipeling }}-plugin/dist-darwin/*.gz .
           cp -R ./${{ inputs.pipeling }}-plugin/docs .
           cp -R ./${{ inputs.pipeling }}-plugin/config .
           ls -al
