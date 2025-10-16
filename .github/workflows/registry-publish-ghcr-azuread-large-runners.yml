@@ -115,7 +115,16 @@ jobs:
       - name: List Build Artifacts
         run: |
           cd ${{ inputs.pipeling }}-plugin
-          ls -laR ./dist
+          for d in dist dist-linux dist-darwin; do
+            if [ -d "$d" ]; then
+              echo "== Contents of $d =="
+              ls -lah "$d"
+              echo "== .gz archives in $d =="
+              find "$d" -maxdepth 1 -name '*.gz' -printf '%p\t%k KB\n' 2>/dev/null || true
+            else
+              echo "== $d not present =="
+            fi
+          done
 
       # Copy artifacts into working dir (steampipe)
       - name: Copy artifacts, docs and config to working dir
