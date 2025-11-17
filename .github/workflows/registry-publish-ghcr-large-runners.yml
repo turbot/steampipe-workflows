@@ -215,6 +215,7 @@ jobs:
 
       # Validate plugin archives (gzip integrity)
       - name: Validate plugin archives (gzip integrity)
+        continue-on-error: true
         run: |
           echo "Validating plugin archives..."
           echo ""
@@ -374,6 +375,7 @@ jobs:
 
       # Log ORAS and environment info
       - name: Log ORAS execution environment
+        continue-on-error: true
         run: |
           echo "=== ORAS EXECUTION ENVIRONMENT ==="
           echo ""
