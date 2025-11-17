@@ -103,6 +103,8 @@ jobs:
           workdir: ${{ inputs.pipeling }}-plugin
           version: latest
           args: release --clean --skip=publish --timeout=${{ inputs.releaseTimeout }}
+        env:
+          GORELEASER_PARALLELISM: 1
 
       - name: Run GoReleaser (tailpipe)
         if: ${{ inputs.useCgo == true || inputs.useCgo == 'true' }}
