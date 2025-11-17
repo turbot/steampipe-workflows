@@ -113,8 +113,8 @@ jobs:
           df -h /tmp 2>/dev/null || df -h /var/tmp 2>/dev/null || echo "Cannot access /tmp"
 
       - name: Run GoReleaser (steampipe)
-        if: ${{ inputs.useCgo == false || inputs.useCgo == 'false' }}
-        uses: goreleaser/goreleaser-action@b953231f81b8dfd023c58e0854a721e35037f28b # v2.9.1
+        if: ${{ inputs.useCgo == false || inputs.useCgo == 'false' }} 
+        uses: goreleaser/goreleaser-action@7ec5c2b0c604053c1de1acad8d40ab5ea50c5956 # v2.12.7
         with:
           workdir: ${{ inputs.pipeling }}-plugin
           version: latest
