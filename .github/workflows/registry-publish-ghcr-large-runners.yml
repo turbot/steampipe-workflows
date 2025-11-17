@@ -113,8 +113,8 @@ jobs:
           df -h /tmp 2>/dev/null || df -h /var/tmp 2>/dev/null || echo "Cannot access /tmp"
 
       - name: Run GoReleaser (steampipe)
-        if: ${{ inputs.useCgo == false || inputs.useCgo == 'false' }} 
-        uses: goreleaser/goreleaser-action@v5  # Latest version
+        if: ${{ inputs.useCgo == false || inputs.useCgo == 'false' }}
+        uses: goreleaser/goreleaser-action@v5 # Latest version
         with:
           workdir: ${{ inputs.pipeling }}-plugin
           version: latest
@@ -210,14 +210,14 @@ jobs:
 
       # Upload build artifacts for inspection
       - name: Upload build artifacts
-        if: always()  # Run even if previous steps fail
+        if: always() # Run even if previous steps fail
         uses: actions/upload-artifact@v4
         with:
           name: plugin-archives-${{ env.VERSION }}
           path: |
             ${{ inputs.pipeling }}-plugin-*.gz
           retention-days: 7
-          compression-level: 0  # Don't compress, we want raw files
+          compression-level: 0 # Don't compress, we want raw files
 
       # Validate plugin archives (gzip integrity)
       - name: Validate plugin archives (gzip integrity)
@@ -225,17 +225,17 @@ jobs:
         run: |
           echo "Validating plugin archives..."
           echo ""
-          
+
           required_files=(
             "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz"
             "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz"
             "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz"
             "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz"
           )
-          
+
           missing_files=0
           corrupted_files=0
-          
+
           for file in "${required_files[@]}"; do
             echo "Checking: $file"
             if [ ! -f "$file" ]; then
@@ -257,12 +257,12 @@ jobs:
             fi
             echo ""
           done
-          
+
           echo "Summary:"
           echo "  Missing files : $missing_files"
           echo "  Corrupted files: $corrupted_files"
           echo ""
-          
+
           if [ $corrupted_files -gt 0 ]; then
             echo "FATAL: Validation failed!"
             echo ""
@@ -271,7 +271,7 @@ jobs:
             echo ""
             exit 1
           fi
-          
+
           echo "✓ All available archives passed gzip integrity check"
 
       # Smoke test Linux plugin binaries (if they exist)
@@ -280,12 +280,12 @@ jobs:
         run: |
           echo "Running Linux plugin smoke tests..."
           echo ""
-          
+
           linux_files=(
             "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz"
             "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz"
           )
-          
+
           for gz in "${linux_files[@]}"; do
             if [ ! -f "$gz" ]; then
               echo "⚠️  Skipping: $gz (not found – may be partial build)"
@@ -321,56 +321,6 @@ jobs:
             rm -f "$tmp_bin"
             echo "✓ Smoke test completed for: $gz"
           done
-
-      # # OLD Validate build artifacts - COMMENTED OUT FOR REPLACEMENT
-      # - name: Validate all plugin archives exist and are valid
-      #   run: |
-      #     echo "Validating plugin archives..."
-      #     echo ""
-
-      #     required_files=(
-      #       "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz"
-      #       "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz"
-      #       "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz"
-      #       "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz"
-      #     )
-
-      #     missing_files=0
-      #     corrupted_files=0
-
-      #     for file in "${required_files[@]}"; do
-      #       if [ ! -f "$file" ]; then
-      #         echo "❌ ERROR: Missing file: $file"
-      #         missing_files=$((missing_files + 1))
-      #       else
-      #         # Verify file integrity with gzip test
-      #         if gzip -t "$file" 2>/dev/null; then
-      #           size=$(stat -c%s "$file" 2>/dev/null || stat -f%z "$file" 2>/dev/null)
-      #           size_mb=$((size / 1048576))
-      #           echo "✓ $file ($size_mb MB)"
-      #         else
-      #           echo "❌ ERROR: Corrupted file: $file"
-      #           corrupted_files=$((corrupted_files + 1))
-      #         fi
-      #       fi
-      #     done
-
-      #     echo ""
-      #     if [ $missing_files -gt 0 ] || [ $corrupted_files -gt 0 ]; then
-      #       echo "FATAL: Validation failed!"
-      #       echo "  Missing files: $missing_files"
-      #       echo "  Corrupted files: $corrupted_files"
-      #       echo ""
-      #       echo "Current directory contents:"
-      #       ls -lh ${{ inputs.pipeling }}-plugin-*.gz 2>/dev/null || echo "  No .gz files found in working directory"
-      #       echo ""
-      #       echo "Source directory (dist/):"
-      #       ls -lh ${{ inputs.pipeling }}-plugin/dist/*.gz 2>/dev/null || echo "  No .gz files found in dist/"
-      #       exit 1
-      #     fi
-
-      #     echo ""
-      #     echo "✓ All required archives validated successfully"
 
       # Setup ORAS
       - name: Install specific version of ORAS
@@ -438,89 +388,24 @@ jobs:
         # run only if inputs.pipeling = steampipe
         if: ${{ env.PIPELING_NAME == 'steampipe' }}
         run: |
-          echo "=== ORAS PUSH EXECUTION WITH VERBOSE LOGGING ==="
-          echo ""
-          
           REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:$VERSION"
           LATEST_REF="$CR/$CR_PREFIX/$ORG/$PLUGIN_NAME:latest"
-          
-          echo "Pushing to: $REF"
-          echo ""
-          echo "Files being pushed:"
-          ls -lh ${{ inputs.pipeling }}-plugin-*.gz 2>/dev/null | awk '{print "  " $9 ": " $5}'
-          echo ""
-          
-          # Build ORAS push command dynamically to only include files that exist
-          echo "Starting ORAS push operation..."
-          echo ""
-          
-          ORAS_CMD="oras push $REF --config config.json:application/vnd.turbot.${{ inputs.pipeling }}.config.v1+json --annotation-file annotations.json"
-          
-          echo "Adding plugin archives to ORAS command..."
-          
-          # Add plugin archives only if they exist
-          if [ -f "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz" ]; then
-            echo "  ✓ Including darwin_amd64.gz"
-            ORAS_CMD="$ORAS_CMD ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-amd64.layer.v1+gzip"
-          else
-            echo "  ⚠️  Skipping darwin_amd64.gz (not found)"
-          fi
-          
-          if [ -f "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz" ]; then
-            echo "  ✓ Including darwin_arm64.gz"
-            ORAS_CMD="$ORAS_CMD ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-arm64.layer.v1+gzip"
-          else
-            echo "  ⚠️  Skipping darwin_arm64.gz (not found)"
-          fi
-          
-          # Only check for Linux builds if they exist (they shouldn't in darwin-only builds)
-          if [ -f "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz" ]; then
-            echo "  ✓ Including linux_amd64.gz"
-            ORAS_CMD="$ORAS_CMD ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-amd64.layer.v1+gzip"
-          else
-            echo "  ℹ️  Skipping linux_amd64.gz (not built)"
-          fi
-          
-          if [ -f "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz" ]; then
-            echo "  ✓ Including linux_arm64.gz"
-            ORAS_CMD="$ORAS_CMD ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip"
-          else
-            echo "  ℹ️  Skipping linux_arm64.gz (not built)"
-          fi
-          
-          # Add docs and config (always exist)
-          echo "  ✓ Including docs and config"
-          ORAS_CMD="$ORAS_CMD docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar config:application/vnd.turbot.${{ inputs.pipeling }}.plugin.spc.layer.v1+tar"
-          
-          echo ""
-          echo "Executing ORAS push command..."
-          echo ""
-          
-          if eval "$ORAS_CMD"; then
-            echo "✓ ORAS push completed successfully"
-          else
-            echo "❌ ORAS push failed - see output above for details"
-            exit 1
-          fi
-          
-          echo ""
-          
+          oras push $REF \
+            --config config.json:application/vnd.turbot.${{ inputs.pipeling }}.config.v1+json \
+            --annotation-file annotations.json \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-amd64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-arm64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-amd64.layer.v1+gzip \
+            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip \
+            docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar config:application/vnd.turbot.${{ inputs.pipeling }}.plugin.spc.layer.v1+tar
+
           # tag the image with the GitHub Run ID for traceability
-          echo "Tagging with Run ID: $GITHUB_RUN_ID"
-          if oras tag $REF $GITHUB_RUN_ID; then
-            echo "✓ Run ID tag created"
-          else
-            echo "⚠ Warning: Failed to tag with Run ID"
-          fi
+          oras tag $REF $GITHUB_RUN_ID
 
           # check if the version is NOT an rc version before tagging as latest
           if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Tagging as latest: $LATEST_REF"
-            if oras tag $REF $LATEST_REF; then
-              echo "✓ Latest tag created"
-            else
-              echo "⚠ Warning: Failed to create latest tag"
-            fi
+            oras tag $REF $LATEST_REF
           else
             echo "Skipping latest tag for rc version: $VERSION"
           fi
