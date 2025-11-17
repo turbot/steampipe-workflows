@@ -114,13 +114,19 @@ jobs:
 
       - name: Run GoReleaser (steampipe)
         if: ${{ inputs.useCgo == false || inputs.useCgo == 'false' }} 
-        uses: goreleaser/goreleaser-action@b953231f81b8dfd023c58e0854a721e35037f28b # v2.9.1
+        uses: goreleaser/goreleaser-action@v5  # Latest version
         with:
           workdir: ${{ inputs.pipeling }}-plugin
-          version: v2.12.7
+          version: latest
           args: release --clean --skip=publish --timeout=${{ inputs.releaseTimeout }}
         env:
           GORELEASER_PARALLELISM: 1
+
+      - name: Log GoReleaser version after build
+        continue-on-error: true
+        run: |
+          which goreleaser || echo "goreleaser not in PATH"
+          goreleaser --version 2>/dev/null || echo "Could not get goreleaser version"
 
       - name: Run GoReleaser (tailpipe)
         if: ${{ inputs.useCgo == true || inputs.useCgo == 'true' }}
@@ -444,17 +450,53 @@ jobs:
           ls -lh ${{ inputs.pipeling }}-plugin-*.gz 2>/dev/null | awk '{print "  " $9 ": " $5}'
           echo ""
           
-          # Run push with verbose output and capture both stdout and stderr
+          # Build ORAS push command dynamically to only include files that exist
           echo "Starting ORAS push operation..."
-          if oras push $REF \
-            --config config.json:application/vnd.turbot.${{ inputs.pipeling }}.config.v1+json \
-            --annotation-file annotations.json \
-            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-amd64.layer.v1+gzip \
-            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-arm64.layer.v1+gzip \
-            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-amd64.layer.v1+gzip \
-            ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip \
-            docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar \
-            config:application/vnd.turbot.${{ inputs.pipeling }}.plugin.spc.layer.v1+tar; then
+          echo ""
+          
+          ORAS_CMD="oras push $REF --config config.json:application/vnd.turbot.${{ inputs.pipeling }}.config.v1+json --annotation-file annotations.json"
+          
+          echo "Adding plugin archives to ORAS command..."
+          
+          # Add plugin archives only if they exist
+          if [ -f "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz" ]; then
+            echo "  ✓ Including darwin_amd64.gz"
+            ORAS_CMD="$ORAS_CMD ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-amd64.layer.v1+gzip"
+          else
+            echo "  ⚠️  Skipping darwin_amd64.gz (not found)"
+          fi
+          
+          if [ -f "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz" ]; then
+            echo "  ✓ Including darwin_arm64.gz"
+            ORAS_CMD="$ORAS_CMD ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.darwin-arm64.layer.v1+gzip"
+          else
+            echo "  ⚠️  Skipping darwin_arm64.gz (not found)"
+          fi
+          
+          # Only check for Linux builds if they exist (they shouldn't in darwin-only builds)
+          if [ -f "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz" ]; then
+            echo "  ✓ Including linux_amd64.gz"
+            ORAS_CMD="$ORAS_CMD ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-amd64.layer.v1+gzip"
+          else
+            echo "  ℹ️  Skipping linux_amd64.gz (not built)"
+          fi
+          
+          if [ -f "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz" ]; then
+            echo "  ✓ Including linux_arm64.gz"
+            ORAS_CMD="$ORAS_CMD ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip"
+          else
+            echo "  ℹ️  Skipping linux_arm64.gz (not built)"
+          fi
+          
+          # Add docs and config (always exist)
+          echo "  ✓ Including docs and config"
+          ORAS_CMD="$ORAS_CMD docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar config:application/vnd.turbot.${{ inputs.pipeling }}.plugin.spc.layer.v1+tar"
+          
+          echo ""
+          echo "Executing ORAS push command..."
+          echo ""
+          
+          if eval "$ORAS_CMD"; then
             echo "✓ ORAS push completed successfully"
           else
             echo "❌ ORAS push failed - see output above for details"
