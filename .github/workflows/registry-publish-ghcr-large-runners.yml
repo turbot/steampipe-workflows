@@ -22,7 +22,7 @@ env:
   ORG: turbot
   CR: ghcr.io
   CR_PREFIX: turbot/${{ inputs.pipeling }}/plugins
-  CONFIG_SCHEMA_VERSION: '2020-11-18'
+  CONFIG_SCHEMA_VERSION: "2020-11-18"
   ORAS_VERSION: 1.1.0
   GOLANG_CROSS_VERSION: v1.24
 
@@ -97,7 +97,7 @@ jobs:
           go-version: 1.24
 
       - name: Run GoReleaser (steampipe)
-        if: ${{ inputs.useCgo == false || inputs.useCgo == 'false' }} 
+        if: ${{ inputs.useCgo == false || inputs.useCgo == 'false' }}
         uses: goreleaser/goreleaser-action@b953231f81b8dfd023c58e0854a721e35037f28b # v2.9.1
         with:
           workdir: ${{ inputs.pipeling }}-plugin
@@ -105,7 +105,7 @@ jobs:
           args: release --clean --skip=publish --timeout=${{ inputs.releaseTimeout }}
 
       - name: Run GoReleaser (tailpipe)
-        if: ${{ inputs.useCgo == true || inputs.useCgo == 'true' }} 
+        if: ${{ inputs.useCgo == true || inputs.useCgo == 'true' }}
         run: |-
           cd ${{ inputs.pipeling }}-plugin
           docker run \
@@ -116,7 +116,7 @@ jobs:
             -w /go/src/plugin \
             ghcr.io/goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
             release --clean --skip=publish --skip=validate --timeout=${{ inputs.releaseTimeout }}
-      
+
       - name: List Build Artifacts
         run: |
           cd ${{ inputs.pipeling }}-plugin
@@ -140,7 +140,7 @@ jobs:
           cp ./${{ inputs.pipeling }}-plugin/dist/*.gz .
           cp -R ./${{ inputs.pipeling }}-plugin/docs .
           ls -al
-      
+
       # Create files for registry
       - name: Create config file
         run: |-
@@ -154,26 +154,26 @@ jobs:
 
       - name: Create annotations file
         run: |-
-           JSON_STRING=$( jq -n \
-                    --arg title "$PLUGIN_NAME" \
-                    --arg desc "$ORG" \
-                    --arg version "$VERSION" \
-                    --arg timestamp "$(date +%FT%T%z | sed 's/\([0-9][0-9]\)\([0-9][0-9]\)$/\1:\2/')" \
-                    --arg repo "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
-                    --arg commit "$GITHUB_SHA" \
-                    --arg vendor "Turbot HQ, Inc." \
-                  '{
-                    "$manifest": {
-                        "org.opencontainers.image.title": $title,
-                        "org.opencontainers.image.description": $desc,
-                        "org.opencontainers.image.version": $version,
-                        "org.opencontainers.image.created": $timestamp,
-                        "org.opencontainers.image.source": $repo,
-                        "org.opencontainers.image.revision": $commit,
-                        "org.opencontainers.image.vendor":  $vendor
-                    }
-                  }' )
-            echo $JSON_STRING > annotations.json
+          JSON_STRING=$( jq -n \
+                   --arg title "$PLUGIN_NAME" \
+                   --arg desc "$ORG" \
+                   --arg version "$VERSION" \
+                   --arg timestamp "$(date +%FT%T%z | sed 's/\([0-9][0-9]\)\([0-9][0-9]\)$/\1:\2/')" \
+                   --arg repo "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+                   --arg commit "$GITHUB_SHA" \
+                   --arg vendor "Turbot HQ, Inc." \
+                 '{
+                   "$manifest": {
+                       "org.opencontainers.image.title": $title,
+                       "org.opencontainers.image.description": $desc,
+                       "org.opencontainers.image.version": $version,
+                       "org.opencontainers.image.created": $timestamp,
+                       "org.opencontainers.image.source": $repo,
+                       "org.opencontainers.image.revision": $commit,
+                       "org.opencontainers.image.vendor":  $vendor
+                   }
+                 }' )
+           echo $JSON_STRING > annotations.json
 
       - name: View annotations
         run: |
@@ -183,6 +183,56 @@ jobs:
         run: |
           cd ${{ inputs.pipeling }}-plugin
           cat README.md
+
+      # Validate build artifacts
+      - name: Validate all plugin archives exist and are valid
+        run: |
+          echo "Validating plugin archives..."
+          echo ""
+
+          required_files=(
+            "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_amd64.gz"
+            "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_darwin_arm64.gz"
+            "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_amd64.gz"
+            "${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz"
+          )
+
+          missing_files=0
+          corrupted_files=0
+
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ ERROR: Missing file: $file"
+              missing_files=$((missing_files + 1))
+            else
+              # Verify file integrity with gzip test
+              if gzip -t "$file" 2>/dev/null; then
+                size=$(stat -c%s "$file" 2>/dev/null || stat -f%z "$file" 2>/dev/null)
+                size_mb=$((size / 1048576))
+                echo "✓ $file ($size_mb MB)"
+              else
+                echo "❌ ERROR: Corrupted file: $file"
+                corrupted_files=$((corrupted_files + 1))
+              fi
+            fi
+          done
+
+          echo ""
+          if [ $missing_files -gt 0 ] || [ $corrupted_files -gt 0 ]; then
+            echo "FATAL: Validation failed!"
+            echo "  Missing files: $missing_files"
+            echo "  Corrupted files: $corrupted_files"
+            echo ""
+            echo "Current directory contents:"
+            ls -lh ${{ inputs.pipeling }}-plugin-*.gz 2>/dev/null || echo "  No .gz files found in working directory"
+            echo ""
+            echo "Source directory (dist/):"
+            ls -lh ${{ inputs.pipeling }}-plugin/dist/*.gz 2>/dev/null || echo "  No .gz files found in dist/"
+            exit 1
+          fi
+
+          echo ""
+          echo "✓ All required archives validated successfully"
 
       # Setup ORAS
       - name: Install specific version of ORAS
@@ -198,7 +248,7 @@ jobs:
           registry: ${{ env.CR }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       # Publish to GHCR
       - name: Push to the container registry (tailpipe)
         # run only if inputs.pipeling = tailpipe
@@ -242,7 +292,7 @@ jobs:
             ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip \
             docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar \
             config:application/vnd.turbot.${{ inputs.pipeling }}.plugin.spc.layer.v1+tar
-          
+
           # tag the image with the GitHub Run ID for traceability
           oras tag $REF $GITHUB_RUN_ID
 
