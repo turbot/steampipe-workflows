@@ -96,6 +96,22 @@ jobs:
         with:
           go-version: 1.24
 
+      - name: Clean temp directory before compression
+        run: |
+          echo "Cleaning temporary directories to ensure GoReleaser has sufficient space..."
+          echo ""
+          echo "Before cleanup:"
+          df -h /tmp 2>/dev/null || df -h /var/tmp 2>/dev/null || echo "Cannot access /tmp"
+          echo ""
+          # Remove old temp files (keep system ones)
+          sudo rm -rf /tmp/goreleaser* 2>/dev/null || true
+          sudo rm -rf /tmp/go-build* 2>/dev/null || true
+          sudo rm -rf /tmp/tmp* 2>/dev/null || true
+          echo "Cleaned up old temporary files"
+          echo ""
+          echo "After cleanup:"
+          df -h /tmp 2>/dev/null || df -h /var/tmp 2>/dev/null || echo "Cannot access /tmp"
+
       - name: Run GoReleaser (steampipe)
         if: ${{ inputs.useCgo == false || inputs.useCgo == 'false' }}
         uses: goreleaser/goreleaser-action@b953231f81b8dfd023c58e0854a721e35037f28b # v2.9.1
