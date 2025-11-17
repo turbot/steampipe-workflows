@@ -202,6 +202,17 @@ jobs:
           cd ${{ inputs.pipeling }}-plugin
           cat README.md
 
+      # Upload build artifacts for inspection
+      - name: Upload build artifacts
+        if: always()  # Run even if previous steps fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-archives-${{ env.VERSION }}
+          path: |
+            ${{ inputs.pipeling }}-plugin-*.gz
+          retention-days: 7
+          compression-level: 0  # Don't compress, we want raw files
+
       # # Validate build artifacts
       # - name: Validate all plugin archives exist and are valid
       #   run: |
