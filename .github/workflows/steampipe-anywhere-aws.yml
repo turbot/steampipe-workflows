@@ -257,7 +257,7 @@ jobs:
   build-postgres-14-fdw-osx-amd64:
     name: Build Postgres 14 FDW for Darwin - AMD64
     needs: get-version
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: Check architecture
         run: uname -a
@@ -668,7 +668,7 @@ jobs:
   build-postgres-15-fdw-osx-amd64:
     name: Build Postgres 15 FDW for Darwin - AMD64
     needs: get-version
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: Check architecture
         run: uname -a
@@ -1009,7 +1009,7 @@ jobs:
   build-sqlite-extension-osx-amd64:
     name: Build SQLite Extension for Darwin - AMD64
     needs: get-version
-    runs-on: macos-13
+    runs-on: macos-14
 
     steps:
       - name: Check architecture
@@ -1575,7 +1575,7 @@ jobs:
 
   check-installation-darwin-amd64:
     name: Check Installation(Darwin AMD64)
-    runs-on: macos-13
+    runs-on: macos-14
     needs: build-draft-release
     steps:
       - name: Check architecture
