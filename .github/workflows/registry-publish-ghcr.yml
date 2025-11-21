@@ -22,8 +22,8 @@ env:
   ORG: turbot
   CR: ghcr.io
   CR_PREFIX: turbot/${{ inputs.pipeling }}/plugins
-  CONFIG_SCHEMA_VERSION: '2020-11-18'
-  ORAS_VERSION: 1.1.0
+  CONFIG_SCHEMA_VERSION: "2020-11-18"
+  ORAS_VERSION: 1.3.0
   GOLANG_CROSS_VERSION: v1.24
 
 jobs:
@@ -96,15 +96,15 @@ jobs:
           go-version: 1.24
 
       - name: Run GoReleaser (steampipe)
-        if: ${{ inputs.useCgo == false || inputs.useCgo == 'false' }} 
-        uses: goreleaser/goreleaser-action@b953231f81b8dfd023c58e0854a721e35037f28b # v2.9.1
+        if: ${{ inputs.useCgo == false || inputs.useCgo == 'false' }}
+        uses: goreleaser/goreleaser-action@v5 # Latest version
         with:
           workdir: ${{ inputs.pipeling }}-plugin
           version: latest
           args: release --clean --skip=publish --timeout=${{ inputs.releaseTimeout }}
 
       - name: Run GoReleaser (tailpipe)
-        if: ${{ inputs.useCgo == true || inputs.useCgo == 'true' }} 
+        if: ${{ inputs.useCgo == true || inputs.useCgo == 'true' }}
         run: |-
           cd ${{ inputs.pipeling }}-plugin
           docker run \
@@ -115,7 +115,7 @@ jobs:
             -w /go/src/plugin \
             ghcr.io/goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
             release --clean --skip=publish --skip=validate --timeout=${{ inputs.releaseTimeout }}
-      
+
       - name: List Build Artifacts
         run: |
           cd ${{ inputs.pipeling }}-plugin
@@ -139,7 +139,7 @@ jobs:
           cp ./${{ inputs.pipeling }}-plugin/dist/*.gz .
           cp -R ./${{ inputs.pipeling }}-plugin/docs .
           ls -al
-      
+
       # Create files for registry
       - name: Create config file
         run: |-
@@ -153,26 +153,26 @@ jobs:
 
       - name: Create annotations file
         run: |-
-           JSON_STRING=$( jq -n \
-                    --arg title "$PLUGIN_NAME" \
-                    --arg desc "$ORG" \
-                    --arg version "$VERSION" \
-                    --arg timestamp "$(date +%FT%T%z | sed 's/\([0-9][0-9]\)\([0-9][0-9]\)$/\1:\2/')" \
-                    --arg repo "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
-                    --arg commit "$GITHUB_SHA" \
-                    --arg vendor "Turbot HQ, Inc." \
-                  '{
-                    "$manifest": {
-                        "org.opencontainers.image.title": $title,
-                        "org.opencontainers.image.description": $desc,
-                        "org.opencontainers.image.version": $version,
-                        "org.opencontainers.image.created": $timestamp,
-                        "org.opencontainers.image.source": $repo,
-                        "org.opencontainers.image.revision": $commit,
-                        "org.opencontainers.image.vendor":  $vendor
-                    }
-                  }' )
-            echo $JSON_STRING > annotations.json
+          JSON_STRING=$( jq -n \
+                   --arg title "$PLUGIN_NAME" \
+                   --arg desc "$ORG" \
+                   --arg version "$VERSION" \
+                   --arg timestamp "$(date +%FT%T%z | sed 's/\([0-9][0-9]\)\([0-9][0-9]\)$/\1:\2/')" \
+                   --arg repo "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+                   --arg commit "$GITHUB_SHA" \
+                   --arg vendor "Turbot HQ, Inc." \
+                 '{
+                   "$manifest": {
+                       "org.opencontainers.image.title": $title,
+                       "org.opencontainers.image.description": $desc,
+                       "org.opencontainers.image.version": $version,
+                       "org.opencontainers.image.created": $timestamp,
+                       "org.opencontainers.image.source": $repo,
+                       "org.opencontainers.image.revision": $commit,
+                       "org.opencontainers.image.vendor":  $vendor
+                   }
+                 }' )
+           echo $JSON_STRING > annotations.json
 
       - name: View annotations
         run: |
@@ -197,7 +197,7 @@ jobs:
           registry: ${{ env.CR }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       # Publish to GHCR
       - name: Push to the container registry (tailpipe)
         # run only if inputs.pipeling = tailpipe
@@ -241,7 +241,7 @@ jobs:
             ${{ inputs.pipeling }}-plugin-${PLUGIN_NAME}_linux_arm64.gz:application/vnd.turbot.${{ inputs.pipeling }}.plugin.linux-arm64.layer.v1+gzip \
             docs:application/vnd.turbot.${{ inputs.pipeling }}.plugin.docs.layer.v1+tar \
             config:application/vnd.turbot.${{ inputs.pipeling }}.plugin.spc.layer.v1+tar
-          
+
           # tag the image with the GitHub Run ID for traceability
           oras tag $REF $GITHUB_RUN_ID
 
