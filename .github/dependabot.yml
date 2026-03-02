@@ -5,5 +5,5 @@ updates:
     schedule:
       interval: "monthly"
     labels:
-      - "github-actions"
-      - "dependabot"
+      - "github_actions"
+      - "dependencies"
