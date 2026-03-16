@@ -8,7 +8,7 @@ on:
         required: true
 
   workflow_call:
-        
+
 jobs:
   get-version:
     name: Get Version
@@ -44,7 +44,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.24
+          go-version: 1.26
 
       - name: Fetch plugin module
         run: |
@@ -91,7 +91,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.24
+          go-version: 1.26
 
       - name: Build steampipe-sqlite-extension
         run: |
@@ -114,7 +114,7 @@ jobs:
   build-sqlite-extension-linux-arm64:
     name: Build SQLite Extension for Linux - ARM64
     needs: get-version
-    runs-on: 
+    runs-on:
       group: linux-arm64-runners
 
     steps:
@@ -131,8 +131,8 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.24
-  
+          go-version: 1.26
+
       - name: Setup apt-get
         run: |-
           sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
@@ -207,7 +207,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.24
+          go-version: 1.26
 
       - name: Build steampipe-sqlite-extension
         run: |
@@ -264,7 +264,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.24
+          go-version: 1.26
 
       - name: Build steampipe-sqlite-extension
         run: |
@@ -331,7 +331,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.24
+          go-version: 1.26
 
       - name: Build steampipe-export
         run: |
@@ -345,7 +345,7 @@ jobs:
         uses: goreleaser/goreleaser-action@5742e2a039330cbb23ebf35f046f814d4c6ff811 # v5.1.0
         with:
           install-only: true
-  
+
       - name: Run GoReleaser
         run: |
           chmod +x scripts/release.sh
@@ -430,7 +430,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
         with:
-          go-version: 1.24
+          go-version: 1.26
 
       - name: Build steampipe-osquery
         run: |
@@ -466,7 +466,7 @@ jobs:
           name: steampipe_osquery_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           path: steampipe_osquery_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           if-no-files-found: error
-    
+
   build-draft-release:
     name: Build Draft Release
     runs-on: ubuntu-latest
@@ -575,7 +575,7 @@ jobs:
           else
             echo "is_prerelease=false" >> $GITHUB_OUTPUT
           fi
-          
+
       - name: Create a draft release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         id: create_draft_release
@@ -643,17 +643,17 @@ jobs:
           curl -fsSL -o install_export.sh https://steampipe.io/install/export.sh
           echo | sudo -E TERM=xterm bash install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
           rm -f install_export.sh
-      
+
       - name: Test Export Tool
         run: |
           # Define the expected output based on environment variables and inputs
           EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${VERSION}"
           echo "Expected version output: $EXPECTED_OUTPUT"
-          
+
           # Execute the command to get the actual version output
           COMMAND_OUTPUT=$(steampipe_export_${{ env.PLUGIN_NAME }} --version)
           echo "Actual command output version: $COMMAND_OUTPUT"
-          
+
           # Compare the actual output with the expected output
           if [ "$COMMAND_OUTPUT" == "$EXPECTED_OUTPUT" ]; then
             echo "Version matches."
@@ -661,7 +661,7 @@ jobs:
             echo "Version does not match. Expected was $EXPECTED_OUTPUT, but got $COMMAND_OUTPUT."
             exit 1  # This exits the step with an error status, failing the job
           fi
-  
+
   check-installation-darwin-arm64:
     name: Check Installation(Darwin ARM64)
     runs-on: macos-latest
@@ -705,11 +705,11 @@ jobs:
           # Define the expected output based on environment variables and inputs
           EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${VERSION}"
           echo "Expected version output: $EXPECTED_OUTPUT"
-          
+
           # Execute the command to get the actual version output
           COMMAND_OUTPUT=$(steampipe_export_${{ env.PLUGIN_NAME }} --version)
           echo "Actual command output version: $COMMAND_OUTPUT"
-          
+
           # Compare the actual output with the expected output
           if [ "$COMMAND_OUTPUT" == "$EXPECTED_OUTPUT" ]; then
             echo "Version matches."
@@ -761,11 +761,11 @@ jobs:
           # Define the expected output based on environment variables and inputs
           EXPECTED_OUTPUT="steampipe_export_${{ env.PLUGIN_NAME }} ${VERSION}"
           echo "Expected version output: $EXPECTED_OUTPUT"
-          
+
           # Execute the command to get the actual version output
           COMMAND_OUTPUT=$(steampipe_export_${{ env.PLUGIN_NAME }} --version)
           echo "Actual command output version: $COMMAND_OUTPUT"
-          
+
           # Compare the actual output with the expected output
           if [ "$COMMAND_OUTPUT" == "$EXPECTED_OUTPUT" ]; then
             echo "Version matches."
@@ -773,7 +773,7 @@ jobs:
             echo "Version does not match. Expected was $EXPECTED_OUTPUT, but got $COMMAND_OUTPUT."
             exit 1  # This exits the step with an error status, failing the job
           fi
-            
+
   notify-slack:
     name: Notify Slack
     runs-on: ubuntu-latest
@@ -801,7 +801,7 @@ jobs:
         id: check_failures
         run: |
           failed_jobs=""
-          
+
           # Check each job's status using static checks
           if [[ "${{ needs.get-version.result }}" == "failure" ]]; then
             failed_jobs="$failed_jobs\n- get-version"
@@ -836,7 +836,7 @@ jobs:
           if [[ "${{ needs.check-installation-darwin-amd64.result }}" == "failure" ]]; then
             failed_jobs="$failed_jobs\n- check-installation-darwin-amd64"
           fi
-          
+
           if [[ -n "$failed_jobs" ]]; then
             echo "status=failure" >> $GITHUB_OUTPUT
             echo "message=The following jobs failed:$failed_jobs" >> $GITHUB_OUTPUT
