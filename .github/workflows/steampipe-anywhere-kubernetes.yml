@@ -428,7 +428,7 @@ jobs:
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@5742e2a039330cbb23ebf35f046f814d4c6ff811 # v5.1.0
         with:
-          version: v2.14.3
+          version: latest
           args: release --snapshot --skip-publish --rm-dist
 
       - name: Copy the gzipped binaries from dist
