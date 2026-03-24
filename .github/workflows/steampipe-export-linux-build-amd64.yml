@@ -46,7 +46,6 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-export"
-          ref: f36f51eb4df2eb4addd98aa16cfb311c8918e1f0 # v0.6.1
           ref: ${{ github.event.inputs.branch }}
 
       - name: Setup GoLang
@@ -86,5 +85,4 @@ jobs:
           name: steampipe_export_aws.linux_amd64.tar.gz
           path: steampipe_export_aws.linux_amd64.tar.gz
           if-no-files-found: error
-
 
