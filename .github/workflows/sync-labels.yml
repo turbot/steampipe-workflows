@@ -11,18 +11,18 @@ jobs:
         run: |
           repo_type=$(echo $GITHUB_REPOSITORY | cut -d '-' -f 2)
           echo $repo_type
-          echo "::set-output name=repo-type::${repo_type}"
+          echo "repo-type=${repo_type}" >> "$GITHUB_OUTPUT"
 
       - name: Sync plugin labels
         if: steps.repo-type.outputs.repo-type == 'plugin'
         uses: EndBug/label-sync@52074158190acb45f3077f9099fea818aa43f97a # v2.3.3
         with:
-          config-file: 'https://raw.githubusercontent.com/turbot/steampipe-workflows/main/.github/plugin_labels.yml'
+          config-file: 'https://raw.githubusercontent.com/turbot/steampipe-workflows/78f8c24a255e65de8cd914c912a32f53905d0fff/.github/plugin_labels.yml'
           delete-other-labels: true
 
       - name: Sync mod labels
         if: steps.repo-type.outputs.repo-type == 'mod'
         uses: EndBug/label-sync@52074158190acb45f3077f9099fea818aa43f97a # v2.3.3
         with:
-          config-file: 'https://raw.githubusercontent.com/turbot/steampipe-workflows/main/.github/mod_labels.yml'
+          config-file: 'https://raw.githubusercontent.com/turbot/steampipe-workflows/78f8c24a255e65de8cd914c912a32f53905d0fff/.github/mod_labels.yml'
           delete-other-labels: true

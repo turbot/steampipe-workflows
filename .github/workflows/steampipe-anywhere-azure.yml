@@ -15,10 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out steampipe-export
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-export"
-          ref: main
+          ref: 1dfeb24204afc23c4746fd41245402aba811649f # main
 
       - name: Set environment variables
         run: |
@@ -75,9 +76,11 @@ jobs:
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
+          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -87,18 +90,6 @@ jobs:
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           fi
           echo "Version: ${VERSION}"
-
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Get the latest tag
-        id: get_latest_tag
-        run: |
-          latest_tag=$(git tag --sort=-v:refname | grep -Ev 'alpha|beta|rc|dev' | head -n 1)
-          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-
-      - name: Checkout the latest tag
-        run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
@@ -174,9 +165,11 @@ jobs:
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
+          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -186,18 +179,6 @@ jobs:
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           fi
           echo "Version: ${VERSION}"
-
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Get the latest tag
-        id: get_latest_tag
-        run: |
-          latest_tag=$(git tag --sort=-v:refname | grep -Ev 'alpha|beta|rc|dev' | head -n 1)
-          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-
-      - name: Checkout the latest tag
-        run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
@@ -291,9 +272,11 @@ jobs:
           ls -l $INTERNAL_LIB
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
+          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -303,18 +286,6 @@ jobs:
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           fi
           echo "Version: ${VERSION}"
-
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Get the latest tag
-        id: get_latest_tag
-        run: |
-          latest_tag=$(git tag --sort=-v:refname | grep -Ev 'alpha|beta|rc|dev' | head -n 1)
-          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-
-      - name: Checkout the latest tag
-        run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup Golang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
@@ -397,9 +368,11 @@ jobs:
           ls -l $INTERNAL_LIB
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
+          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -409,18 +382,6 @@ jobs:
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           fi
           echo "Version: ${VERSION}"
-
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Get the latest tag
-        id: get_latest_tag
-        run: |
-          latest_tag=$(git tag --sort=-v:refname | grep -Ev 'alpha|beta|rc|dev' | head -n 1)
-          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-
-      - name: Checkout the latest tag
-        run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup Golang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
@@ -483,9 +444,11 @@ jobs:
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
+          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -495,18 +458,6 @@ jobs:
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           fi
           echo "Version: ${VERSION}"
-
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Get the latest tag
-        id: get_latest_tag
-        run: |
-          latest_tag=$(git tag --sort=-v:refname | grep -Ev 'alpha|beta|rc|dev' | head -n 1)
-          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-
-      - name: Checkout the latest tag
-        run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
@@ -582,9 +533,11 @@ jobs:
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-postgres-fdw-anywhere
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
+          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -594,18 +547,6 @@ jobs:
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           fi
           echo "Version: ${VERSION}"
-
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Get the latest tag
-        id: get_latest_tag
-        run: |
-          latest_tag=$(git tag --sort=-v:refname | grep -Ev 'alpha|beta|rc|dev' | head -n 1)
-          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-
-      - name: Checkout the latest tag
-        run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
@@ -706,9 +647,11 @@ jobs:
           ls -l $INTERNAL_LIB
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
+          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -718,18 +661,6 @@ jobs:
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           fi
           echo "Version: ${VERSION}"
-
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Get the latest tag
-        id: get_latest_tag
-        run: |
-          latest_tag=$(git tag --sort=-v:refname | grep -Ev 'alpha|beta|rc|dev' | head -n 1)
-          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-
-      - name: Checkout the latest tag
-        run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup Golang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
@@ -817,9 +748,11 @@ jobs:
           ls -l $INTERNAL_LIB
 
       - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
+          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -829,18 +762,6 @@ jobs:
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           fi
           echo "Version: ${VERSION}"
-
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Get the latest tag
-        id: get_latest_tag
-        run: |
-          latest_tag=$(git tag --sort=-v:refname | grep -Ev 'alpha|beta|rc|dev' | head -n 1)
-          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-
-      - name: Checkout the latest tag
-        run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup Golang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
@@ -902,10 +823,11 @@ jobs:
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-sqlite"
-          ref: main
+          ref: 98d35058238212af1e73e17db4f95fde43274e8e # main
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -969,10 +891,11 @@ jobs:
           sudo env ACCEPT_EULA=Y apt-get upgrade
 
       - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-sqlite"
-          ref: main
+          ref: 98d35058238212af1e73e17db4f95fde43274e8e # main
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -1018,10 +941,11 @@ jobs:
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-sqlite-extension"
-          ref: main
+          ref: 98d35058238212af1e73e17db4f95fde43274e8e # main
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -1075,10 +999,11 @@ jobs:
         run: uname -a
 
       - name: Check out steampipe-sqlite-extension
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-sqlite-extension"
-          ref: main
+          ref: 98d35058238212af1e73e17db4f95fde43274e8e # main
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -1127,9 +1052,11 @@ jobs:
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Check out steampipe-table-dump
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-table-dump"
+          ref: f36f51eb4df2eb4addd98aa16cfb311c8918e1f0 # v0.6.1
 
       - name: Get latest version tag
         run: |-
@@ -1144,18 +1071,6 @@ jobs:
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           fi
           echo "Version: ${VERSION}"
-
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Get the latest tag
-        id: get_latest_tag
-        run: |
-          latest_tag=$(git tag --sort=-v:refname | grep -Ev 'alpha|beta|rc|dev' | head -n 1)
-          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-
-      - name: Checkout the latest tag
-        run: git checkout tags/${{ env.LATEST_TAG }}
 
       - name: Setup GoLang
         uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1

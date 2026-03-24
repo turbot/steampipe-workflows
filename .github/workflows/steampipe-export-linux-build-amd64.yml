@@ -42,8 +42,9 @@ jobs:
           echo "Version: ${VERSION}"
 
       - name: Check out steampipe-export
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          persist-credentials: false
           repository: "turbot/steampipe-export"
           ref: ${{ github.event.inputs.branch }}
 
@@ -84,5 +85,4 @@ jobs:
           name: steampipe_export_aws.linux_amd64.tar.gz
           path: steampipe_export_aws.linux_amd64.tar.gz
           if-no-files-found: error
-
 
