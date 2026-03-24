@@ -9,6 +9,9 @@ on:
 
   workflow_call:
 
+permissions:
+  contents: write
+
 jobs:
   get-version:
     name: Get Version
