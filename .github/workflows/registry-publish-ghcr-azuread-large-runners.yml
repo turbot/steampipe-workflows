@@ -21,13 +21,14 @@ env:
   CONFIG_SCHEMA_VERSION: "2020-11-18"
   ORAS_VERSION: 1.3.0
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-deploy:
     runs-on:
       group: large-runners
-    permissions:
-      contents: read
-      packages: write
 
     steps:
       - name: Output pipeling name
