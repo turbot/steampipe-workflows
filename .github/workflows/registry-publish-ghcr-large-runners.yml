@@ -18,6 +18,10 @@ on:
         default: false
         type: boolean
 
+permissions:
+  contents: read
+  packages: write
+
 env:
   ORG: turbot
   CR: ghcr.io
@@ -29,9 +33,6 @@ jobs:
   build-deploy:
     runs-on:
       group: large-runners
-    permissions:
-      contents: read
-      packages: write
     steps:
       - name: Output pipeling name
         run: |
