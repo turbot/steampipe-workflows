@@ -32,6 +32,11 @@ env:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      packages: write
+
     steps:
       - name: Output pipeling name
         run: |

@@ -33,6 +33,11 @@ jobs:
   build-deploy:
     runs-on:
       group: large-runners
+
+    permissions:
+      contents: write
+      packages: write
+
     steps:
       - name: Output pipeling name
         run: |
