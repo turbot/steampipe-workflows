@@ -1,0 +1,10 @@
+# CODEOWNERS for turbot/steampipe-workflows
+#
+# Critical shared CI/CD infrastructure used across 100+ repos.
+# All changes require review from the workflow maintainers team.
+
+# Default: everything
+* @turbot/workflow-maintainers
+
+# Explicitly protect this file
+.github/CODEOWNERS @turbot/workflow-maintainers
