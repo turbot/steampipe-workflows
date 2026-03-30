@@ -142,7 +142,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
@@ -232,7 +232,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
@@ -325,7 +325,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64
 
       - name: Save MacOS Build Artifact - AMD64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
@@ -421,7 +421,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64
 
       - name: Save MacOS Build Artifact - ARM64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
@@ -509,7 +509,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
@@ -599,7 +599,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
@@ -698,7 +698,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64
 
       - name: Save MacOS Build Artifact - AMD64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
@@ -799,7 +799,7 @@ jobs:
           tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64
 
       - name: Save MacOS Build Artifact - ARM64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
@@ -854,7 +854,7 @@ jobs:
           tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
@@ -917,7 +917,7 @@ jobs:
           tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
@@ -972,7 +972,7 @@ jobs:
           tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Darwin Build Artifact - AMD64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
@@ -1030,7 +1030,7 @@ jobs:
           tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
       - name: Save Darwin Build Artifact - ARM64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
@@ -1103,28 +1103,28 @@ jobs:
           ls -al
 
       - name: Save Linux Build Artifact - AMD64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           path: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
           if-no-files-found: error
 
       - name: Save Linux Build Artifact - ARM64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           path: steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
           if-no-files-found: error
 
       - name: Save Darwin Build Artifact - AMD64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           path: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           if-no-files-found: error
 
       - name: Save Darwin Build Artifact - ARM64
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
           path: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
