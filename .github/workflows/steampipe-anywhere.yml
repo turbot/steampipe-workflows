@@ -1160,97 +1160,97 @@ jobs:
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
         id: download_pg14_linux_amd64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_amd64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
         id: download_pg14_linux_arm64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
         id: download_pg14_darwin_amd64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
         id: download_pg14_darwin_arm64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
         id: download_pg15_linux_amd64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_amd64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
         id: download_pg15_linux_arm64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
         id: download_pg15_darwin_amd64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
 
       - name: Download steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
         id: download_pg15_darwin_arm64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
         id: download_sqlite_linux_amd64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
         id: download_sqlite_linux_arm64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
         id: download_sqlite_darwin_amd64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
 
       - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
         id: download_sqlite_darwin_arm64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
         id: download_export_linux_amd64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
         id: download_export_linux_arm64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
         id: download_export_darwin_amd64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
         id: download_export_darwin_arm64
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
 
@@ -1318,6 +1318,14 @@ jobs:
     runs-on: ubuntu-22.04
     needs: build-draft-release
     steps:
+      - name: Checkout install scripts
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: turbot/steampipe-workflows
+          ref: ${{ github.workflow_sha }}
+          path: steampipe-workflows
+          persist-credentials: false
+
       - name: Check architecture
         run: uname -a
 
@@ -1357,9 +1365,7 @@ jobs:
 
       - name: Download and install Postgres FDW
         run: |-
-          curl -fsSL -o install_postgres_fdw.sh https://steampipe.io/install/postgres.sh
-          echo | sudo -E TERM=xterm bash install_postgres_fdw.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
-          rm -f install_postgres_fdw.sh
+          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_postgres.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
 
       - name: Test Postgres FDW
         run: |-
@@ -1376,7 +1382,7 @@ jobs:
 
       - name: Download and install SQLite Extension
         run: |-
-          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          echo | TERM=xterm bash steampipe-workflows/scripts/install_sqlite.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
 
       - name: Test SQLite Extension
         run: |
@@ -1384,9 +1390,7 @@ jobs:
 
       - name: Download and install Export Tool
         run: |-
-          curl -fsSL -o install_export.sh https://steampipe.io/install/export.sh
-          echo | sudo -E TERM=xterm bash install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
-          rm -f install_export.sh
+          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
 
       - name: Test Export Tool
         run: |
@@ -1445,9 +1449,7 @@ jobs:
 
       - name: Download and install Postgres FDW
         run: |-
-          curl -fsSL -o install_postgres_fdw.sh https://steampipe.io/install/postgres.sh
-          echo | sudo -E TERM=xterm bash install_postgres_fdw.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
-          rm -f install_postgres_fdw.sh
+          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_postgres.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
 
       - name: Configure PostgreSQL
         run: |-
@@ -1460,13 +1462,11 @@ jobs:
 
       - name: Download and install SQLite Extension
         run: |-
-          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          echo | TERM=xterm bash steampipe-workflows/scripts/install_sqlite.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
 
       - name: Download and install Export Tool
         run: |-
-          curl -fsSL -o install_export.sh https://steampipe.io/install/export.sh
-          echo | sudo -E TERM=xterm bash install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
-          rm -f install_export.sh
+          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
 
       - name: Test Export Tool
         run: |
@@ -1525,9 +1525,7 @@ jobs:
 
       - name: Download and install Postgres FDW
         run: |-
-          curl -fsSL -o install_postgres_fdw.sh https://steampipe.io/install/postgres.sh
-          echo | sudo -E TERM=xterm bash install_postgres_fdw.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
-          rm -f install_postgres_fdw.sh
+          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_postgres.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
 
       - name: Configure PostgreSQL
         run: |-
@@ -1540,13 +1538,11 @@ jobs:
 
       - name: Download and install SQLite Extension
         run: |-
-          echo | TERM=xterm bash <(curl -fsSL https://steampipe.io/install/sqlite.sh) ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          echo | TERM=xterm bash steampipe-workflows/scripts/install_sqlite.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
 
       - name: Download and install Export Tool
         run: |-
-          curl -fsSL -o install_export.sh https://steampipe.io/install/export.sh
-          echo | sudo -E TERM=xterm bash install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
-          rm -f install_export.sh
+          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
 
       - name: Test Export Tool
         run: |
