@@ -1332,6 +1332,7 @@ jobs:
           repository: turbot/steampipe-workflows
           ref: ${{ github.workflow_sha }}
           path: steampipe-workflows
+          persist-credentials: false
 
       - name: Check architecture
         run: uname -a
