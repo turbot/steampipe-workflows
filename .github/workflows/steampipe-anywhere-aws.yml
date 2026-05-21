@@ -1,5 +1,25 @@
 name: Steampipe Anywhere Components (AWS)
 
+# Component pinning
+# -----------------
+# This workflow statically links the plugin into a fixed bundle of
+# steampipe-postgres-fdw, steampipe-export, and steampipe-sqlite. Each of
+# those is pinned below to a specific commit SHA (the trailing comment is
+# the tag or branch the SHA was taken from). The pinning is intentional:
+# every plugin release that ships through Anywhere is built against the
+# exact same FDW/export/sqlite the Pipes runtime expects, so the bundle
+# stays reproducible across re-runs.
+#
+# Coordination requirement: an SDK major-version bump on plugins (e.g.
+# steampipe-plugin-sdk/v5 -> /v6) requires a matching ref-bump PR here.
+# Static linking fails to compile when the plugin's SDK major version
+# diverges from the FDW/export/sqlite pinned below. Merging the SDK bump
+# to plugin develop does NOT flow into this workflow on its own - the
+# pinned SHAs must be updated to commits that carry the new SDK major.
+#
+# When bumping: update every occurrence of the SHA (FDW is referenced in
+# many jobs across this file) and the trailing tag/branch comment.
+
 on:
   workflow_dispatch:
     inputs:
@@ -22,7 +42,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-export"
-          ref: 1dfeb24204afc23c4746fd41245402aba811649f # main
+          ref: 676528ebf7121cb6096a744ee7dece6d92638065 # develop (SDK v6)
 
       - name: Set environment variables
         run: |
@@ -81,7 +101,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
+          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -170,7 +190,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
+          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -277,7 +297,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
+          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -373,7 +393,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
+          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -452,7 +472,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
+          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -541,7 +561,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
+          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -655,7 +675,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
+          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -756,7 +776,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 217346cf8f9fd199ac319e5317ab84a83c6e151f # v2.2.0
+          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -835,7 +855,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-sqlite"
-          ref: 98d35058238212af1e73e17db4f95fde43274e8e # main
+          ref: 50543c5743d56d518094280b57c848eaa526eb16 # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -903,7 +923,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-sqlite"
-          ref: 98d35058238212af1e73e17db4f95fde43274e8e # main
+          ref: 50543c5743d56d518094280b57c848eaa526eb16 # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -953,7 +973,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-sqlite"
-          ref: 98d35058238212af1e73e17db4f95fde43274e8e # main
+          ref: 50543c5743d56d518094280b57c848eaa526eb16 # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -1064,7 +1084,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-export"
-          ref: f36f51eb4df2eb4addd98aa16cfb311c8918e1f0 # v0.6.1
+          ref: 676528ebf7121cb6096a744ee7dece6d92638065 # develop (SDK v6)
 
       - name: Get latest version tag
         run: |-
