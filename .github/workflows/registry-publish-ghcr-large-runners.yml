@@ -87,14 +87,28 @@ jobs:
 
       - name: Ensure Version Does Not Exist
         run: |-
-          URL=https://$CR/v2/$CR_PREFIX/$ORG/$PLUGIN_NAME/tags/list
-          IDX=$(curl -L -H "Authorization: Bearer $(base64 <<< $GITHUB_TOKEN)" $URL | jq ".tags | index(\"$VERSION\")")
-          if [ $IDX == "null" ]; then
-            echo "OK - Version does not exist: $VERSION"
-          else
+          URL="https://$CR/v2/$CR_PREFIX/$ORG/$PLUGIN_NAME/tags/list?n=10000"
+          # $GITHUB_TOKEN is not set in this step's env, so obtain an anonymous
+          # pull token for the (public) package instead of relying on it.
+          TOKEN=$(curl -fsSL "https://$CR/token?scope=repository:$CR_PREFIX/$ORG/$PLUGIN_NAME:pull&service=$CR" | jq -r '.token // empty')
+          if [ -z "$TOKEN" ]; then
+            echo "Failed to obtain registry pull token; cannot verify version $VERSION"
+            exit 1
+          fi
+          RESP=$(curl -fsSL -H "Authorization: Bearer $TOKEN" "$URL") || {
+            echo "Failed to query registry tags; cannot verify version $VERSION"
+            exit 1
+          }
+          if ! echo "$RESP" | jq -e 'has("tags")' >/dev/null; then
+            echo "Registry response missing 'tags' field; refusing to proceed"
+            echo "$RESP"
+            exit 1
+          fi
+          if [ "$(echo "$RESP" | jq ".tags | index(\"$VERSION\")")" != "null" ]; then
             echo "Version already exists: $VERSION"
             exit 1
           fi
+          echo "OK - Version does not exist: $VERSION"
 
       # Setup go & build
       - name: Set up Go
