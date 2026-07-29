@@ -1,5 +1,26 @@
 name: Steampipe Anywhere Components (Kubernetes)
 
+# Component pinning
+# -----------------
+# This workflow statically links the plugin into a fixed bundle of
+# steampipe-export, steampipe-sqlite, and steampipe-osquery. Each of
+# those is pinned below to a specific commit SHA (the trailing comment is
+# the tag or branch the SHA was taken from). The pinning is intentional:
+# every plugin release that ships through Anywhere is built against the
+# exact same export/sqlite/osquery the customer-side runtime expects, so
+# the bundle stays reproducible across re-runs.
+#
+# Coordination requirement: an SDK major-version bump on the plugin (e.g.
+# steampipe-plugin-sdk/v5 -> /v6) requires a matching ref-bump PR here.
+# Static linking fails to compile when the plugin's SDK major version
+# diverges from the export/sqlite/osquery pinned below. Merging the SDK
+# bump to plugin main does NOT flow into this workflow on its own - the
+# pinned SHAs must be updated to commits that carry the new SDK major.
+#
+# This is the kubernetes-specific variant of steampipe-anywhere.yml; it
+# skips the postgres FDW builds and additionally builds the osquery
+# extension.
+
 on:
   workflow_dispatch:
     inputs:
@@ -22,7 +43,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-export"
-          ref: 1dfeb24204afc23c4746fd41245402aba811649f # main
+          ref: 676528ebf7121cb6096a744ee7dece6d92638065 # develop (SDK v6)
 
       - name: Set environment variables
         run: |
@@ -82,7 +103,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-sqlite"
-          ref: 98d35058238212af1e73e17db4f95fde43274e8e # main
+          ref: 50543c5743d56d518094280b57c848eaa526eb16 # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -150,7 +171,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-sqlite"
-          ref: 98d35058238212af1e73e17db4f95fde43274e8e # main
+          ref: 50543c5743d56d518094280b57c848eaa526eb16 # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -200,7 +221,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-sqlite-extension"
-          ref: 98d35058238212af1e73e17db4f95fde43274e8e # main
+          ref: 50543c5743d56d518094280b57c848eaa526eb16 # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -258,7 +279,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-sqlite-extension"
-          ref: 98d35058238212af1e73e17db4f95fde43274e8e # main
+          ref: 50543c5743d56d518094280b57c848eaa526eb16 # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -310,7 +331,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-export"
-          ref: f36f51eb4df2eb4addd98aa16cfb311c8918e1f0 # v0.6.1
+          ref: 676528ebf7121cb6096a744ee7dece6d92638065 # develop (SDK v6)
 
       - name: Get latest version tag
         run: |-
@@ -398,13 +419,22 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
+      - name: Create steampipe-osquery reader token
+        id: osquery-reader-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.STEAMPIPE_OSQUERY_READER_CLIENT_ID }}
+          private-key: ${{ secrets.STEAMPIPE_OSQUERY_READER_PRIVATE_KEY }}
+          owner: turbot
+          repositories: steampipe-osquery
+
       - name: Check out steampipe-osquery
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
           repository: "turbot/steampipe-osquery"
-          ref: dd05f0fbe826e21630f6a4a5a24562e53d98a7f4 # v0.3.0
-          token: ${{ secrets.GH_TOKEN }}
+          ref: 64db5f30c71d63de7fc0fe0ea08623cc1c5bbbf1 # develop (SDK v6)
+          token: ${{ steps.osquery-reader-token.outputs.token }}
 
       - name: If workflow_dispatch, get version from input
         run: |
