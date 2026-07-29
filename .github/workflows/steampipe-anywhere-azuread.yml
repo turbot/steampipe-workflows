@@ -173,7 +173,7 @@ jobs:
     name: Build Postgres 14 FDW for Linux - ARM64
     needs: get-version
     runs-on:
-      group: linux-arm64-large-runners
+      group: linux-arm64-runners
 
     steps:
       - name: Check architecture
@@ -541,7 +541,7 @@ jobs:
     name: Build Postgres 15 FDW for Linux - ARM64
     needs: get-version
     runs-on:
-      group: linux-arm64-large-runners
+      group: linux-arm64-runners
 
     steps:
       - name: Check architecture
@@ -887,7 +887,7 @@ jobs:
     name: Build SQLite Extension for Linux - ARM64
     needs: get-version
     runs-on:
-      group: linux-arm64-large-runners
+      group: linux-arm64-runners
 
     steps:
       - name: Check architecture
