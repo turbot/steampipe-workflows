@@ -419,13 +419,22 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
+      - name: Create steampipe-osquery reader token
+        id: osquery-reader-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.STEAMPIPE_OSQUERY_READER_CLIENT_ID }}
+          private-key: ${{ secrets.STEAMPIPE_OSQUERY_READER_PRIVATE_KEY }}
+          owner: turbot
+          repositories: steampipe-osquery
+
       - name: Check out steampipe-osquery
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
           repository: "turbot/steampipe-osquery"
           ref: 64db5f30c71d63de7fc0fe0ea08623cc1c5bbbf1 # develop (SDK v6)
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ steps.osquery-reader-token.outputs.token }}
 
       - name: If workflow_dispatch, get version from input
         run: |
