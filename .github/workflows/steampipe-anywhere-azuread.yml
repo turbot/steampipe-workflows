@@ -129,6 +129,10 @@ jobs:
         run: |-
           sudo apt-get -y install postgresql-server-dev-14
 
+      - name: Use PostgreSQL 14 pg_config
+        run: |-
+          echo "/usr/lib/postgresql/14/bin" >> $GITHUB_PATH
+
       - name: Find stuff and set env
         run: |-
 
@@ -496,6 +500,10 @@ jobs:
       - name: Install PostgreSQL15 Dev
         run: |-
           sudo apt-get -y install postgresql-server-dev-15
+
+      - name: Use PostgreSQL 15 pg_config
+        run: |-
+          echo "/usr/lib/postgresql/15/bin" >> $GITHUB_PATH
 
       - name: Find stuff and set env
         run: |-
