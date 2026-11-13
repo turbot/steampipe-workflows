@@ -107,7 +107,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
+          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -196,7 +196,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
+          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -303,7 +303,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
+          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -399,7 +399,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
+          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -474,7 +474,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
+          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -563,7 +563,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
+          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -677,7 +677,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
+          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -778,7 +778,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 0341161a4c5000fc5b326ae809f5c3e8dce34bea # develop (SDK v6)
+          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
 
       - name: If workflow_dispatch, get version from input
         run: |
