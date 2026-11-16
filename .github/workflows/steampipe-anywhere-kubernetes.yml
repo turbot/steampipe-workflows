@@ -431,7 +431,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-osquery"
-          ref: 64db5f30c71d63de7fc0fe0ea08623cc1c5bbbf1 # develop (SDK v6)
+          ref: be4e74b8b1364b52779c09c708cc50c47f01174f # develop (SDK v6, GoReleaser v2 config)
           token: ${{ steps.osquery-reader-token.outputs.token }}
 
       - name: If workflow_dispatch, get version from input
