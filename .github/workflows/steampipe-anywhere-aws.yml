@@ -32,6 +32,11 @@ on:
 permissions:
   contents: write
 
+env:
+  # Darwin builds otherwise take the runner's macOS version as their minimum,
+  # so builds on macOS 15 runners would not load on macOS 14.
+  MACOSX_DEPLOYMENT_TARGET: "14.0"
+
 jobs:
   get-version:
     name: Get Version
@@ -261,7 +266,7 @@ jobs:
   build-postgres-14-fdw-osx-amd64:
     name: Build Postgres 14 FDW for Darwin - AMD64
     needs: get-version
-    runs-on: macos-14-large
+    runs-on: macos-15-large
     steps:
       - name: Check architecture
         run: uname -a
@@ -274,7 +279,7 @@ jobs:
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
       - name: Install PostgreSQL@14
-        run: brew install postgresql@14
+        run: brew install --force postgresql@14
 
       - name: PGConfig
         run: |-
@@ -354,7 +359,7 @@ jobs:
   build-postgres-14-fdw-osx-arm64:
     name: Build Postgres 14 FDW for Darwin - ARM64
     needs: get-version
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Check architecture
         run: uname -a
@@ -370,7 +375,7 @@ jobs:
         run: uname -a
 
       - name: Install PostgreSQL@14
-        run: brew install postgresql@14
+        run: brew install --force postgresql@14
 
       - name: PGConfig
         run: |-
@@ -632,7 +637,7 @@ jobs:
   build-postgres-15-fdw-osx-amd64:
     name: Build Postgres 15 FDW for Darwin - AMD64
     needs: get-version
-    runs-on: macos-14-large
+    runs-on: macos-15-large
     steps:
       - name: Check architecture
         run: uname -a
@@ -731,7 +736,7 @@ jobs:
   build-postgres-15-fdw-osx-arm64:
     name: Build Postgres 15 FDW for Darwin - ARM64
     needs: get-version
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Check architecture
         run: uname -a
@@ -955,7 +960,7 @@ jobs:
   build-sqlite-extension-osx-amd64:
     name: Build SQLite Extension for Darwin - AMD64
     needs: get-version
-    runs-on: macos-14-large
+    runs-on: macos-15-large
 
     steps:
       - name: Check architecture
@@ -1475,7 +1480,7 @@ jobs:
           echo "Version: ${VERSION}"
 
       - name: Install PostgreSQL14
-        run: brew install postgresql@14
+        run: brew install --force postgresql@14
 
       - name: Start PostgreSQL service
         run: brew services start postgresql@14
@@ -1520,7 +1525,7 @@ jobs:
 
   check-installation-darwin-amd64:
     name: Check Installation(Darwin AMD64)
-    runs-on: macos-14-large
+    runs-on: macos-15-large
     needs: build-draft-release
     steps:
       - name: Checkout install scripts
@@ -1555,7 +1560,7 @@ jobs:
           echo "Version: ${VERSION}"
 
       - name: Install PostgreSQL14
-        run: brew install postgresql@14
+        run: brew install --force postgresql@14
 
       - name: Start PostgreSQL service
         run: brew services start postgresql@14
