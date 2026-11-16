@@ -73,6 +73,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Fetch plugin module
         run: |
@@ -121,6 +122,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Setup apt-get
         run: |-
@@ -209,6 +211,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Setup apt-get
         run: |-
@@ -315,6 +318,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Find stuff and set env
         run: |-
@@ -411,6 +415,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Find stuff and set env
         run: |-
@@ -490,6 +495,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Setup apt-get
         run: |-
@@ -578,6 +584,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Setup apt-get
         run: |-
@@ -691,6 +698,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Find stuff and set env
         run: |-
@@ -792,6 +800,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Find stuff and set env
         run: |-
@@ -871,6 +880,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Build steampipe-sqlite-extension
         run: |
@@ -911,6 +921,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Check out steampipe-sqlite-extension
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -982,6 +993,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Build steampipe-sqlite-extension
         run: |
@@ -1098,6 +1110,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: 1.26.10
+          cache: false
 
       - name: Build steampipe-export
         run: |
