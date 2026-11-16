@@ -1,10 +1,10 @@
 # CODEOWNERS for turbot/steampipe-workflows
 #
 # Critical shared CI/CD infrastructure used across 100+ repos.
-# All changes require review from the workflow maintainers team.
+# Code owner: the pipelings area's release approvers team.
 
 # Default: everything
-* @turbot/workflow-maintainers
+* @turbot/pipelings-release-approvers
 
 # Explicitly protect this file
-.github/CODEOWNERS @turbot/workflow-maintainers
+.github/CODEOWNERS @turbot/pipelings-release-approvers
