@@ -1569,7 +1569,7 @@ jobs:
         run: pg_config --version
 
       # As install_postgres.sh installs the release asset.
-      - name: Install the Postgres FDW from the build
+      - name: Install the Postgres 14 FDW from the build
         run: |-
           name="steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64"
           tar -xzvf "darwin-builds/$name.tar.gz"
@@ -1583,6 +1583,44 @@ jobs:
             "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}--1.0.sql" "$(pg_config --sharedir)/extension/"
 
       - name: Configure PostgreSQL
+        run: |-
+          psql -d postgres -c "CREATE EXTENSION ltree;"
+          psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "SELECT * FROM pg_extension;"
+
+      # Then the same for Postgres 15. Homebrew links one postgresql@ version
+      # at a time, and each finds its libpq through the link, so switch the
+      # link and the service over to 15.
+      - name: Install PostgreSQL15
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        run: |-
+          brew services stop postgresql@14
+          brew install postgresql@15
+          brew unlink postgresql@14
+          brew link --overwrite postgresql@15
+          brew services start postgresql@15
+          for _ in $(seq 1 30); do pg_isready -q && break; sleep 1; done
+          pg_config --version
+
+      - name: Install the Postgres 15 FDW from the build
+        run: |-
+          name="steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64"
+          tar -xzvf "darwin-builds/$name.tar.gz"
+          so="$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.so"
+          file "$so"
+          otool -l "$so" | grep -A4 LC_BUILD_VERSION
+          # Apple Silicon only loads signed code; the linker signs arm64 builds.
+          codesign -v "$so"
+          sudo cp "$so" "$(pg_config --pkglibdir)/"
+          sudo cp "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.control" \
+            "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}--1.0.sql" "$(pg_config --sharedir)/extension/"
+
+      - name: Configure PostgreSQL 15
         run: |-
           psql -d postgres -c "CREATE EXTENSION ltree;"
           psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
@@ -1698,7 +1736,7 @@ jobs:
         run: pg_config --version
 
       # As install_postgres.sh installs the release asset.
-      - name: Install the Postgres FDW from the build
+      - name: Install the Postgres 14 FDW from the build
         run: |-
           name="steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64"
           tar -xzvf "darwin-builds/$name.tar.gz"
@@ -1710,6 +1748,42 @@ jobs:
             "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}--1.0.sql" "$(pg_config --sharedir)/extension/"
 
       - name: Configure PostgreSQL
+        run: |-
+          psql -d postgres -c "CREATE EXTENSION ltree;"
+          psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "SELECT * FROM pg_extension;"
+
+      # Then the same for Postgres 15. Homebrew links one postgresql@ version
+      # at a time, and each finds its libpq through the link, so switch the
+      # link and the service over to 15.
+      - name: Install PostgreSQL15
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        run: |-
+          brew services stop postgresql@14
+          brew install postgresql@15
+          brew unlink postgresql@14
+          brew link --overwrite postgresql@15
+          brew services start postgresql@15
+          for _ in $(seq 1 30); do pg_isready -q && break; sleep 1; done
+          pg_config --version
+
+      - name: Install the Postgres 15 FDW from the build
+        run: |-
+          name="steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64"
+          tar -xzvf "darwin-builds/$name.tar.gz"
+          so="$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.so"
+          file "$so"
+          otool -l "$so" | grep -A4 LC_BUILD_VERSION
+          sudo cp "$so" "$(pg_config --pkglibdir)/"
+          sudo cp "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.control" \
+            "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}--1.0.sql" "$(pg_config --sharedir)/extension/"
+
+      - name: Configure PostgreSQL 15
         run: |-
           psql -d postgres -c "CREATE EXTENSION ltree;"
           psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
