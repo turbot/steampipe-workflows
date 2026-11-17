@@ -114,7 +114,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
+          ref: 34f2829e64e70411bba39ad100585b97df1ec636 # develop (Darwin cross-compile)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -207,7 +207,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
+          ref: 34f2829e64e70411bba39ad100585b97df1ec636 # develop (Darwin cross-compile)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -299,7 +299,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 26a8ae90b84c9ca6996a619e1e4e53e6d7106e22 # darwin-cross-compile (swap for the develop merge commit)
+          ref: 34f2829e64e70411bba39ad100585b97df1ec636 # develop (Darwin cross-compile)
           path: steampipe-postgres-fdw
 
       - name: If workflow_dispatch, get version from input
@@ -461,7 +461,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 26a8ae90b84c9ca6996a619e1e4e53e6d7106e22 # darwin-cross-compile (swap for the develop merge commit)
+          ref: 34f2829e64e70411bba39ad100585b97df1ec636 # develop (Darwin cross-compile)
           path: steampipe-postgres-fdw
 
       - name: If workflow_dispatch, get version from input
@@ -624,7 +624,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
+          ref: 34f2829e64e70411bba39ad100585b97df1ec636 # develop (Darwin cross-compile)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -717,7 +717,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
+          ref: 34f2829e64e70411bba39ad100585b97df1ec636 # develop (Darwin cross-compile)
 
       - name: If workflow_dispatch, get version from input
         run: |
