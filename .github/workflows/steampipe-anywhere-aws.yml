@@ -1250,6 +1250,9 @@ jobs:
       - build-sqlite-extension-osx-arm64
       # Export
       - build-export-tool
+      # Darwin checks
+      - check-darwin-arm64
+      - check-darwin-amd64
     steps:
       - name: Set environment variables
         run: |
@@ -1387,6 +1390,9 @@ jobs:
         id: create_draft_release
         with:
           draft: false
+          # A published release is immutable, so fail before creating it if
+          # any listed asset is missing.
+          fail_on_unmatched_files: true
           prerelease: ${{ steps.check_prerelease.outputs.is_prerelease }}
           name: ${{ env.VERSION }}
           tag_name: ${{ env.VERSION }}
@@ -1508,19 +1514,21 @@ jobs:
             exit 1  # This exits the step with an error status, failing the job
           fi
 
-  check-installation-darwin-arm64:
-    name: Check Installation(Darwin ARM64)
+  # Installs and loads the Darwin builds on a Mac before the release is
+  # published: a published release is immutable, so a bad asset couldn't be
+  # replaced. The files are installed as the install scripts install the
+  # release assets; check-installation-linux runs the scripts themselves.
+  check-darwin-arm64:
+    name: Check Darwin Builds (ARM64)
     runs-on: macos-latest
-    needs: build-draft-release
+    needs:
+      - build-postgres-fdw-osx-arm64
+      - build-sqlite-extension-osx-arm64
+      - build-export-tool
+    # It only reads the build artifacts.
+    permissions:
+      contents: read
     steps:
-      - name: Checkout install scripts
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: turbot/steampipe-workflows
-          ref: main
-          path: steampipe-workflows
-          persist-credentials: false
-
       - name: Check architecture
         run: uname -a
 
@@ -1544,6 +1552,13 @@ jobs:
           fi
           echo "Version: ${VERSION}"
 
+      - name: Download the Darwin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: "*.darwin_arm64.tar.gz"
+          merge-multiple: true
+          path: darwin-builds
+
       - name: Install PostgreSQL14
         run: brew install --force postgresql@14
 
@@ -1553,9 +1568,19 @@ jobs:
       - name: Check pg_config version
         run: pg_config --version
 
-      - name: Download and install Postgres FDW
+      # As install_postgres.sh installs the release asset.
+      - name: Install the Postgres FDW from the build
         run: |-
-          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_postgres.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          name="steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64"
+          tar -xzvf "darwin-builds/$name.tar.gz"
+          so="$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.so"
+          file "$so"
+          otool -l "$so" | grep -A4 LC_BUILD_VERSION
+          # Apple Silicon only loads signed code; the linker signs arm64 builds.
+          codesign -v "$so"
+          sudo cp "$so" "$(pg_config --pkglibdir)/"
+          sudo cp "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.control" \
+            "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}--1.0.sql" "$(pg_config --sharedir)/extension/"
 
       - name: Configure PostgreSQL
         run: |-
@@ -1566,9 +1591,10 @@ jobs:
           psql -d postgres -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "SELECT * FROM pg_extension;"
 
-      - name: Download and install SQLite Extension
-        run: |-
-          echo | TERM=xterm bash steampipe-workflows/scripts/install_sqlite.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+      # As install_sqlite.sh installs the release asset, into the current
+      # directory.
+      - name: Install the SQLite extension from the build
+        run: tar -xzvf "darwin-builds/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz"
 
       # macOS's own /usr/bin/sqlite3 can't load extensions.
       - name: Install SQLite3
@@ -1591,9 +1617,13 @@ jobs:
           fi
           echo ".load $so" | "$(brew --prefix sqlite)/bin/sqlite3"
 
-      - name: Download and install Export Tool
+      # As install_export.sh installs the release asset.
+      - name: Install the export tool from the build
         run: |-
-          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          mkdir -p export
+          tar -xzvf "darwin-builds/steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz" -C export
+          sudo install -d /usr/local/bin
+          sudo install "export/steampipe_export_${{ env.PLUGIN_NAME }}" /usr/local/bin
 
       - name: Test Export Tool
         run: |
@@ -1613,19 +1643,21 @@ jobs:
             exit 1  # This exits the step with an error status, failing the job
           fi
 
-  check-installation-darwin-amd64:
-    name: Check Installation(Darwin AMD64)
+  # Installs and loads the Darwin builds on a Mac before the release is
+  # published: a published release is immutable, so a bad asset couldn't be
+  # replaced. The files are installed as the install scripts install the
+  # release assets; check-installation-linux runs the scripts themselves.
+  check-darwin-amd64:
+    name: Check Darwin Builds (AMD64)
     runs-on: macos-15-large
-    needs: build-draft-release
+    needs:
+      - build-postgres-fdw-osx-amd64
+      - build-sqlite-extension-osx-amd64
+      - build-export-tool
+    # It only reads the build artifacts.
+    permissions:
+      contents: read
     steps:
-      - name: Checkout install scripts
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: turbot/steampipe-workflows
-          ref: main
-          path: steampipe-workflows
-          persist-credentials: false
-
       - name: Check architecture
         run: uname -a
 
@@ -1649,6 +1681,13 @@ jobs:
           fi
           echo "Version: ${VERSION}"
 
+      - name: Download the Darwin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: "*.darwin_amd64.tar.gz"
+          merge-multiple: true
+          path: darwin-builds
+
       - name: Install PostgreSQL14
         run: brew install --force postgresql@14
 
@@ -1658,9 +1697,17 @@ jobs:
       - name: Check pg_config version
         run: pg_config --version
 
-      - name: Download and install Postgres FDW
+      # As install_postgres.sh installs the release asset.
+      - name: Install the Postgres FDW from the build
         run: |-
-          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_postgres.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          name="steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64"
+          tar -xzvf "darwin-builds/$name.tar.gz"
+          so="$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.so"
+          file "$so"
+          otool -l "$so" | grep -A4 LC_BUILD_VERSION
+          sudo cp "$so" "$(pg_config --pkglibdir)/"
+          sudo cp "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.control" \
+            "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}--1.0.sql" "$(pg_config --sharedir)/extension/"
 
       - name: Configure PostgreSQL
         run: |-
@@ -1671,9 +1718,10 @@ jobs:
           psql -d postgres -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "SELECT * FROM pg_extension;"
 
-      - name: Download and install SQLite Extension
-        run: |-
-          echo | TERM=xterm bash steampipe-workflows/scripts/install_sqlite.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+      # As install_sqlite.sh installs the release asset, into the current
+      # directory.
+      - name: Install the SQLite extension from the build
+        run: tar -xzvf "darwin-builds/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz"
 
       # macOS's own /usr/bin/sqlite3 can't load extensions.
       - name: Install SQLite3
@@ -1696,9 +1744,13 @@ jobs:
           fi
           echo ".load $so" | "$(brew --prefix sqlite)/bin/sqlite3"
 
-      - name: Download and install Export Tool
+      # As install_export.sh installs the release asset.
+      - name: Install the export tool from the build
         run: |-
-          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          mkdir -p export
+          tar -xzvf "darwin-builds/steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz" -C export
+          sudo install -d /usr/local/bin
+          sudo install "export/steampipe_export_${{ env.PLUGIN_NAME }}" /usr/local/bin
 
       - name: Test Export Tool
         run: |
@@ -1737,8 +1789,8 @@ jobs:
       - build-export-tool
       - build-draft-release
       - check-installation-linux
-      - check-installation-darwin-arm64
-      - check-installation-darwin-amd64
+      - check-darwin-arm64
+      - check-darwin-amd64
     steps:
       - name: Set environment variables
         run: |
@@ -1794,11 +1846,11 @@ jobs:
           if [[ "${{ needs.check-installation-linux.result }}" == "failure" ]]; then
             failed_jobs="$failed_jobs\n- check-installation-linux"
           fi
-          if [[ "${{ needs.check-installation-darwin-arm64.result }}" == "failure" ]]; then
-            failed_jobs="$failed_jobs\n- check-installation-darwin-arm64"
+          if [[ "${{ needs.check-darwin-arm64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- check-darwin-arm64"
           fi
-          if [[ "${{ needs.check-installation-darwin-amd64.result }}" == "failure" ]]; then
-            failed_jobs="$failed_jobs\n- check-installation-darwin-amd64"
+          if [[ "${{ needs.check-darwin-amd64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- check-darwin-amd64"
           fi
 
           if [[ -n "$failed_jobs" ]]; then
