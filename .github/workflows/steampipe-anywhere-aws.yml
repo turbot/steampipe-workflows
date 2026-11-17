@@ -36,6 +36,10 @@ env:
   # Darwin builds otherwise take the runner's macOS version as their minimum,
   # so builds on macOS 15 runners would not load on macOS 14.
   MACOSX_DEPLOYMENT_TARGET: "14.0"
+  # The Darwin SQLite extensions are cross-compiled on Linux in this image:
+  # goreleaser-cross v1.26.10, whose Go matches the go-version the other jobs
+  # set up. Multi-arch index digest.
+  GORELEASER_CROSS_IMAGE: ghcr.io/goreleaser/goreleaser-cross@sha256:4ddb0de02f2eaac64d2b33e16d1d702d800db6a110154f8768f283858fb26c02
 
 jobs:
   get-version:
@@ -865,7 +869,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-sqlite"
-          ref: 50543c5743d56d518094280b57c848eaa526eb16 # develop (SDK v6)
+          ref: f7d95f6ab8ed26740e1a0420f0aa71439f257841 # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -928,7 +932,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-sqlite"
-          ref: 50543c5743d56d518094280b57c848eaa526eb16 # develop (SDK v6)
+          ref: f7d95f6ab8ed26740e1a0420f0aa71439f257841 # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -960,12 +964,14 @@ jobs:
   build-sqlite-extension-osx-amd64:
     name: Build SQLite Extension for Darwin - AMD64
     needs: get-version
-    runs-on: macos-15-large
+    # Cross-compiled on Linux, which keeps the build off the org's 5 concurrent
+    # macOS jobs. The install checks below load it on a Mac.
+    runs-on: ubuntu-latest
+    # It runs a third-party build image, and only uploads an artifact.
+    permissions:
+      contents: read
 
     steps:
-      - name: Check architecture
-        run: uname -a
-
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -978,7 +984,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-sqlite"
-          ref: 50543c5743d56d518094280b57c848eaa526eb16 # develop (SDK v6)
+          ref: f7d95f6ab8ed26740e1a0420f0aa71439f257841 # develop (SDK v6)
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -989,18 +995,70 @@ jobs:
           fi
           echo "Version: ${VERSION}"
 
-      - name: Setup GoLang
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version: 1.26.10
-          cache: false
+      # goreleaser-cross is about 18 GB unpacked. Remove SDKs the containerised
+      # build doesn't use, as the Tailpipe plugin builds do
+      # (turbot/steampipe-hub-actions).
+      - name: Free disk space on the root volume
+        run: |-
+          df -h /
+          sudo rm -rf \
+            /usr/share/dotnet \
+            /usr/local/lib/android \
+            /opt/ghc \
+            /usr/local/.ghcup \
+            /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
+
+      - name: Pull goreleaser-cross
+        run: docker pull --quiet "$GORELEASER_CROSS_IMAGE"
 
       - name: Build steampipe-sqlite-extension
-        run: |
-          pwd
+        run: |-
+          # The Go caches and temp files go on the runner's larger /mnt disk.
+          sudo mkdir -p /mnt/go/cache /mnt/go/modcache /mnt/go/tmp /mnt/go/home
+          sudo chown -R "$(id -u):$(id -g)" /mnt/go
+          # Run as the runner's user: as root, git refuses the runner-owned
+          # checkout ("dubious ownership") and Go's VCS stamping fails the build.
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -e HOME=/mnt-go/home \
+            -e GOOS=darwin \
+            -e GOARCH=amd64 \
+            -e CGO_ENABLED=1 \
+            -e CC=o64-clang \
+            -e MACOSX_DEPLOYMENT_TARGET \
+            -e GOCACHE=/mnt-go/cache \
+            -e GOMODCACHE=/mnt-go/modcache \
+            -e GOTMPDIR=/mnt-go/tmp \
+            -e TMPDIR=/mnt-go/tmp \
+            -v "$PWD:/src" \
+            -v /mnt/go:/mnt-go \
+            -w /src \
+            --entrypoint make \
+            "$GORELEASER_CROSS_IMAGE" \
+            build plugin="$PLUGIN_NAME" plugin_version="$VERSION" plugin_github_url="$PLUGIN_GITHUB_URL"
           ls -ltr
-          make build plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
-          ls -ltr
+
+      - name: Check the extension's architecture and minimum macOS version
+        run: |-
+          docker run --rm \
+            -e MACOSX_DEPLOYMENT_TARGET \
+            -v "$PWD:/src:ro" \
+            --entrypoint bash \
+            "$GORELEASER_CROSS_IMAGE" \
+            -c '
+              set -euo pipefail
+              so="/src/steampipe_sqlite_$0.so"
+              want="Mach-O 64-bit x86_64 dynamically linked shared library"
+              desc=$(file "$so")
+              echo "$desc"
+              [[ "$desc" == *"$want"* ]] || { echo "::error::expected $want"; exit 1; }
+              headers=$(llvm-objdump --macho --private-headers "$so")
+              minos=$(echo "$headers" | awk "/cmd LC_BUILD_VERSION/ {f=1} f && !m && \$1 == \"minos\" {print \$2; m=1}")
+              echo "minos: $minos"
+              [ "$minos" = "$MACOSX_DEPLOYMENT_TARGET" ] || { echo "::error::minos is $minos, expected $MACOSX_DEPLOYMENT_TARGET"; exit 1; }
+            ' "$PLUGIN_NAME"
 
       - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
         run: |-
@@ -1013,63 +1071,119 @@ jobs:
           path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
           if-no-files-found: error
 
-  # TODO Re-enable this job once the issue with the build is resolved
-  # build-sqlite-extension-osx-arm64:
-  #   name: Build SQLite Extension for Darwin - ARM64
-  #   needs: get-version
-  #   runs-on: macos-14
+  build-sqlite-extension-osx-arm64:
+    name: Build SQLite Extension for Darwin - ARM64
+    needs: get-version
+    # Cross-compiled on Linux, which keeps the build off the org's 5 concurrent
+    # macOS jobs. The install checks below load it on a Mac.
+    runs-on: ubuntu-latest
+    # It runs a third-party build image, and only uploads an artifact.
+    permissions:
+      contents: read
 
-  #   steps:
-  #     - name: Check architecture
-  #       run: uname -a
+    steps:
+      - name: Set environment variables
+        run: |
+          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
+          echo $plugin_name
+          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
+          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
-  #     - name: Set environment variables
-  #       run: |
-  #         plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
-  #         echo $plugin_name
-  #         echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
-  #         echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
+      - name: Check out steampipe-sqlite-extension
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          repository: "turbot/steampipe-sqlite"
+          ref: f7d95f6ab8ed26740e1a0420f0aa71439f257841 # develop (SDK v6)
 
-  #     - name: Check architecture
-  #       run: uname -a
+      - name: If workflow_dispatch, get version from input
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+          echo "Version: ${VERSION}"
 
-  #     - name: Check out steampipe-sqlite-extension
-  #       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-  #       with:
-  #         repository: "turbot/steampipe-sqlite"
-  #         ref: main
+      # goreleaser-cross is about 18 GB unpacked. Remove SDKs the containerised
+      # build doesn't use, as the Tailpipe plugin builds do
+      # (turbot/steampipe-hub-actions).
+      - name: Free disk space on the root volume
+        run: |-
+          df -h /
+          sudo rm -rf \
+            /usr/share/dotnet \
+            /usr/local/lib/android \
+            /opt/ghc \
+            /usr/local/.ghcup \
+            /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
 
-  #     - name: If workflow_dispatch, get version from input
-  #       run: |
-  #         if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-  #           echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-  #         else
-  #           echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-  #         fi
-  #         echo "Version: ${VERSION}"
+      - name: Pull goreleaser-cross
+        run: docker pull --quiet "$GORELEASER_CROSS_IMAGE"
 
-  #     - name: Setup GoLang
-  #       uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-  #       with:
-  #         go-version: 1.26
+      - name: Build steampipe-sqlite-extension
+        run: |-
+          # The Go caches and temp files go on the runner's larger /mnt disk.
+          sudo mkdir -p /mnt/go/cache /mnt/go/modcache /mnt/go/tmp /mnt/go/home
+          sudo chown -R "$(id -u):$(id -g)" /mnt/go
+          # Run as the runner's user: as root, git refuses the runner-owned
+          # checkout ("dubious ownership") and Go's VCS stamping fails the build.
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -e HOME=/mnt-go/home \
+            -e GOOS=darwin \
+            -e GOARCH=arm64 \
+            -e CGO_ENABLED=1 \
+            -e CC=oa64-clang \
+            -e MACOSX_DEPLOYMENT_TARGET \
+            -e GOCACHE=/mnt-go/cache \
+            -e GOMODCACHE=/mnt-go/modcache \
+            -e GOTMPDIR=/mnt-go/tmp \
+            -e TMPDIR=/mnt-go/tmp \
+            -v "$PWD:/src" \
+            -v /mnt/go:/mnt-go \
+            -w /src \
+            --entrypoint make \
+            "$GORELEASER_CROSS_IMAGE" \
+            build plugin="$PLUGIN_NAME" plugin_version="$VERSION" plugin_github_url="$PLUGIN_GITHUB_URL"
+          ls -ltr
 
-  #     - name: Build steampipe-sqlite-extension
-  #       run: |
-  #         pwd
-  #         ls -ltr
-  #         make build plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
-  #         ls -ltr
+      - name: Check the extension's architecture, minimum macOS version and signature
+        run: |-
+          docker run --rm \
+            -e MACOSX_DEPLOYMENT_TARGET \
+            -v "$PWD:/src:ro" \
+            --entrypoint bash \
+            "$GORELEASER_CROSS_IMAGE" \
+            -c '
+              set -euo pipefail
+              so="/src/steampipe_sqlite_$0.so"
+              want="Mach-O 64-bit arm64 dynamically linked shared library"
+              desc=$(file "$so")
+              echo "$desc"
+              [[ "$desc" == *"$want"* ]] || { echo "::error::expected $want"; exit 1; }
+              headers=$(llvm-objdump --macho --private-headers "$so")
+              minos=$(echo "$headers" | awk "/cmd LC_BUILD_VERSION/ {f=1} f && !m && \$1 == \"minos\" {print \$2; m=1}")
+              echo "minos: $minos"
+              [ "$minos" = "$MACOSX_DEPLOYMENT_TARGET" ] || { echo "::error::minos is $minos, expected $MACOSX_DEPLOYMENT_TARGET"; exit 1; }
+              # Apple Silicon only loads signed code; the linker ad-hoc signs
+              # arm64 builds. The Darwin ARM64 install check verifies it.
+              [[ "$headers" == *"cmd LC_CODE_SIGNATURE"* ]] || { echo "::error::no code signature"; exit 1; }
+              echo "code signature: present"
+            ' "$PLUGIN_NAME"
 
-  #     - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
-  #       run: |-
-  #         tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
+      - name: Zip and rename the steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
+        run: |-
+          tar -czvf steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz steampipe_sqlite_${{ env.PLUGIN_NAME }}.so
 
-  #     - name: Save Darwin Build Artifact - ARM64
-  #       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-  #       with:
-  #         name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-  #         path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-  #         if-no-files-found: error
+      - name: Save Darwin Build Artifact - ARM64
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+          path: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+          if-no-files-found: error
 
   build-export-tool:
     name: Build Export Tool
@@ -1185,6 +1299,7 @@ jobs:
       - build-sqlite-extension-linux-amd64
       - build-sqlite-extension-linux-arm64
       - build-sqlite-extension-osx-amd64
+      - build-sqlite-extension-osx-arm64
       # Export
       - build-export-tool
     steps:
@@ -1260,11 +1375,11 @@ jobs:
         with:
           name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
 
-      # - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
-      #   id: download_sqlite_darwin_arm64
-      #   uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-      #   with:
-      #     name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+      - name: Download steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
+        id: download_sqlite_darwin_arm64
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
 
       - name: Download steampipe_export_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
         id: download_export_linux_amd64
@@ -1340,6 +1455,7 @@ jobs:
             ${{ steps.download_pg15_linux_arm64.outputs.download-path }}/steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
 
             ${{ steps.download_sqlite_darwin_amd64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz
+            ${{ steps.download_sqlite_darwin_arm64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz
             ${{ steps.download_sqlite_linux_amd64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_amd64.tar.gz
             ${{ steps.download_sqlite_linux_arm64.outputs.download-path }}/steampipe_sqlite_${{ env.PLUGIN_NAME }}.linux_arm64.tar.gz
 
@@ -1502,6 +1618,31 @@ jobs:
           psql -d postgres -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "SELECT * FROM pg_extension;"
 
+      - name: Download and install SQLite Extension
+        run: |-
+          echo | TERM=xterm bash steampipe-workflows/scripts/install_sqlite.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+
+      # macOS's own /usr/bin/sqlite3 can't load extensions.
+      - name: Install SQLite3
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        run: brew install sqlite
+
+      # The Darwin extension is cross-compiled on Linux, so this is where it's
+      # first loaded on a Mac. SQLite appends .dylib, not .so, to a file name
+      # without an extension on macOS, so pass the full name.
+      - name: Test SQLite Extension
+        run: |-
+          so="./steampipe_sqlite_${{ env.PLUGIN_NAME }}.so"
+          file "$so"
+          otool -l "$so" | grep -A4 LC_BUILD_VERSION
+          # Apple Silicon only loads signed code; the linker signs arm64 builds.
+          if [ "$(uname -m)" = "arm64" ]; then
+            codesign -v "$so"
+          fi
+          echo ".load $so" | "$(brew --prefix sqlite)/bin/sqlite3"
+
       - name: Download and install Export Tool
         run: |-
           echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
@@ -1586,6 +1727,27 @@ jobs:
         run: |-
           echo | TERM=xterm bash steampipe-workflows/scripts/install_sqlite.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
 
+      # macOS's own /usr/bin/sqlite3 can't load extensions.
+      - name: Install SQLite3
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        run: brew install sqlite
+
+      # The Darwin extension is cross-compiled on Linux, so this is where it's
+      # first loaded on a Mac. SQLite appends .dylib, not .so, to a file name
+      # without an extension on macOS, so pass the full name.
+      - name: Test SQLite Extension
+        run: |-
+          so="./steampipe_sqlite_${{ env.PLUGIN_NAME }}.so"
+          file "$so"
+          otool -l "$so" | grep -A4 LC_BUILD_VERSION
+          # Apple Silicon only loads signed code; the linker signs arm64 builds.
+          if [ "$(uname -m)" = "arm64" ]; then
+            codesign -v "$so"
+          fi
+          echo ".load $so" | "$(brew --prefix sqlite)/bin/sqlite3"
+
       - name: Download and install Export Tool
         run: |-
           echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
@@ -1625,6 +1787,7 @@ jobs:
       - build-sqlite-extension-linux-amd64
       - build-sqlite-extension-linux-arm64
       - build-sqlite-extension-osx-amd64
+      - build-sqlite-extension-osx-arm64
       - build-export-tool
       - build-draft-release
       - check-installation-linux
@@ -1678,6 +1841,9 @@ jobs:
           fi
           if [[ "${{ needs.build-sqlite-extension-osx-amd64.result }}" == "failure" ]]; then
             failed_jobs="$failed_jobs\n- build-sqlite-extension-osx-amd64"
+          fi
+          if [[ "${{ needs.build-sqlite-extension-osx-arm64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-sqlite-extension-osx-arm64"
           fi
           if [[ "${{ needs.build-export-tool.result }}" == "failure" ]]; then
             failed_jobs="$failed_jobs\n- build-export-tool"
