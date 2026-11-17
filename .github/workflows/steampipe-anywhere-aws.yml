@@ -114,7 +114,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 34f2829e64e70411bba39ad100585b97df1ec636 # develop (Darwin cross-compile)
+          ref: c3fd76f0174888fb567318adf522313745f18afc # v2.3.1
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -203,7 +203,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 34f2829e64e70411bba39ad100585b97df1ec636 # develop (Darwin cross-compile)
+          ref: c3fd76f0174888fb567318adf522313745f18afc # v2.3.1
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -295,7 +295,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 34f2829e64e70411bba39ad100585b97df1ec636 # develop (Darwin cross-compile)
+          ref: c3fd76f0174888fb567318adf522313745f18afc # v2.3.1
           path: steampipe-postgres-fdw
 
       - name: If workflow_dispatch, get version from input
@@ -457,7 +457,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 34f2829e64e70411bba39ad100585b97df1ec636 # develop (Darwin cross-compile)
+          ref: c3fd76f0174888fb567318adf522313745f18afc # v2.3.1
           path: steampipe-postgres-fdw
 
       - name: If workflow_dispatch, get version from input
@@ -620,7 +620,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 34f2829e64e70411bba39ad100585b97df1ec636 # develop (Darwin cross-compile)
+          ref: c3fd76f0174888fb567318adf522313745f18afc # v2.3.1
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -709,7 +709,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 34f2829e64e70411bba39ad100585b97df1ec636 # develop (Darwin cross-compile)
+          ref: c3fd76f0174888fb567318adf522313745f18afc # v2.3.1
 
       - name: If workflow_dispatch, get version from input
         run: |
