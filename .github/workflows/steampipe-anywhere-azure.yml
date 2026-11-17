@@ -35,9 +35,12 @@ env:
   # Darwin builds otherwise take the runner's macOS version as their minimum,
   # so builds on macOS 15 runners would not load on macOS 14.
   MACOSX_DEPLOYMENT_TARGET: "14.0"
-  # The Darwin SQLite extensions are cross-compiled on Linux in this image:
-  # goreleaser-cross v1.26.10, whose Go matches the go-version the other jobs
-  # set up. Multi-arch index digest.
+  # The Go version the Go builds use: the setup-go steps below, and the
+  # goreleaser-cross image below, which must ship the same Go (each
+  # cross-compile job checks). Update the two together.
+  GO_VERSION: "1.26.10"
+  # The Darwin SQLite extensions and Postgres FDWs are cross-compiled on
+  # Linux in this image: goreleaser-cross v1.26.10. Multi-arch index digest.
   GORELEASER_CROSS_IMAGE: ghcr.io/goreleaser/goreleaser-cross@sha256:4ddb0de02f2eaac64d2b33e16d1d702d800db6a110154f8768f283858fb26c02
 
 jobs:
@@ -76,7 +79,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Fetch plugin module
@@ -111,7 +114,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
+          ref: c3fd76f0174888fb567318adf522313745f18afc # v2.3.1
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -125,7 +128,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Setup apt-get
@@ -204,7 +207,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
+          ref: c3fd76f0174888fb567318adf522313745f18afc # v2.3.1
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -218,7 +221,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Setup apt-get
@@ -272,14 +275,18 @@ jobs:
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.linux_arm64.tar.gz
           if-no-files-found: error
 
-  build-postgres-14-fdw-osx-amd64:
-    name: Build Postgres 14 FDW for Darwin - AMD64
+  build-postgres-fdw-osx-amd64:
+    name: Build Postgres 14 and 15 FDWs for Darwin - AMD64
     needs: get-version
-    runs-on: macos-15-large
-    steps:
-      - name: Check architecture
-        run: uname -a
+    # Cross-compiled on Linux, which keeps the build off the org's 5 concurrent
+    # macOS jobs. One job builds both Postgres versions, so the plugin compiles
+    # once. The install checks below load the Postgres 14 FDW on a Mac.
+    runs-on: ubuntu-latest
+    # It runs a third-party build image, and only uploads artifacts.
+    permissions:
+      contents: read
 
+    steps:
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -287,31 +294,13 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
-      - name: Install PostgreSQL@14
-        run: brew install --force postgresql@14
-
-      - name: PGConfig
-        run: |-
-          which pg_config
-          ls -l $(which pg_config)
-          PGXS=$(pg_config --pgxs)
-          SERVER_LIB=$(pg_config --includedir)/server
-          INTERNAL_LIB=$(pg_config --includedir)/internal
-
-          echo $PGXS
-          echo $SERVER_LIB
-          echo $INTERNAL_LIB
-
-          ls -l $PGXS
-          ls -l $SERVER_LIB
-          ls -l $INTERNAL_LIB
-
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
+          ref: c3fd76f0174888fb567318adf522313745f18afc # v2.3.1
+          path: steampipe-postgres-fdw
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -322,58 +311,144 @@ jobs:
           fi
           echo "Version: ${VERSION}"
 
-      - name: Setup Golang
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version: 1.26.10
-          cache: false
-
-      - name: Find stuff and set env
+      # goreleaser-cross is about 18 GB unpacked. Remove SDKs the containerised
+      # build doesn't use, as the Tailpipe plugin builds do
+      # (turbot/steampipe-hub-actions).
+      - name: Free disk space on the root volume
         run: |-
-          go version
+          df -h /
+          sudo rm -rf \
+            /usr/share/dotnet \
+            /usr/local/lib/android \
+            /opt/ghc \
+            /usr/local/.ghcup \
+            /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
 
-          which pg_config
-          pg_config --version
+      - name: Pull goreleaser-cross
+        run: docker pull --quiet "$GORELEASER_CROSS_IMAGE"
 
-          export PATH=$(pg_config --bindir):$PATH
-          export PGXS=$(pg_config --pgxs)
-
-          export SERVER_LIB=$(pg_config --includedir)/server
-          export INTERNAL_LIB=$(pg_config --includedir)/internal
-
-          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-
-          export LDFLAGS=$(pg_config --ldfalgs)
-          export PG_LDFLAGS=$(pg_config --ldfalgs)
-
-      - name: Build steampipe-postgres-fdw-anywhere
-        run: |
-          pwd
-          ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
-          ls -ltr
-
-      - name: Rename and zip the build-Darwin folder
+      # The build must use the same Go as the workflow's other Go builds.
+      - name: Check the build image's Go version
         run: |-
-          mv build-Darwin steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64
-          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64
+          image_go=$(docker run --rm --entrypoint go "$GORELEASER_CROSS_IMAGE" env GOVERSION)
+          echo "goreleaser-cross has $image_go; GO_VERSION is $GO_VERSION"
+          if [ "$image_go" != "go$GO_VERSION" ]; then
+            echo "::error::goreleaser-cross has $image_go, not go$GO_VERSION. Update GORELEASER_CROSS_IMAGE and GO_VERSION together."
+            exit 1
+          fi
 
-      - name: Save MacOS Build Artifact - AMD64
+      # make standalone_darwin_cross fetches the Postgres headers from
+      # Homebrew's macOS bottles, pinned in steampipe-postgres-fdw, and builds
+      # without PGXS. Each build lands in build-Darwin, which is moved out of
+      # the checkout and named as the release asset is.
+      - name: Build steampipe-postgres-fdw for Postgres 14 and 15
+        run: |-
+          # The Go caches and temp files go on the runner's larger /mnt disk.
+          sudo mkdir -p /mnt/go/cache /mnt/go/modcache /mnt/go/tmp /mnt/go/home
+          sudo chown -R "$(id -u):$(id -g)" /mnt/go
+          for pg in 14 15; do
+            # Run as the runner's user: as root, git refuses the runner-owned
+            # checkout ("dubious ownership") and Go's VCS stamping fails the build.
+            docker run --rm \
+              --user "$(id -u):$(id -g)" \
+              -e HOME=/mnt-go/home \
+              -e GOOS=darwin \
+              -e GOARCH=amd64 \
+              -e CGO_ENABLED=1 \
+              -e CC=o64-clang \
+              -e MACOSX_DEPLOYMENT_TARGET \
+              -e GOCACHE=/mnt-go/cache \
+              -e GOMODCACHE=/mnt-go/modcache \
+              -e GOTMPDIR=/mnt-go/tmp \
+              -e TMPDIR=/mnt-go/tmp \
+              -v "$PWD/steampipe-postgres-fdw:/src" \
+              -v /mnt/go:/mnt-go \
+              -w /src \
+              --entrypoint make \
+              "$GORELEASER_CROSS_IMAGE" \
+              standalone_darwin_cross plugin="$PLUGIN_NAME" plugin_version="$VERSION" plugin_github_url="$PLUGIN_GITHUB_URL" pg_major="$pg"
+            mv steampipe-postgres-fdw/build-Darwin "steampipe_postgres_${PLUGIN_NAME}.pg${pg}.darwin_amd64"
+          done
+          ls -l steampipe_postgres_*
+
+      # Releases are immutable and the install checks only load the FDW after
+      # publishing, so check the builds first.
+      - name: Check the FDWs' architecture, linking and minimum macOS version
+        run: |-
+          cat > "$RUNNER_TEMP/check-fdw.sh" <<'EOF'
+          set -euo pipefail
+          failed=0
+          for pg in 14 15; do
+            so="/src/steampipe_postgres_$1.pg$pg.darwin_amd64/steampipe_postgres_$1.so"
+            echo "== Postgres $pg: $so"
+            fail() { echo "::error::Postgres $pg FDW: $*"; failed=1; }
+            desc=$(file -b "$so")
+            echo "$desc"
+            [[ "$desc" == "Mach-O 64-bit x86_64 bundle"* ]] || fail "expected Mach-O 64-bit x86_64 bundle"
+            # Postgres symbols bind two-level to the postgres executable that
+            # loads the bundle (-bundle_loader), as in a macOS build.
+            for flag in NOUNDEFS TWOLEVEL; do
+              [[ "$desc" == *"$flag"* ]] || fail "no $flag flag"
+            done
+            imports=$(llvm-nm -m --undefined-only "$so")
+            from_postgres=$(grep -c '(from executable)' <<<"$imports" || true)
+            flat=$(grep -c '(dynamically looked up)' <<<"$imports" || true)
+            echo "imports from postgres: $from_postgres, flat-namespace: $flat"
+            [ "$from_postgres" -gt 0 ] || fail "no imports bound to postgres"
+            [ "$flat" -eq 0 ] || fail "$flat flat-namespace imports"
+            libs=$(llvm-objdump --macho --dylibs-used "$so" | tail -n +2 | awk '{print $1}')
+            echo "$libs"
+            # PGXS links with -dead_strip_dylibs, which drops AppKit and
+            # Foundation (on the link line, but unused), as on macOS.
+            if grep -E '/(AppKit|Foundation)\.framework/' <<<"$libs"; then fail "links AppKit or Foundation"; fi
+            minos=$(llvm-objdump --macho --private-headers "$so" | awk '/cmd LC_BUILD_VERSION/ {f=1} f && !m && $1 == "minos" {print $2; m=1}')
+            echo "minos: $minos"
+            [ "$minos" = "$MACOSX_DEPLOYMENT_TARGET" ] || fail "minos is $minos, expected $MACOSX_DEPLOYMENT_TARGET"
+          done
+          exit "$failed"
+          EOF
+          docker run --rm \
+            -e MACOSX_DEPLOYMENT_TARGET \
+            -v "$PWD:/src:ro" \
+            -v "$RUNNER_TEMP/check-fdw.sh:/check-fdw.sh:ro" \
+            --entrypoint bash \
+            "$GORELEASER_CROSS_IMAGE" \
+            /check-fdw.sh "$PLUGIN_NAME"
+
+      - name: Zip the build-Darwin folders
+        run: |-
+          for pg in 14 15; do
+            tar -czvf "steampipe_postgres_${PLUGIN_NAME}.pg${pg}.darwin_amd64.tar.gz" "steampipe_postgres_${PLUGIN_NAME}.pg${pg}.darwin_amd64"
+          done
+
+      - name: Save Darwin Build Artifact - Postgres 14 AMD64
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64.tar.gz
           if-no-files-found: error
 
-  build-postgres-14-fdw-osx-arm64:
-    name: Build Postgres 14 FDW for Darwin - ARM64
-    needs: get-version
-    runs-on: macos-15
-    steps:
-      - name: Check architecture
-        run: uname -a
+      - name: Save Darwin Build Artifact - Postgres 15 AMD64
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
+          path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
+          if-no-files-found: error
 
+  build-postgres-fdw-osx-arm64:
+    name: Build Postgres 14 and 15 FDWs for Darwin - ARM64
+    needs: get-version
+    # Cross-compiled on Linux, which keeps the build off the org's 5 concurrent
+    # macOS jobs. One job builds both Postgres versions, so the plugin compiles
+    # once. The install checks below load the Postgres 14 FDW on a Mac.
+    runs-on: ubuntu-latest
+    # It runs a third-party build image, and only uploads artifacts.
+    permissions:
+      contents: read
+
+    steps:
       - name: Set environment variables
         run: |
           plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
@@ -381,34 +456,13 @@ jobs:
           echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
           echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
 
-      - name: Check architecture
-        run: uname -a
-
-      - name: Install PostgreSQL@14
-        run: brew install --force postgresql@14
-
-      - name: PGConfig
-        run: |-
-          which pg_config
-          ls -l $(which pg_config)
-          PGXS=$(pg_config --pgxs)
-          SERVER_LIB=$(pg_config --includedir)/server
-          INTERNAL_LIB=$(pg_config --includedir)/internal
-
-          echo $PGXS
-          echo $SERVER_LIB
-          echo $INTERNAL_LIB
-
-          ls -l $PGXS
-          ls -l $SERVER_LIB
-          ls -l $INTERNAL_LIB
-
       - name: Check out steampipe-postgres-fdw
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
+          ref: c3fd76f0174888fb567318adf522313745f18afc # v2.3.1
+          path: steampipe-postgres-fdw
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -419,48 +473,134 @@ jobs:
           fi
           echo "Version: ${VERSION}"
 
-      - name: Setup Golang
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version: 1.26.10
-          cache: false
-
-      - name: Find stuff and set env
+      # goreleaser-cross is about 18 GB unpacked. Remove SDKs the containerised
+      # build doesn't use, as the Tailpipe plugin builds do
+      # (turbot/steampipe-hub-actions).
+      - name: Free disk space on the root volume
         run: |-
-          go version
+          df -h /
+          sudo rm -rf \
+            /usr/share/dotnet \
+            /usr/local/lib/android \
+            /opt/ghc \
+            /usr/local/.ghcup \
+            /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
 
-          which pg_config
-          pg_config --version
+      - name: Pull goreleaser-cross
+        run: docker pull --quiet "$GORELEASER_CROSS_IMAGE"
 
-          export PATH=$(pg_config --bindir):$PATH
-          export PGXS=$(pg_config --pgxs)
-
-          export SERVER_LIB=$(pg_config --includedir)/server
-          export INTERNAL_LIB=$(pg_config --includedir)/internal
-
-          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-
-          export LDFLAGS=$(pg_config --ldfalgs)
-          export PG_LDFLAGS=$(pg_config --ldfalgs)
-
-      - name: Build steampipe-postgres-fdw-anywhere
-        run: |
-          pwd
-          ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
-          ls -ltr
-
-      - name: Rename and zip the build-Darwin folder
+      # The build must use the same Go as the workflow's other Go builds.
+      - name: Check the build image's Go version
         run: |-
-          mv build-Darwin steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64
-          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64
+          image_go=$(docker run --rm --entrypoint go "$GORELEASER_CROSS_IMAGE" env GOVERSION)
+          echo "goreleaser-cross has $image_go; GO_VERSION is $GO_VERSION"
+          if [ "$image_go" != "go$GO_VERSION" ]; then
+            echo "::error::goreleaser-cross has $image_go, not go$GO_VERSION. Update GORELEASER_CROSS_IMAGE and GO_VERSION together."
+            exit 1
+          fi
 
-      - name: Save MacOS Build Artifact - AMD64
+      # make standalone_darwin_cross fetches the Postgres headers from
+      # Homebrew's macOS bottles, pinned in steampipe-postgres-fdw, and builds
+      # without PGXS. Each build lands in build-Darwin, which is moved out of
+      # the checkout and named as the release asset is.
+      - name: Build steampipe-postgres-fdw for Postgres 14 and 15
+        run: |-
+          # The Go caches and temp files go on the runner's larger /mnt disk.
+          sudo mkdir -p /mnt/go/cache /mnt/go/modcache /mnt/go/tmp /mnt/go/home
+          sudo chown -R "$(id -u):$(id -g)" /mnt/go
+          for pg in 14 15; do
+            # Run as the runner's user: as root, git refuses the runner-owned
+            # checkout ("dubious ownership") and Go's VCS stamping fails the build.
+            docker run --rm \
+              --user "$(id -u):$(id -g)" \
+              -e HOME=/mnt-go/home \
+              -e GOOS=darwin \
+              -e GOARCH=arm64 \
+              -e CGO_ENABLED=1 \
+              -e CC=oa64-clang \
+              -e MACOSX_DEPLOYMENT_TARGET \
+              -e GOCACHE=/mnt-go/cache \
+              -e GOMODCACHE=/mnt-go/modcache \
+              -e GOTMPDIR=/mnt-go/tmp \
+              -e TMPDIR=/mnt-go/tmp \
+              -v "$PWD/steampipe-postgres-fdw:/src" \
+              -v /mnt/go:/mnt-go \
+              -w /src \
+              --entrypoint make \
+              "$GORELEASER_CROSS_IMAGE" \
+              standalone_darwin_cross plugin="$PLUGIN_NAME" plugin_version="$VERSION" plugin_github_url="$PLUGIN_GITHUB_URL" pg_major="$pg"
+            mv steampipe-postgres-fdw/build-Darwin "steampipe_postgres_${PLUGIN_NAME}.pg${pg}.darwin_arm64"
+          done
+          ls -l steampipe_postgres_*
+
+      # Releases are immutable and the install checks only load the FDW after
+      # publishing, so check the builds first.
+      - name: Check the FDWs' architecture, linking and minimum macOS version
+        run: |-
+          cat > "$RUNNER_TEMP/check-fdw.sh" <<'EOF'
+          set -euo pipefail
+          failed=0
+          for pg in 14 15; do
+            so="/src/steampipe_postgres_$1.pg$pg.darwin_arm64/steampipe_postgres_$1.so"
+            echo "== Postgres $pg: $so"
+            fail() { echo "::error::Postgres $pg FDW: $*"; failed=1; }
+            desc=$(file -b "$so")
+            echo "$desc"
+            [[ "$desc" == "Mach-O 64-bit arm64 bundle"* ]] || fail "expected Mach-O 64-bit arm64 bundle"
+            # Postgres symbols bind two-level to the postgres executable that
+            # loads the bundle (-bundle_loader), as in a macOS build.
+            for flag in NOUNDEFS TWOLEVEL; do
+              [[ "$desc" == *"$flag"* ]] || fail "no $flag flag"
+            done
+            imports=$(llvm-nm -m --undefined-only "$so")
+            from_postgres=$(grep -c '(from executable)' <<<"$imports" || true)
+            flat=$(grep -c '(dynamically looked up)' <<<"$imports" || true)
+            echo "imports from postgres: $from_postgres, flat-namespace: $flat"
+            [ "$from_postgres" -gt 0 ] || fail "no imports bound to postgres"
+            [ "$flat" -eq 0 ] || fail "$flat flat-namespace imports"
+            libs=$(llvm-objdump --macho --dylibs-used "$so" | tail -n +2 | awk '{print $1}')
+            echo "$libs"
+            # PGXS links with -dead_strip_dylibs, which drops AppKit and
+            # Foundation (on the link line, but unused), as on macOS.
+            if grep -E '/(AppKit|Foundation)\.framework/' <<<"$libs"; then fail "links AppKit or Foundation"; fi
+            minos=$(llvm-objdump --macho --private-headers "$so" | awk '/cmd LC_BUILD_VERSION/ {f=1} f && !m && $1 == "minos" {print $2; m=1}')
+            echo "minos: $minos"
+            [ "$minos" = "$MACOSX_DEPLOYMENT_TARGET" ] || fail "minos is $minos, expected $MACOSX_DEPLOYMENT_TARGET"
+            # Apple Silicon only loads signed code; the linker ad-hoc signs
+            # arm64 builds. The Darwin ARM64 install check verifies it.
+            headers=$(llvm-objdump --macho --private-headers "$so")
+            [[ "$headers" == *"cmd LC_CODE_SIGNATURE"* ]] || fail "no code signature"
+          done
+          exit "$failed"
+          EOF
+          docker run --rm \
+            -e MACOSX_DEPLOYMENT_TARGET \
+            -v "$PWD:/src:ro" \
+            -v "$RUNNER_TEMP/check-fdw.sh:/check-fdw.sh:ro" \
+            --entrypoint bash \
+            "$GORELEASER_CROSS_IMAGE" \
+            /check-fdw.sh "$PLUGIN_NAME"
+
+      - name: Zip the build-Darwin folders
+        run: |-
+          for pg in 14 15; do
+            tar -czvf "steampipe_postgres_${PLUGIN_NAME}.pg${pg}.darwin_arm64.tar.gz" "steampipe_postgres_${PLUGIN_NAME}.pg${pg}.darwin_arm64"
+          done
+
+      - name: Save Darwin Build Artifact - Postgres 14 ARM64
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64.tar.gz
+          if-no-files-found: error
+
+      - name: Save Darwin Build Artifact - Postgres 15 ARM64
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
+          path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
           if-no-files-found: error
 
   build-postgres-15-fdw-linux-amd64:
@@ -484,7 +624,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
+          ref: c3fd76f0174888fb567318adf522313745f18afc # v2.3.1
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -498,7 +638,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Setup apt-get
@@ -577,7 +717,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "turbot/steampipe-postgres-fdw"
-          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
+          ref: c3fd76f0174888fb567318adf522313745f18afc # v2.3.1
 
       - name: If workflow_dispatch, get version from input
         run: |
@@ -591,7 +731,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Setup apt-get
@@ -645,208 +785,6 @@ jobs:
           path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.linux_arm64.tar.gz
           if-no-files-found: error
 
-  build-postgres-15-fdw-osx-amd64:
-    name: Build Postgres 15 FDW for Darwin - AMD64
-    needs: get-version
-    runs-on: macos-15-large
-    steps:
-      - name: Check architecture
-        run: uname -a
-
-      - name: Set environment variables
-        run: |
-          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
-          echo $plugin_name
-          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
-          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
-
-      - name: Install PostgreSQL@15
-        run: brew install postgresql@15
-
-      - name: Get the installation directory of the postgresql@15 formula
-        run: brew --prefix postgresql@15
-
-      - name: Configure PATH for PostgreSQL
-        run: echo $(brew --prefix postgresql@15)/bin >> $GITHUB_PATH
-
-      - name: PGConfig
-        run: |-
-          which pg_config
-          pg_config
-          ls -l $(which pg_config)
-          PGXS=$(pg_config --pgxs)
-          SERVER_LIB=$(pg_config --includedir)/postgresql/server
-          INTERNAL_LIB=$(pg_config --includedir)/postgresql/internal
-
-          echo $PGXS
-          echo $SERVER_LIB
-          echo $INTERNAL_LIB
-
-          ls -l $PGXS
-          ls -l $SERVER_LIB
-          ls -l $INTERNAL_LIB
-
-      - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-          repository: "turbot/steampipe-postgres-fdw"
-          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
-
-      - name: If workflow_dispatch, get version from input
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-          else
-            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-          fi
-          echo "Version: ${VERSION}"
-
-      - name: Setup Golang
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version: 1.26.10
-          cache: false
-
-      - name: Find stuff and set env
-        run: |-
-          go version
-
-          which pg_config
-          pg_config --version
-
-          export PGXS=$(pg_config --pgxs)
-
-          export SERVER_LIB=$(pg_config --includedir)/postgresql/server
-          export INTERNAL_LIB=$(pg_config --includedir)/postgresql/internal
-
-          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-
-          export LDFLAGS=$(pg_config --ldfalgs)
-          export PG_LDFLAGS=$(pg_config --ldfalgs)
-
-      - name: Build steampipe-postgres-fdw-anywhere
-        run: |
-          pwd
-          ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
-          ls -ltr
-
-      - name: Rename and zip the build-Darwin folder
-        run: |-
-          mv build-Darwin steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64
-          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64
-
-      - name: Save MacOS Build Artifact - AMD64
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
-          path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64.tar.gz
-          if-no-files-found: error
-
-  build-postgres-15-fdw-osx-arm64:
-    name: Build Postgres 15 FDW for Darwin - ARM64
-    needs: get-version
-    runs-on: macos-15
-    steps:
-      - name: Check architecture
-        run: uname -a
-
-      - name: Set environment variables
-        run: |
-          plugin_name=$(echo $GITHUB_REPOSITORY | cut -d'-' -f 3)
-          echo $plugin_name
-          echo "PLUGIN_NAME=${plugin_name}" >> $GITHUB_ENV
-          echo "PLUGIN_GITHUB_URL=github.com/turbot/steampipe-plugin-${plugin_name}" >> $GITHUB_ENV
-
-      - name: Check architecture
-        run: uname -a
-
-      - name: Install PostgreSQL@15
-        run: brew install postgresql@15
-
-      - name: Get the installation directory of the postgresql@15 formula
-        run: brew --prefix postgresql@15
-
-      - name: Configure PATH for PostgreSQL
-        run: echo $(brew --prefix postgresql@15)/bin >> $GITHUB_PATH
-
-      - name: PGConfig
-        run: |-
-          which pg_config
-          ls -l $(which pg_config)
-          PGXS=$(pg_config --pgxs)
-          SERVER_LIB=$(pg_config --includedir)/postgresql/server
-          INTERNAL_LIB=$(pg_config --includedir)/postgresql/internal
-
-          echo $PGXS
-          echo $SERVER_LIB
-          echo $INTERNAL_LIB
-
-          ls -l $PGXS
-          ls -l $SERVER_LIB
-          ls -l $INTERNAL_LIB
-
-      - name: Check out steampipe-postgres-fdw
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-          repository: "turbot/steampipe-postgres-fdw"
-          ref: 7d3d21d19f59b6e215504e404afebc72ca2aa681 # v2.3.0
-
-      - name: If workflow_dispatch, get version from input
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-          else
-            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-          fi
-          echo "Version: ${VERSION}"
-
-      - name: Setup Golang
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version: 1.26.10
-          cache: false
-
-      - name: Find stuff and set env
-        run: |-
-          go version
-
-          which pg_config
-          pg_config --version
-
-          export PGXS=$(pg_config --pgxs)
-
-          export SERVER_LIB=$(pg_config --includedir)/postgresql/server
-          export INTERNAL_LIB=$(pg_config --includedir)/postgresql/internal
-
-          export CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-          export PG_CFLAGS="$(pg_config --cflags) -I${SERVER_LIB} -I${INTERNAL_LIB} -g"
-
-          export LDFLAGS=$(pg_config --ldfalgs)
-          export PG_LDFLAGS=$(pg_config --ldfalgs)
-
-      - name: Build steampipe-postgres-fdw-anywhere
-        run: |
-          pwd
-          ls -ltr
-          make standalone plugin=${{ env.PLUGIN_NAME }} plugin_version=${{ env.VERSION }} plugin_github_url=${{ env.PLUGIN_GITHUB_URL }}
-          ls -ltr
-
-      - name: Rename and zip the build-Darwin folder
-        run: |-
-          mv build-Darwin steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64
-          tar -czvf steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64
-
-      - name: Save MacOS Build Artifact - ARM64
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
-          path: steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64.tar.gz
-          if-no-files-found: error
-
   build-sqlite-extension-linux-amd64:
     name: Build SQLite Extension for Linux - AMD64
     needs: get-version
@@ -882,7 +820,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Build steampipe-sqlite-extension
@@ -923,7 +861,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Check out steampipe-sqlite-extension
@@ -1011,6 +949,16 @@ jobs:
 
       - name: Pull goreleaser-cross
         run: docker pull --quiet "$GORELEASER_CROSS_IMAGE"
+
+      # The build must use the same Go as the workflow's other Go builds.
+      - name: Check the build image's Go version
+        run: |-
+          image_go=$(docker run --rm --entrypoint go "$GORELEASER_CROSS_IMAGE" env GOVERSION)
+          echo "goreleaser-cross has $image_go; GO_VERSION is $GO_VERSION"
+          if [ "$image_go" != "go$GO_VERSION" ]; then
+            echo "::error::goreleaser-cross has $image_go, not go$GO_VERSION. Update GORELEASER_CROSS_IMAGE and GO_VERSION together."
+            exit 1
+          fi
 
       - name: Build steampipe-sqlite-extension
         run: |-
@@ -1122,6 +1070,16 @@ jobs:
       - name: Pull goreleaser-cross
         run: docker pull --quiet "$GORELEASER_CROSS_IMAGE"
 
+      # The build must use the same Go as the workflow's other Go builds.
+      - name: Check the build image's Go version
+        run: |-
+          image_go=$(docker run --rm --entrypoint go "$GORELEASER_CROSS_IMAGE" env GOVERSION)
+          echo "goreleaser-cross has $image_go; GO_VERSION is $GO_VERSION"
+          if [ "$image_go" != "go$GO_VERSION" ]; then
+            echo "::error::goreleaser-cross has $image_go, not go$GO_VERSION. Update GORELEASER_CROSS_IMAGE and GO_VERSION together."
+            exit 1
+          fi
+
       - name: Build steampipe-sqlite-extension
         run: |-
           # The Go caches and temp files go on the runner's larger /mnt disk.
@@ -1222,7 +1180,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Build steampipe-export
@@ -1297,13 +1255,12 @@ jobs:
       # Postgres 14
       - build-postgres-14-fdw-linux-amd64
       - build-postgres-14-fdw-linux-arm64
-      - build-postgres-14-fdw-osx-amd64
-      - build-postgres-14-fdw-osx-arm64
       # Postgres 15
       - build-postgres-15-fdw-linux-amd64
       - build-postgres-15-fdw-linux-arm64
-      - build-postgres-15-fdw-osx-amd64
-      - build-postgres-15-fdw-osx-arm64
+      # Postgres 14 and 15 for Darwin
+      - build-postgres-fdw-osx-amd64
+      - build-postgres-fdw-osx-arm64
       # SQLite
       - build-sqlite-extension-linux-amd64
       - build-sqlite-extension-linux-arm64
@@ -1311,6 +1268,9 @@ jobs:
       - build-sqlite-extension-osx-arm64
       # Export
       - build-export-tool
+      # Darwin checks
+      - check-darwin-arm64
+      - check-darwin-amd64
     steps:
       - name: Set environment variables
         run: |
@@ -1448,6 +1408,9 @@ jobs:
         id: create_draft_release
         with:
           draft: false
+          # A published release is immutable, so fail before creating it if
+          # any listed asset is missing.
+          fail_on_unmatched_files: true
           prerelease: ${{ steps.check_prerelease.outputs.is_prerelease }}
           name: ${{ env.VERSION }}
           tag_name: ${{ env.VERSION }}
@@ -1569,19 +1532,21 @@ jobs:
             exit 1  # This exits the step with an error status, failing the job
           fi
 
-  check-installation-darwin-arm64:
-    name: Check Installation(Darwin ARM64)
+  # Installs and loads the Darwin builds on a Mac before the release is
+  # published: a published release is immutable, so a bad asset couldn't be
+  # replaced. The files are installed as the install scripts install the
+  # release assets; check-installation-linux runs the scripts themselves.
+  check-darwin-arm64:
+    name: Check Darwin Builds (ARM64)
     runs-on: macos-latest
-    needs: build-draft-release
+    needs:
+      - build-postgres-fdw-osx-arm64
+      - build-sqlite-extension-osx-arm64
+      - build-export-tool
+    # It only reads the build artifacts.
+    permissions:
+      contents: read
     steps:
-      - name: Checkout install scripts
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: turbot/steampipe-workflows
-          ref: main
-          path: steampipe-workflows
-          persist-credentials: false
-
       - name: Check architecture
         run: uname -a
 
@@ -1605,6 +1570,13 @@ jobs:
           fi
           echo "Version: ${VERSION}"
 
+      - name: Download the Darwin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: "*.darwin_arm64.tar.gz"
+          merge-multiple: true
+          path: darwin-builds
+
       - name: Install PostgreSQL14
         run: brew install --force postgresql@14
 
@@ -1614,9 +1586,19 @@ jobs:
       - name: Check pg_config version
         run: pg_config --version
 
-      - name: Download and install Postgres FDW
+      # As install_postgres.sh installs the release asset.
+      - name: Install the Postgres 14 FDW from the build
         run: |-
-          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_postgres.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          name="steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_arm64"
+          tar -xzvf "darwin-builds/$name.tar.gz"
+          so="$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.so"
+          file "$so"
+          otool -l "$so" | grep -A4 LC_BUILD_VERSION
+          # Apple Silicon only loads signed code; the linker signs arm64 builds.
+          codesign -v "$so"
+          sudo cp "$so" "$(pg_config --pkglibdir)/"
+          sudo cp "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.control" \
+            "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}--1.0.sql" "$(pg_config --sharedir)/extension/"
 
       - name: Configure PostgreSQL
         run: |-
@@ -1627,9 +1609,48 @@ jobs:
           psql -d postgres -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "SELECT * FROM pg_extension;"
 
-      - name: Download and install SQLite Extension
+      # Then the same for Postgres 15. Homebrew links one postgresql@ version
+      # at a time, and each finds its libpq through the link, so switch the
+      # link and the service over to 15.
+      - name: Install PostgreSQL15
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
         run: |-
-          echo | TERM=xterm bash steampipe-workflows/scripts/install_sqlite.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          brew services stop postgresql@14
+          brew install postgresql@15
+          brew unlink postgresql@14
+          brew link --overwrite postgresql@15
+          brew services start postgresql@15
+          for _ in $(seq 1 30); do pg_isready -q && break; sleep 1; done
+          pg_config --version
+
+      - name: Install the Postgres 15 FDW from the build
+        run: |-
+          name="steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_arm64"
+          tar -xzvf "darwin-builds/$name.tar.gz"
+          so="$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.so"
+          file "$so"
+          otool -l "$so" | grep -A4 LC_BUILD_VERSION
+          # Apple Silicon only loads signed code; the linker signs arm64 builds.
+          codesign -v "$so"
+          sudo cp "$so" "$(pg_config --pkglibdir)/"
+          sudo cp "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.control" \
+            "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}--1.0.sql" "$(pg_config --sharedir)/extension/"
+
+      - name: Configure PostgreSQL 15
+        run: |-
+          psql -d postgres -c "CREATE EXTENSION ltree;"
+          psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "SELECT * FROM pg_extension;"
+
+      # As install_sqlite.sh installs the release asset, into the current
+      # directory.
+      - name: Install the SQLite extension from the build
+        run: tar -xzvf "darwin-builds/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz"
 
       # macOS's own /usr/bin/sqlite3 can't load extensions.
       - name: Install SQLite3
@@ -1652,9 +1673,13 @@ jobs:
           fi
           echo ".load $so" | "$(brew --prefix sqlite)/bin/sqlite3"
 
-      - name: Download and install Export Tool
+      # As install_export.sh installs the release asset.
+      - name: Install the export tool from the build
         run: |-
-          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          mkdir -p export
+          tar -xzvf "darwin-builds/steampipe_export_${{ env.PLUGIN_NAME }}.darwin_arm64.tar.gz" -C export
+          sudo install -d /usr/local/bin
+          sudo install "export/steampipe_export_${{ env.PLUGIN_NAME }}" /usr/local/bin
 
       - name: Test Export Tool
         run: |
@@ -1674,19 +1699,21 @@ jobs:
             exit 1  # This exits the step with an error status, failing the job
           fi
 
-  check-installation-darwin-amd64:
-    name: Check Installation(Darwin AMD64)
+  # Installs and loads the Darwin builds on a Mac before the release is
+  # published: a published release is immutable, so a bad asset couldn't be
+  # replaced. The files are installed as the install scripts install the
+  # release assets; check-installation-linux runs the scripts themselves.
+  check-darwin-amd64:
+    name: Check Darwin Builds (AMD64)
     runs-on: macos-15-large
-    needs: build-draft-release
+    needs:
+      - build-postgres-fdw-osx-amd64
+      - build-sqlite-extension-osx-amd64
+      - build-export-tool
+    # It only reads the build artifacts.
+    permissions:
+      contents: read
     steps:
-      - name: Checkout install scripts
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: turbot/steampipe-workflows
-          ref: main
-          path: steampipe-workflows
-          persist-credentials: false
-
       - name: Check architecture
         run: uname -a
 
@@ -1710,6 +1737,13 @@ jobs:
           fi
           echo "Version: ${VERSION}"
 
+      - name: Download the Darwin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: "*.darwin_amd64.tar.gz"
+          merge-multiple: true
+          path: darwin-builds
+
       - name: Install PostgreSQL14
         run: brew install --force postgresql@14
 
@@ -1719,9 +1753,17 @@ jobs:
       - name: Check pg_config version
         run: pg_config --version
 
-      - name: Download and install Postgres FDW
+      # As install_postgres.sh installs the release asset.
+      - name: Install the Postgres 14 FDW from the build
         run: |-
-          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_postgres.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          name="steampipe_postgres_${{ env.PLUGIN_NAME }}.pg14.darwin_amd64"
+          tar -xzvf "darwin-builds/$name.tar.gz"
+          so="$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.so"
+          file "$so"
+          otool -l "$so" | grep -A4 LC_BUILD_VERSION
+          sudo cp "$so" "$(pg_config --pkglibdir)/"
+          sudo cp "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.control" \
+            "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}--1.0.sql" "$(pg_config --sharedir)/extension/"
 
       - name: Configure PostgreSQL
         run: |-
@@ -1732,9 +1774,46 @@ jobs:
           psql -d postgres -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
           psql -d postgres -c "SELECT * FROM pg_extension;"
 
-      - name: Download and install SQLite Extension
+      # Then the same for Postgres 15. Homebrew links one postgresql@ version
+      # at a time, and each finds its libpq through the link, so switch the
+      # link and the service over to 15.
+      - name: Install PostgreSQL15
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
         run: |-
-          echo | TERM=xterm bash steampipe-workflows/scripts/install_sqlite.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          brew services stop postgresql@14
+          brew install postgresql@15
+          brew unlink postgresql@14
+          brew link --overwrite postgresql@15
+          brew services start postgresql@15
+          for _ in $(seq 1 30); do pg_isready -q && break; sleep 1; done
+          pg_config --version
+
+      - name: Install the Postgres 15 FDW from the build
+        run: |-
+          name="steampipe_postgres_${{ env.PLUGIN_NAME }}.pg15.darwin_amd64"
+          tar -xzvf "darwin-builds/$name.tar.gz"
+          so="$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.so"
+          file "$so"
+          otool -l "$so" | grep -A4 LC_BUILD_VERSION
+          sudo cp "$so" "$(pg_config --pkglibdir)/"
+          sudo cp "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}.control" \
+            "$name/steampipe_postgres_${{ env.PLUGIN_NAME }}--1.0.sql" "$(pg_config --sharedir)/extension/"
+
+      - name: Configure PostgreSQL 15
+        run: |-
+          psql -d postgres -c "CREATE EXTENSION ltree;"
+          psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "CREATE SERVER steampipe_${{ env.PLUGIN_NAME }} FOREIGN DATA WRAPPER steampipe_postgres_${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "CREATE SCHEMA ${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "IMPORT FOREIGN SCHEMA ${{ env.PLUGIN_NAME }} FROM SERVER steampipe_${{ env.PLUGIN_NAME }} INTO ${{ env.PLUGIN_NAME }};"
+          psql -d postgres -c "SELECT * FROM pg_extension;"
+
+      # As install_sqlite.sh installs the release asset, into the current
+      # directory.
+      - name: Install the SQLite extension from the build
+        run: tar -xzvf "darwin-builds/steampipe_sqlite_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz"
 
       # macOS's own /usr/bin/sqlite3 can't load extensions.
       - name: Install SQLite3
@@ -1757,9 +1836,13 @@ jobs:
           fi
           echo ".load $so" | "$(brew --prefix sqlite)/bin/sqlite3"
 
-      - name: Download and install Export Tool
+      # As install_export.sh installs the release asset.
+      - name: Install the export tool from the build
         run: |-
-          echo | sudo -E TERM=xterm bash steampipe-workflows/scripts/install_export.sh ${{ env.PLUGIN_NAME }} latest 2>/dev/null
+          mkdir -p export
+          tar -xzvf "darwin-builds/steampipe_export_${{ env.PLUGIN_NAME }}.darwin_amd64.tar.gz" -C export
+          sudo install -d /usr/local/bin
+          sudo install "export/steampipe_export_${{ env.PLUGIN_NAME }}" /usr/local/bin
 
       - name: Test Export Tool
         run: |
@@ -1787,12 +1870,10 @@ jobs:
       - get-version
       - build-postgres-14-fdw-linux-amd64
       - build-postgres-14-fdw-linux-arm64
-      - build-postgres-14-fdw-osx-amd64
-      - build-postgres-14-fdw-osx-arm64
       - build-postgres-15-fdw-linux-amd64
       - build-postgres-15-fdw-linux-arm64
-      - build-postgres-15-fdw-osx-amd64
-      - build-postgres-15-fdw-osx-arm64
+      - build-postgres-fdw-osx-amd64
+      - build-postgres-fdw-osx-arm64
       - build-sqlite-extension-linux-amd64
       - build-sqlite-extension-linux-arm64
       - build-sqlite-extension-osx-amd64
@@ -1800,8 +1881,8 @@ jobs:
       - build-export-tool
       - build-draft-release
       - check-installation-linux
-      - check-installation-darwin-arm64
-      - check-installation-darwin-amd64
+      - check-darwin-arm64
+      - check-darwin-amd64
     steps:
       - name: Set environment variables
         run: |
@@ -1824,23 +1905,17 @@ jobs:
           if [[ "${{ needs.build-postgres-14-fdw-linux-arm64.result }}" == "failure" ]]; then
             failed_jobs="$failed_jobs\n- build-postgres-14-fdw-linux-arm64"
           fi
-          if [[ "${{ needs.build-postgres-14-fdw-osx-amd64.result }}" == "failure" ]]; then
-            failed_jobs="$failed_jobs\n- build-postgres-14-fdw-osx-amd64"
-          fi
-          if [[ "${{ needs.build-postgres-14-fdw-osx-arm64.result }}" == "failure" ]]; then
-            failed_jobs="$failed_jobs\n- build-postgres-14-fdw-osx-arm64"
-          fi
           if [[ "${{ needs.build-postgres-15-fdw-linux-amd64.result }}" == "failure" ]]; then
             failed_jobs="$failed_jobs\n- build-postgres-15-fdw-linux-amd64"
           fi
           if [[ "${{ needs.build-postgres-15-fdw-linux-arm64.result }}" == "failure" ]]; then
             failed_jobs="$failed_jobs\n- build-postgres-15-fdw-linux-arm64"
           fi
-          if [[ "${{ needs.build-postgres-15-fdw-osx-amd64.result }}" == "failure" ]]; then
-            failed_jobs="$failed_jobs\n- build-postgres-15-fdw-osx-amd64"
+          if [[ "${{ needs.build-postgres-fdw-osx-amd64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-postgres-fdw-osx-amd64"
           fi
-          if [[ "${{ needs.build-postgres-15-fdw-osx-arm64.result }}" == "failure" ]]; then
-            failed_jobs="$failed_jobs\n- build-postgres-15-fdw-osx-arm64"
+          if [[ "${{ needs.build-postgres-fdw-osx-arm64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- build-postgres-fdw-osx-arm64"
           fi
           if [[ "${{ needs.build-sqlite-extension-linux-amd64.result }}" == "failure" ]]; then
             failed_jobs="$failed_jobs\n- build-sqlite-extension-linux-amd64"
@@ -1863,11 +1938,11 @@ jobs:
           if [[ "${{ needs.check-installation-linux.result }}" == "failure" ]]; then
             failed_jobs="$failed_jobs\n- check-installation-linux"
           fi
-          if [[ "${{ needs.check-installation-darwin-arm64.result }}" == "failure" ]]; then
-            failed_jobs="$failed_jobs\n- check-installation-darwin-arm64"
+          if [[ "${{ needs.check-darwin-arm64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- check-darwin-arm64"
           fi
-          if [[ "${{ needs.check-installation-darwin-amd64.result }}" == "failure" ]]; then
-            failed_jobs="$failed_jobs\n- check-installation-darwin-amd64"
+          if [[ "${{ needs.check-darwin-amd64.result }}" == "failure" ]]; then
+            failed_jobs="$failed_jobs\n- check-darwin-amd64"
           fi
 
           if [[ -n "$failed_jobs" ]]; then
