@@ -37,9 +37,12 @@ env:
   # Darwin builds otherwise take the runner's macOS version as their minimum,
   # so builds on macOS 15 runners would not load on macOS 14.
   MACOSX_DEPLOYMENT_TARGET: "14.0"
+  # The Go version the Go builds use: the setup-go steps below, and the
+  # goreleaser-cross image below, which must ship the same Go (each
+  # cross-compile job checks). Update the two together.
+  GO_VERSION: "1.26.10"
   # The Darwin SQLite extensions are cross-compiled on Linux in this image:
-  # goreleaser-cross v1.26.10, whose Go matches the go-version the other jobs
-  # set up. Multi-arch index digest.
+  # goreleaser-cross v1.26.10. Multi-arch index digest.
   GORELEASER_CROSS_IMAGE: ghcr.io/goreleaser/goreleaser-cross@sha256:4ddb0de02f2eaac64d2b33e16d1d702d800db6a110154f8768f283858fb26c02
 
 jobs:
@@ -78,7 +81,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Fetch plugin module
@@ -127,7 +130,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Build steampipe-sqlite-extension
@@ -168,7 +171,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Check out steampipe-sqlite-extension
@@ -256,6 +259,16 @@ jobs:
 
       - name: Pull goreleaser-cross
         run: docker pull --quiet "$GORELEASER_CROSS_IMAGE"
+
+      # The build must use the same Go as the workflow's other Go builds.
+      - name: Check the build image's Go version
+        run: |-
+          image_go=$(docker run --rm --entrypoint go "$GORELEASER_CROSS_IMAGE" env GOVERSION)
+          echo "goreleaser-cross has $image_go; GO_VERSION is $GO_VERSION"
+          if [ "$image_go" != "go$GO_VERSION" ]; then
+            echo "::error::goreleaser-cross has $image_go, not go$GO_VERSION. Update GORELEASER_CROSS_IMAGE and GO_VERSION together."
+            exit 1
+          fi
 
       - name: Build steampipe-sqlite-extension
         run: |-
@@ -367,6 +380,16 @@ jobs:
       - name: Pull goreleaser-cross
         run: docker pull --quiet "$GORELEASER_CROSS_IMAGE"
 
+      # The build must use the same Go as the workflow's other Go builds.
+      - name: Check the build image's Go version
+        run: |-
+          image_go=$(docker run --rm --entrypoint go "$GORELEASER_CROSS_IMAGE" env GOVERSION)
+          echo "goreleaser-cross has $image_go; GO_VERSION is $GO_VERSION"
+          if [ "$image_go" != "go$GO_VERSION" ]; then
+            echo "::error::goreleaser-cross has $image_go, not go$GO_VERSION. Update GORELEASER_CROSS_IMAGE and GO_VERSION together."
+            exit 1
+          fi
+
       - name: Build steampipe-sqlite-extension
         run: |-
           # The Go caches and temp files go on the runner's larger /mnt disk.
@@ -466,7 +489,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Build steampipe-export
@@ -565,7 +588,7 @@ jobs:
       - name: Setup GoLang
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: 1.26.10
+          go-version: ${{ env.GO_VERSION }}
           cache: false
 
       - name: Build steampipe-osquery
