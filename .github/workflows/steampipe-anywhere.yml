@@ -964,6 +964,9 @@ jobs:
     # Cross-compiled on Linux, which keeps the build off the org's 5 concurrent
     # macOS jobs. The install checks below load it on a Mac.
     runs-on: ubuntu-latest
+    # It runs a third-party build image, and only uploads an artifact.
+    permissions:
+      contents: read
 
     steps:
       - name: Set environment variables
@@ -1071,6 +1074,9 @@ jobs:
     # Cross-compiled on Linux, which keeps the build off the org's 5 concurrent
     # macOS jobs. The install checks below load it on a Mac.
     runs-on: ubuntu-latest
+    # It runs a third-party build image, and only uploads an artifact.
+    permissions:
+      contents: read
 
     steps:
       - name: Set environment variables
